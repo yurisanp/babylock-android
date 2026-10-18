@@ -2,11 +2,11 @@
 <!--
   Configuração mínima de propósito (ajuda na revisão do Google Play):
   - sem canRetrieveWindowContent: o app NÃO lê o conteúdo da tela
-  - só eventos de mudança de janela, para saber quando a barra de notificações abre
+  - só eventos de mudança de janela/conteúdo (sem ler o conteúdo), para saber quando a barra de notificações abre
   - filtro de teclas para bloquear o volume durante o bloqueio
 -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowsChanged"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowsChanged|typeWindowContentChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityFlags="flagRequestFilterKeyEvents|flagRetrieveInteractiveWindows"
     android:canRequestFilterKeyEvents="true"

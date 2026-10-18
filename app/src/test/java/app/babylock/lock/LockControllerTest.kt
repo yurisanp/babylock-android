@@ -17,7 +17,7 @@ class LockControllerTest {
 
     private val app: Application = ApplicationProvider.getApplicationContext()
 
-    private fun wait(ms: Long) = shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(ms))
+    private fun advance(ms: Long) = shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(ms))
 
     @After
     fun limpar() {
@@ -59,12 +59,12 @@ class LockControllerTest {
         ShadowSettings.setCanDrawOverlays(true)
         LockController.scheduleLock(app, 3)
         assertThat(LockController.countdown.value).isEqualTo(3)
-        wait(1_000)
+        advance(1_000)
         assertThat(LockController.countdown.value).isEqualTo(2)
-        wait(1_000)
+        advance(1_000)
         assertThat(LockController.countdown.value).isEqualTo(1)
         assertThat(LockController.locked.value).isFalse()
-        wait(1_000)
+        advance(1_000)
         assertThat(LockController.countdown.value).isNull()
         assertThat(LockController.locked.value).isTrue()
     }
@@ -73,10 +73,10 @@ class LockControllerTest {
     fun `cancelar o agendamento nao trava`() {
         ShadowSettings.setCanDrawOverlays(true)
         LockController.scheduleLock(app, 3)
-        wait(1_000)
+        advance(1_000)
         LockController.cancelScheduled()
         assertThat(LockController.countdown.value).isNull()
-        wait(5_000)
+        advance(5_000)
         assertThat(LockController.locked.value).isFalse()
     }
 
@@ -85,7 +85,7 @@ class LockControllerTest {
         ShadowSettings.setCanDrawOverlays(true)
         LockController.scheduleLock(app, 2)
         LockController.scheduleLock(app, 5)
-        wait(2_000)
+        advance(2_000)
         assertThat(LockController.locked.value).isFalse()
         assertThat(LockController.countdown.value).isEqualTo(3)
     }
