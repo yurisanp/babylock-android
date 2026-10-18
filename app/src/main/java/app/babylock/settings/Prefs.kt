@@ -1,0 +1,64 @@
+package app.babylock.settings
+
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Base64
+import java.security.MessageDigest
+import java.security.SecureRandom
+
+/** Configurações locais do app. Nada sai do aparelho. */
+object Prefs {
+    private lateinit var sp: SharedPreferences
+
+    fun init(context: Context) {
+        sp = context.getSharedPreferences("babylock", Context.MODE_PRIVATE)
+    }
+
+    /** Bloquear os botões de volume durante o bloqueio (só no modo acessibilidade). */
+    var lockVolume: Boolean
+        get() = sp.getBoolean("lock_volume", true)
+        set(v) = sp.edit().putBoolean("lock_volume", v).apply()
+
+    /** Fechar a barra de notificações assim que ela abrir (só no modo acessibilidade). */
+    var closeShade: Boolean
+        get() = sp.getBoolean("close_shade", true)
+        set(v) = sp.edit().putBoolean("close_shade", v).apply()
+
+    /** Quantos segundos segurar o canto para chamar o desbloqueio. */
+    var holdSeconds: Int
+        get() = sp.getInt("hold_seconds", 3)
+        set(v) = sp.edit().putInt("hold_seconds", v.coerceIn(2, 6)).apply()
+
+    /** O adulto aceitou a divulgação do uso de acessibilidade (exigência do Google Play). */
+    var disclosureAccepted: Boolean
+        get() = sp.getBoolean("disclosure_accepted", false)
+        set(v) = sp.edit().putBoolean("disclosure_accepted", v).apply()
+
+    val hasPin: Boolean get() = sp.contains("pin_hash")
+
+    fun setPin(pin: String) {
+        val salt = ByteArray(16).also { SecureRandom().nextBytes(it) }
+        sp.edit()
+            .putString("pin_salt", Base64.encodeToString(salt, Base64.NO_WRAP))
+            .putString("pin_hash", hash(salt, pin))
+            .apply()
+    }
+
+    fun clearPin() {
+        sp.edit().remove("pin_salt").remove("pin_hash").apply()
+    }
+
+    fun checkPin(pin: String): Boolean {
+        val salt = sp.getString("pin_salt", null) ?: return false
+        val stored = sp.getString("pin_hash", null) ?: return false
+        val candidate = hash(Base64.decode(salt, Base64.NO_WRAP), pin)
+        return MessageDigest.isEqual(stored.toByteArray(), candidate.toByteArray())
+    }
+
+    private fun hash(salt: ByteArray, pin: String): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        md.update(salt)
+        val bytes = md.digest(pin.toByteArray())
+        return Base64.encodeToString(bytes, Base64.NO_WRAP)
+    }
+}
