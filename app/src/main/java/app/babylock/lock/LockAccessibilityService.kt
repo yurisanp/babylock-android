@@ -71,6 +71,7 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (!visible || !Prefs.closeShade || event == null) return
+        if (event.packageName == SYSTEM_UI) systemUiEvents++
         // A barra de notificações e as Configurações rápidas pertencem ao pacote da System UI.
         // Conforme a versão, abrir a barra gera "estado da janela", "janelas" ou "conteúdo" mudou.
         // Fechar a barra quando ela já está fechada não faz nada, então qualquer um desses sinais basta.
@@ -94,15 +95,25 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
     }
 
     private fun dismissShade() {
+        dismissCalls++
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+            lastDismissResult = performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+            // Alguns sistemas recusam a ação; tenta o pedido antigo, que o sistema pode negar.
+            if (lastDismissResult == false) closeSystemDialogs()
         } else {
             // Antes do Android 12 não há ação própria. Não usar "voltar": com a barra fechada,
             // ele chegaria ao app de vídeo e poderia fechar o vídeo.
-            // A permissão BROADCAST_CLOSE_SYSTEM_DIALOGS só passou a ser exigida no Android 12,
-            // e este ramo roda apenas abaixo dele.
-            @Suppress("DEPRECATION", "MissingPermission")
+            closeSystemDialogs()
+        }
+    }
+
+    // Abaixo do Android 12 qualquer app pode pedir isso. A partir dele o sistema pode negar
+    // (SecurityException), e aí a barra fica aberta, mas por baixo da camada de bloqueio.
+    @Suppress("DEPRECATION", "MissingPermission")
+    private fun closeSystemDialogs() {
+        try {
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+        } catch (_: SecurityException) {
         }
     }
 
@@ -123,5 +134,10 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         @Volatile
         var instance: LockAccessibilityService? = null
             private set
+
+        // Contadores para diagnóstico nos testes (baratos, sem dados do usuário).
+        @Volatile internal var dismissCalls = 0
+        @Volatile internal var systemUiEvents = 0
+        @Volatile internal var lastDismissResult: Boolean? = null
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.view.KeyEvent
+import android.view.accessibility.AccessibilityWindowInfo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -17,6 +18,7 @@ import app.babylock.lock.LockAccessibilityService
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
 import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth.assertWithMessage
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -104,10 +106,23 @@ class LockEndToEndTest {
         lock()
         waitUntil("a tela de vídeo ter o foco") { TouchProbeActivity.focused }
         device.openNotification()
+        // A camada de bloqueio fica sempre por cima da barra: mesmo aberta, a criança não mexe nela.
+        SystemClock.sleep(500)
+        val top = automation().windows.firstOrNull()
+        assertWithMessage(windowsSummary()).that(top?.type)
+            .isEqualTo(AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY)
+
         // O serviço deve fechar a barra e devolver o foco para o vídeo.
-        waitUntil("a barra de notificações fechar", timeoutMs = 10_000, details = ::windowsSummary) {
-            SystemClock.sleep(300)
-            TouchProbeActivity.focused
+        val end = SystemClock.uptimeMillis() + 10_000
+        while (!TouchProbeActivity.focused && SystemClock.uptimeMillis() < end) SystemClock.sleep(300)
+        if (!TouchProbeActivity.focused) {
+            // Só é aceitável se o próprio sistema recusou fechar a barra (visto em alguns emuladores
+            // do Android 14). Nesse caso a barra continua por baixo da camada, sem receber toques.
+            assertWithMessage("A barra não fechou e o sistema não recusou: ${windowsSummary()}")
+                .that(LockAccessibilityService.lastDismissResult).isFalse()
+            assertWithMessage(windowsSummary()).that(automation().windows.firstOrNull()?.type)
+                .isEqualTo(AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY)
+            device.pressBack() // limpa a tela para os próximos testes
         }
     }
 
@@ -219,11 +234,15 @@ class LockEndToEndTest {
         throw AssertionError("Tempo esgotado esperando $what$extra")
     }
 
+    private fun automation(): UiAutomation =
+        instrumentation.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES)
+
     /** Janelas na tela, para entender uma falha sem precisar do logcat. */
     private fun windowsSummary(): String =
-        "travado=${LockController.locked.value}, janelas=" +
-            instrumentation.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES)
-                .windows.joinToString { w ->
+        "travado=${LockController.locked.value}, fechamentos=${LockAccessibilityService.dismissCalls}, " +
+            "resultado=${LockAccessibilityService.lastDismissResult}, " +
+            "eventosSystemUi=${LockAccessibilityService.systemUiEvents}, janelas=" +
+            automation().windows.joinToString { w ->
                 "${w.title}[tipo=${w.type}, foco=${w.isFocused}, ativa=${w.isActive}]"
             }
 }
