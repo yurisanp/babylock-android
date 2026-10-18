@@ -221,7 +221,9 @@ class LockEndToEndTest {
 
     /** Janelas na tela, para entender uma falha sem precisar do logcat. */
     private fun windowsSummary(): String =
-        "travado=${LockController.locked.value}, janelas=" +
+        "travado=${LockController.locked.value}, fechamentos=${LockAccessibilityService.dismissCalls}, " +
+            "resultado=${LockAccessibilityService.lastDismissResult}, " +
+            "eventosSystemUi=${LockAccessibilityService.systemUiEvents}, janelas=" +
             instrumentation.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES)
                 .windows.joinToString { w ->
                 "${w.title}[tipo=${w.type}, foco=${w.isFocused}, ativa=${w.isActive}]"

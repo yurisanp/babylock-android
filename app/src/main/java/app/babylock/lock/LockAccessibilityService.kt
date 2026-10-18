@@ -71,6 +71,7 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (!visible || !Prefs.closeShade || event == null) return
+        if (event.packageName == SYSTEM_UI) systemUiEvents++
         // A barra de notificações e as Configurações rápidas pertencem ao pacote da System UI.
         // Conforme a versão, abrir a barra gera "estado da janela", "janelas" ou "conteúdo" mudou.
         // Fechar a barra quando ela já está fechada não faz nada, então qualquer um desses sinais basta.
@@ -94,8 +95,9 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
     }
 
     private fun dismissShade() {
+        dismissCalls++
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+            lastDismissResult = performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
         } else {
             // Antes do Android 12 não há ação própria. Não usar "voltar": com a barra fechada,
             // ele chegaria ao app de vídeo e poderia fechar o vídeo.
@@ -123,5 +125,10 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         @Volatile
         var instance: LockAccessibilityService? = null
             private set
+
+        // Contadores para diagnóstico nos testes (baratos, sem dados do usuário).
+        @Volatile internal var dismissCalls = 0
+        @Volatile internal var systemUiEvents = 0
+        @Volatile internal var lastDismissResult: Boolean? = null
     }
 }
