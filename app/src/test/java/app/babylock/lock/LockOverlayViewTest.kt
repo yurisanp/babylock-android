@@ -43,7 +43,7 @@ class LockOverlayViewTest {
         return MotionEvent.obtain(t, t, action, pointers, props, coords, 0, 0, 1f, 1f, 0, 0, 0, 0)
     }
 
-    private fun wait(ms: Long) = shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(ms))
+    private fun advance(ms: Long) = shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(ms))
 
     @Test
     fun `todo toque e consumido`() {
@@ -56,9 +56,9 @@ class LockOverlayViewTest {
     fun `segurar o canto pelo tempo certo pede o desbloqueio`() {
         val (x, y) = corner
         view.dispatchTouchEvent(event(MotionEvent.ACTION_DOWN, x, y))
-        wait(2_900)
+        advance(2_900)
         assertThat(unlockRequests).isEqualTo(0)
-        wait(200)
+        advance(200)
         assertThat(unlockRequests).isEqualTo(1)
     }
 
@@ -66,9 +66,9 @@ class LockOverlayViewTest {
     fun `soltar antes do tempo nao desbloqueia`() {
         val (x, y) = corner
         view.dispatchTouchEvent(event(MotionEvent.ACTION_DOWN, x, y))
-        wait(2_000)
+        advance(2_000)
         view.dispatchTouchEvent(event(MotionEvent.ACTION_UP, x, y))
-        wait(5_000)
+        advance(5_000)
         assertThat(unlockRequests).isEqualTo(0)
     }
 
@@ -76,7 +76,7 @@ class LockOverlayViewTest {
     fun `segurar fora do canto nao desbloqueia`() {
         listOf(20f to 20f, w - 20f to h - 20f, w / 2f to h / 2f).forEach { (x, y) ->
             view.dispatchTouchEvent(event(MotionEvent.ACTION_DOWN, x, y))
-            wait(5_000)
+            advance(5_000)
             view.dispatchTouchEvent(event(MotionEvent.ACTION_UP, x, y))
         }
         assertThat(unlockRequests).isEqualTo(0)
@@ -86,9 +86,9 @@ class LockOverlayViewTest {
     fun `arrastar para fora do canto cancela`() {
         val (x, y) = corner
         view.dispatchTouchEvent(event(MotionEvent.ACTION_DOWN, x, y))
-        wait(1_000)
+        advance(1_000)
         view.dispatchTouchEvent(event(MotionEvent.ACTION_MOVE, x - 500, y + 500))
-        wait(5_000)
+        advance(5_000)
         assertThat(unlockRequests).isEqualTo(0)
     }
 
@@ -96,10 +96,10 @@ class LockOverlayViewTest {
     fun `segundo dedo cancela (crianca batendo na tela)`() {
         val (x, y) = corner
         view.dispatchTouchEvent(event(MotionEvent.ACTION_DOWN, x, y))
-        wait(1_000)
+        advance(1_000)
         val second = MotionEvent.ACTION_POINTER_DOWN or (1 shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
         view.dispatchTouchEvent(event(second, x, y, pointers = 2))
-        wait(5_000)
+        advance(5_000)
         assertThat(unlockRequests).isEqualTo(0)
     }
 
@@ -107,9 +107,9 @@ class LockOverlayViewTest {
     fun `sair da tela cancela o gesto em andamento`() {
         val (x, y) = corner
         view.dispatchTouchEvent(event(MotionEvent.ACTION_DOWN, x, y))
-        wait(1_000)
+        advance(1_000)
         view.dispatchTouchEvent(event(MotionEvent.ACTION_CANCEL, x, y))
-        wait(5_000)
+        advance(5_000)
         assertThat(unlockRequests).isEqualTo(0)
     }
 }
