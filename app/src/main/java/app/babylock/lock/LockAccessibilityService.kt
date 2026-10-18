@@ -76,7 +76,9 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         } else {
             // Antes do Android 12 não há ação própria. Não usar "voltar": com a barra fechada,
             // ele chegaria ao app de vídeo e poderia fechar o vídeo.
-            @Suppress("DEPRECATION")
+            // A permissão BROADCAST_CLOSE_SYSTEM_DIALOGS só passou a ser exigida no Android 12,
+            // e este ramo roda apenas abaixo dele.
+            @Suppress("DEPRECATION", "MissingPermission")
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
         }
     }
