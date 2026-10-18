@@ -3,7 +3,6 @@ package app.babylock
 import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
-import android.media.AudioManager
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -75,24 +74,21 @@ class LockEndToEndTest {
 
     @Test
     fun botoesDeVolumeFicamTravados() {
-        val audio = context.getSystemService(AudioManager::class.java)
-        // Volume baixo: acima do "volume seguro" o sistema pode recusar o aumento sozinho.
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, 1, 0)
-        SystemClock.sleep(300)
+        // O emulador roda sem áudio (-noaudio), então o teste não mede o volume:
+        // confere se a tecla chega ao app de vídeo. Se chega, o app (ou o sistema) muda o volume.
+        waitUntil("a tela de vídeo ter o foco") { TouchProbeActivity.focused }
 
-        // Controle: sem bloqueio, a tecla muda o volume (prova que o teste não passa à toa).
+        // Controle: sem bloqueio, a tecla chega (prova que o teste não passa à toa).
         volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
-        waitUntil("a tecla de volume funcionar sem bloqueio") {
-            audio.getStreamVolume(AudioManager.STREAM_MUSIC) == 2
-        }
+        waitUntil("a tecla de volume chegar sem bloqueio") { TouchProbeActivity.volumeKeys.get() > 0 }
 
         lock()
-        val before = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val before = TouchProbeActivity.volumeKeys.get()
         volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
         volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
         volumeKey(KeyEvent.KEYCODE_VOLUME_DOWN)
         SystemClock.sleep(800)
-        assertThat(audio.getStreamVolume(AudioManager.STREAM_MUSIC)).isEqualTo(before)
+        assertThat(TouchProbeActivity.volumeKeys.get()).isEqualTo(before)
     }
 
     @Test
@@ -170,6 +166,7 @@ class LockEndToEndTest {
 
     private fun openProbe() {
         TouchProbeActivity.touches.set(0)
+        TouchProbeActivity.volumeKeys.set(0)
         val intent = Intent(context, TouchProbeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
         waitUntil("a tela de teste abrir") { TouchProbeActivity.current != null }

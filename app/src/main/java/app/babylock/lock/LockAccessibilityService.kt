@@ -3,7 +3,8 @@ package app.babylock.lock
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.Build
-import android.os.SystemClock
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
@@ -18,7 +19,22 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     private var overlay: LockOverlayView? = null
     private var visible = false
-    private var lastDismiss = 0L
+    private val main = Handler(Looper.getMainLooper())
+    private var dismissScheduled = false
+    private val dismissAgain = Runnable {
+        dismissScheduled = false
+        if (visible && Prefs.closeShade) dismissShade()
+    }
+
+    // Rede de segurança: nem toda versão avisa quando a barra abre. A partir do Android 12,
+    // pedir para fechar a barra já fechada não tem efeito, então dá para conferir a cada segundo.
+    private val watchdog = object : Runnable {
+        override fun run() {
+            if (!visible || !Prefs.closeShade) return
+            dismissShade()
+            main.postDelayed(this, WATCHDOG_MS)
+        }
+    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -36,10 +52,15 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         visible = true
         view.flashHint()
         if (Prefs.closeShade) dismissShade()
+        main.removeCallbacks(watchdog)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) main.postDelayed(watchdog, WATCHDOG_MS)
     }
 
     override fun hideOverlay() {
         visible = false
+        main.removeCallbacks(dismissAgain)
+        main.removeCallbacks(watchdog)
+        dismissScheduled = false
         overlay?.let { if (it.parent != null) getSystemService(WindowManager::class.java).removeView(it) }
     }
 
@@ -54,10 +75,11 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         // Conforme a versão, abrir a barra gera "estado da janela", "janelas" ou "conteúdo" mudou.
         // Fechar a barra quando ela já está fechada não faz nada, então qualquer um desses sinais basta.
         if (event.packageName == SYSTEM_UI || event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-            val now = SystemClock.uptimeMillis()
-            if (now - lastDismiss >= DISMISS_INTERVAL_MS) {
-                lastDismiss = now
-                dismissShade()
+            dismissShade()
+            // A barra ainda pode estar abrindo (animação) e ignorar o primeiro pedido: tenta de novo.
+            if (!dismissScheduled) {
+                dismissScheduled = true
+                main.postDelayed(dismissAgain, RETRY_DISMISS_MS)
             }
         }
     }
@@ -76,7 +98,9 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         } else {
             // Antes do Android 12 não há ação própria. Não usar "voltar": com a barra fechada,
             // ele chegaria ao app de vídeo e poderia fechar o vídeo.
-            @Suppress("DEPRECATION")
+            // A permissão BROADCAST_CLOSE_SYSTEM_DIALOGS só passou a ser exigida no Android 12,
+            // e este ramo roda apenas abaixo dele.
+            @Suppress("DEPRECATION", "MissingPermission")
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
         }
     }
@@ -92,7 +116,8 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     companion object {
         private const val SYSTEM_UI = "com.android.systemui"
-        private const val DISMISS_INTERVAL_MS = 150L
+        private const val RETRY_DISMISS_MS = 400L
+        private const val WATCHDOG_MS = 1_000L
 
         @Volatile
         var instance: LockAccessibilityService? = null
