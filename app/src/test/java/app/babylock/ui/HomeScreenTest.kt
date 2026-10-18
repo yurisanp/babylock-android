@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowSettings
 
 @RunWith(AndroidJUnit4::class)
@@ -37,6 +38,9 @@ class HomeScreenTest {
     fun limpar() {
         context.getSharedPreferences("babylock", Context.MODE_PRIVATE).edit().clear().commit()
         Prefs.init(context)
+        // Como no emulador do CI: sem os loops decorativos (halo, pulsos), que nunca deixam a tela "parada"
+        // e travam a espera do Espresso ao digitar no diálogo do PIN.
+        Settings.Global.putFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
     }
 
     @After
@@ -74,7 +78,8 @@ class HomeScreenTest {
         assertThat(LockController.countdown.value).isEqualTo(5)
         compose.onNodeWithTag("cancel_countdown").performClick()
         assertThat(LockController.countdown.value).isNull()
-        compose.onNodeWithText("Travar em 5 segundos").assertIsDisplayed()
+        compose.onNodeWithText("Travando em 5 s… abra o vídeo").assertDoesNotExist()
+        compose.onNodeWithTag("lock_button").assertIsEnabled()
     }
 
     @Test
@@ -107,6 +112,9 @@ class HomeScreenTest {
     }
 
     @Test
+    // Com a tela grande dos outros testes, o AlertDialog com campos de texto nunca fica ocioso
+    // no Robolectric (acontece até com o tema padrão do Material). Na tela padrão ele funciona.
+    @Config(qualifiers = "w320dp-h470dp")
     fun `definir PIN exige 4 digitos e confirmacao igual`() {
         show()
         compose.onNodeWithTag("pin_button").performScrollTo().performClick()
