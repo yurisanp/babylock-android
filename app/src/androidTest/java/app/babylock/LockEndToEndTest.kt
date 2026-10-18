@@ -1,5 +1,6 @@
 package app.babylock
 
+import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -9,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import app.babylock.lock.LockAccessibilityService
@@ -30,7 +32,12 @@ class LockEndToEndTest {
 
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context: Context = instrumentation.targetContext
-    private val device = UiDevice.getInstance(instrumentation)
+    // Sem esta flag, o UiAutomator desliga os outros serviços de acessibilidade
+    // (inclusive o do BabyLock) assim que se conecta.
+    private val device: UiDevice = run {
+        Configurator.getInstance().setUiAutomationFlags(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES)
+        UiDevice.getInstance(instrumentation)
+    }
     private val pin = "2468"
 
     @Before
