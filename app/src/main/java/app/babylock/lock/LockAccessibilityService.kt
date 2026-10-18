@@ -98,13 +98,22 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         dismissCalls++
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             lastDismissResult = performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
+            // Alguns sistemas recusam a ação; tenta o pedido antigo, que o sistema pode negar.
+            if (lastDismissResult == false) closeSystemDialogs()
         } else {
             // Antes do Android 12 não há ação própria. Não usar "voltar": com a barra fechada,
             // ele chegaria ao app de vídeo e poderia fechar o vídeo.
-            // A permissão BROADCAST_CLOSE_SYSTEM_DIALOGS só passou a ser exigida no Android 12,
-            // e este ramo roda apenas abaixo dele.
-            @Suppress("DEPRECATION", "MissingPermission")
+            closeSystemDialogs()
+        }
+    }
+
+    // Abaixo do Android 12 qualquer app pode pedir isso. A partir dele o sistema pode negar
+    // (SecurityException), e aí a barra fica aberta, mas por baixo da camada de bloqueio.
+    @Suppress("DEPRECATION", "MissingPermission")
+    private fun closeSystemDialogs() {
+        try {
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+        } catch (_: SecurityException) {
         }
     }
 
