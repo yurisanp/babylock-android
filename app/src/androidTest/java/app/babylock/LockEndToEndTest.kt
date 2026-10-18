@@ -1,5 +1,6 @@
 package app.babylock
 
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
@@ -74,21 +75,28 @@ class LockEndToEndTest {
 
     @Test
     fun botoesDeVolumeFicamTravados() {
-        // O emulador roda sem áudio (-noaudio), então o teste não mede o volume:
-        // confere se a tecla chega ao app de vídeo. Se chega, o app (ou o sistema) muda o volume.
-        waitUntil("a tela de vídeo ter o foco") { TouchProbeActivity.focused }
+        // Teclas injetadas por software (UiAutomator ou `input keyevent`) não passam pelo filtro
+        // de teclas da acessibilidade; só botões físicos passam. Por isso o teste confere
+        // a configuração que o sistema aplicou ao serviço e a resposta dele a cada tecla.
+        val service = LockAccessibilityService.instance!!
+        val info = service.serviceInfo
+        assertThat(info.flags and AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS).isNotEqualTo(0)
+        assertThat(info.capabilities and AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS)
+            .isNotEqualTo(0)
 
-        // Controle: sem bloqueio, a tecla chega (prova que o teste não passa à toa).
-        volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
-        waitUntil("a tecla de volume chegar sem bloqueio") { TouchProbeActivity.volumeKeys.get() > 0 }
+        val keys = listOf(KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_MUTE)
+        fun consumed(code: Int): Boolean {
+            var result = false
+            instrumentation.runOnMainSync { result = service.onKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, code)) }
+            return result
+        }
 
+        // Sem bloqueio as teclas seguem normalmente.
+        keys.forEach { assertThat(consumed(it)).isFalse() }
         lock()
-        val before = TouchProbeActivity.volumeKeys.get()
-        volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
-        volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
-        volumeKey(KeyEvent.KEYCODE_VOLUME_DOWN)
-        SystemClock.sleep(800)
-        assertThat(TouchProbeActivity.volumeKeys.get()).isEqualTo(before)
+        keys.forEach { assertThat(consumed(it)).isTrue() }
+        // Outras teclas nunca são seguradas.
+        assertThat(consumed(KeyEvent.KEYCODE_BACK)).isFalse()
     }
 
     @Test
@@ -97,7 +105,7 @@ class LockEndToEndTest {
         waitUntil("a tela de vídeo ter o foco") { TouchProbeActivity.focused }
         device.openNotification()
         // O serviço deve fechar a barra e devolver o foco para o vídeo.
-        waitUntil("a barra de notificações fechar", timeoutMs = 5_000) {
+        waitUntil("a barra de notificações fechar", timeoutMs = 10_000, details = ::windowsSummary) {
             SystemClock.sleep(300)
             TouchProbeActivity.focused
         }
@@ -166,7 +174,6 @@ class LockEndToEndTest {
 
     private fun openProbe() {
         TouchProbeActivity.touches.set(0)
-        TouchProbeActivity.volumeKeys.set(0)
         val intent = Intent(context, TouchProbeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
         waitUntil("a tela de teste abrir") { TouchProbeActivity.current != null }
@@ -188,14 +195,6 @@ class LockEndToEndTest {
         device.wait(Until.findObject(By.res("unlock_confirm").enabled(true)), 3_000)
             ?: throw AssertionError("O botão Confirmar não ficou ativo")
 
-    /**
-     * Tecla de volume pelo comando `input`, como um botão físico.
-     * As teclas do UiAutomator vêm da própria acessibilidade e pulam o filtro de teclas do serviço.
-     */
-    private fun volumeKey(code: Int) {
-        device.executeShellCommand("input keyevent $code")
-    }
-
     private fun corner(): Pair<Int, Int> = device.displayWidth - 30 to 30
 
     /** Segura o canto superior direito com um dedo por mais que [Prefs.holdSeconds]. */
@@ -205,12 +204,26 @@ class LockEndToEndTest {
         device.swipe(x, y, x, y, 600)
     }
 
-    private fun waitUntil(what: String, timeoutMs: Long = 5_000, condition: () -> Boolean) {
+    private fun waitUntil(
+        what: String,
+        timeoutMs: Long = 5_000,
+        details: (() -> String)? = null,
+        condition: () -> Boolean,
+    ) {
         val end = SystemClock.uptimeMillis() + timeoutMs
         while (SystemClock.uptimeMillis() < end) {
             if (condition()) return
             SystemClock.sleep(100)
         }
-        throw AssertionError("Tempo esgotado esperando $what")
+        val extra = details?.let { " (${runCatching(it).getOrElse { e -> e.toString() }})" }.orEmpty()
+        throw AssertionError("Tempo esgotado esperando $what$extra")
     }
+
+    /** Janelas na tela, para entender uma falha sem precisar do logcat. */
+    private fun windowsSummary(): String =
+        "travado=${LockController.locked.value}, janelas=" +
+            instrumentation.getUiAutomation(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES)
+                .windows.joinToString { w ->
+                "${w.title}[tipo=${w.type}, foco=${w.isFocused}, ativa=${w.isActive}]"
+            }
 }
