@@ -1,9 +1,11 @@
 package app.babylock.ui.components
 
 import android.os.Build
+import android.provider.Settings
 import android.view.HapticFeedbackConstants
 import android.view.View
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
@@ -19,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import app.babylock.ui.theme.Motion
@@ -44,9 +47,23 @@ fun Modifier.pressScale(source: InteractionSource, pressed: Float = 0.95f): Modi
     }
 }
 
+/**
+ * O adulto desligou as animações do Android (Acessibilidade > Remover animações):
+ * os loops decorativos param. As animações curtas de resposta ao toque continuam,
+ * porque o próprio sistema as encurta.
+ */
+@Composable
+fun rememberReduceMotion(): Boolean {
+    val context = LocalContext.current
+    return remember {
+        Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
+    }
+}
+
 /** Valor de 0 a 1 que vai e volta para sempre (respirar, flutuar, piscar). */
 @Composable
 fun rememberPulse(periodMs: Int = Motion.BREATH_MS, delayMs: Int = 0): Float {
+    if (rememberReduceMotion()) return 0.5f
     val transition = rememberInfiniteTransition(label = "pulse")
     val value by transition.animateFloat(
         initialValue = 0f,
@@ -62,12 +79,13 @@ fun rememberPulse(periodMs: Int = Motion.BREATH_MS, delayMs: Int = 0): Float {
 
 /** Valor de 0 a 1 que recomeça do zero a cada volta (ondas, anéis). */
 @Composable
-fun rememberLoop(periodMs: Int, delayMs: Int = 0): Float {
+fun rememberLoop(periodMs: Int, delayMs: Int = 0, easing: Easing = Motion.Emphasized, still: Float = 0f): Float {
+    if (rememberReduceMotion()) return still
     val transition = rememberInfiniteTransition(label = "loop")
     val value by transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(periodMs, delayMs, Motion.Emphasized), RepeatMode.Restart),
+        animationSpec = infiniteRepeatable(tween(periodMs, delayMs, easing), RepeatMode.Restart),
         label = "loop",
     )
     return value

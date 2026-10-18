@@ -37,6 +37,9 @@ class HomeScreenTest {
     fun limpar() {
         context.getSharedPreferences("babylock", Context.MODE_PRIVATE).edit().clear().commit()
         Prefs.init(context)
+        // Como no emulador do CI: sem os loops decorativos (halo, pulsos), que nunca deixam a tela "parada"
+        // e travam a espera do Espresso ao digitar no diálogo do PIN.
+        Settings.Global.putFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
     }
 
     @After

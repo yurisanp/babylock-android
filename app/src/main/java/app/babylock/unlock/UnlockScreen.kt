@@ -5,12 +5,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -77,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import app.babylock.ui.components.FingerprintGlyph
 import app.babylock.ui.components.Haptics
 import app.babylock.ui.components.pressScale
+import app.babylock.ui.components.rememberLoop
 import app.babylock.ui.theme.Cream
 import app.babylock.ui.theme.Lilac
 import app.babylock.ui.theme.Motion
@@ -247,13 +244,7 @@ fun UnlockScreen(
 /** Barra fina que esvazia em 20 s: o tempo até travar de novo sozinho. */
 @Composable
 private fun TimeoutBar() {
-    val t = rememberInfiniteTransition(label = "timeout")
-    val left by t.animateFloat(
-        initialValue = 1f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(tween(TIMEOUT_MS, easing = LinearEasing), RepeatMode.Restart),
-        label = "timeout",
-    )
+    val left = 1f - rememberLoop(TIMEOUT_MS, easing = LinearEasing)
     Box(
         Modifier
             .fillMaxWidth()
@@ -273,9 +264,8 @@ private fun TimeoutBar() {
 @Composable
 private fun BigFingerprint(onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
-    val t = rememberInfiniteTransition(label = "fp")
-    val r1 by t.animateFloat(0f, 1f, infiniteRepeatable(tween(2200, easing = Motion.Emphasized)), label = "r1")
-    val r2 by t.animateFloat(0f, 1f, infiniteRepeatable(tween(2200, 1100, Motion.Emphasized)), label = "r2")
+    val r1 = rememberLoop(2200)
+    val r2 = rememberLoop(2200, delayMs = 1100)
     Box(Modifier.size(150.dp), contentAlignment = Alignment.Center) {
         listOf(r1, r2).forEach { r ->
             Box(
