@@ -648,7 +648,7 @@ private fun SettingSwitch(title: String, subtitle: String, checked: Boolean, onC
 }
 
 @Composable
-private fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -> Unit, onRemove: () -> Unit) {
+internal fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -> Unit, onRemove: () -> Unit) {
     var pin by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
     val valid = pin.length in 4..6 && pin == confirm
