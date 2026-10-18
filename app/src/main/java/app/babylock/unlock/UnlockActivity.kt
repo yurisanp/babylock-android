@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.HapticFeedbackConstants
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.biometric.BiometricManager
@@ -110,6 +111,9 @@ class UnlockActivity : FragmentActivity() {
         if (done) return
         done = true
         main.removeCallbacks(timeout)
+        window.decorView.performHapticFeedback(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) HapticFeedbackConstants.CONFIRM else HapticFeedbackConstants.LONG_PRESS,
+        )
         LockController.unlock(this)
         finish()
     }

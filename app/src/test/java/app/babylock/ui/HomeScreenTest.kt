@@ -74,7 +74,8 @@ class HomeScreenTest {
         assertThat(LockController.countdown.value).isEqualTo(5)
         compose.onNodeWithTag("cancel_countdown").performClick()
         assertThat(LockController.countdown.value).isNull()
-        compose.onNodeWithText("Travar em 5 segundos").assertIsDisplayed()
+        compose.onNodeWithText("Travando em 5 s… abra o vídeo").assertDoesNotExist()
+        compose.onNodeWithTag("lock_button").assertIsEnabled()
     }
 
     @Test

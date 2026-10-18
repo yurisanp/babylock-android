@@ -3,13 +3,22 @@
     <style name="Theme.BabyLock" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/cream</item>
+    </style>
+
+    <style name="Animation.BabyLock.Unlock" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/unlock_none</item>
+        <item name="android:activityCloseExitAnimation">@anim/unlock_exit</item>
+        <item name="android:windowEnterAnimation">@anim/unlock_none</item>
+        <item name="android:windowExitAnimation">@anim/unlock_exit</item>
     </style>
 
     <style name="Theme.BabyLock.Transparent" parent="Theme.BabyLock">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <!-- O escurecimento é desenhado e animado pela própria tela. -->
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@style/Animation.BabyLock.Unlock</item>
     </style>
 </resources>

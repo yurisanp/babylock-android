@@ -87,4 +87,14 @@ class UnlockScreenTest {
         compose.onNodeWithTag("unlock_cancel").performClick()
         assertThat(cancelled).isEqualTo(1)
     }
+
+    @Test
+    fun `teclado proprio digita, apaga e confirma`() {
+        show(canUseSystemAuth = false, hasPin = true)
+        listOf("2", "4", "6", "9").forEach { compose.onNodeWithTag("unlock_key_$it").performClick() }
+        compose.onNodeWithTag("unlock_backspace").performClick()
+        compose.onNodeWithTag("unlock_key_8").performClick()
+        compose.onNodeWithTag("unlock_confirm").performClick()
+        assertThat(submitted).isEqualTo("2468")
+    }
 }

@@ -34,6 +34,11 @@ object Prefs {
         get() = sp.getBoolean("disclosure_accepted", false)
         set(v) = sp.edit().putBoolean("disclosure_accepted", v).apply()
 
+    /** As boas-vindas já foram vistas (ou puladas). */
+    var onboardingDone: Boolean
+        get() = sp.getBoolean("onboarding_done", false)
+        set(v) = sp.edit().putBoolean("onboarding_done", v).apply()
+
     val hasPin: Boolean get() = sp.contains("pin_hash")
 
     fun setPin(pin: String) {
