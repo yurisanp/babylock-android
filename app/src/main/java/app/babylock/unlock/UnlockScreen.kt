@@ -29,11 +29,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun UnlockScreen(
     canUseSystemAuth: Boolean,
@@ -48,6 +53,7 @@ fun UnlockScreen(
     Box(
         Modifier
             .fillMaxSize()
+            .semantics { testTagsAsResourceId = true }
             .background(Color.Black.copy(alpha = 0.35f)),
         contentAlignment = Alignment.Center,
     ) {
@@ -60,7 +66,7 @@ fun UnlockScreen(
                 Icon(Icons.Filled.Lock, null, tint = MaterialTheme.colorScheme.primary)
                 Text("Desbloquear", style = MaterialTheme.typography.titleLarge)
                 if (canUseSystemAuth) {
-                    Button(onClick = onSystemAuth, modifier = Modifier.fillMaxWidth()) {
+                    Button(onClick = onSystemAuth, modifier = Modifier.fillMaxWidth().testTag("unlock_biometric")) {
                         Icon(Icons.Filled.Fingerprint, null)
                         Spacer(Modifier.padding(4.dp))
                         Text("Usar digital ou rosto")
@@ -81,16 +87,16 @@ fun UnlockScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                         isError = error != null,
                         supportingText = { error?.let { Text(it) } },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("unlock_answer"),
                     )
                     OutlinedButton(
                         onClick = { onSubmit(answer); answer = "" },
                         enabled = answer.isNotEmpty(),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("unlock_confirm"),
                     ) { Text("Confirmar") }
                 }
                 Spacer(Modifier.height(4.dp))
-                TextButton(onClick = onCancel) { Text("Continuar bloqueado") }
+                TextButton(onClick = onCancel, modifier = Modifier.testTag("unlock_cancel")) { Text("Continuar bloqueado") }
             }
         }
     }

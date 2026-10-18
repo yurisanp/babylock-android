@@ -51,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -131,7 +132,7 @@ fun HomeScreen() {
             Button(
                 onClick = { startLock(OPEN_AND_LOCK_SECONDS) },
                 enabled = ready && countdown == null,
-                modifier = Modifier.fillMaxWidth().height(64.dp),
+                modifier = Modifier.fillMaxWidth().height(64.dp).testTag("lock_button"),
                 shape = MaterialTheme.shapes.large,
             ) {
                 Icon(Icons.Filled.Lock, null)
@@ -142,7 +143,10 @@ fun HomeScreen() {
                 )
             }
             if (countdown != null) {
-                TextButton(onClick = { LockController.cancelScheduled() }) { Text("Cancelar") }
+                TextButton(
+                    onClick = { LockController.cancelScheduled() },
+                    modifier = Modifier.testTag("cancel_countdown"),
+                ) { Text("Cancelar") }
             }
 
             val installed = VIDEO_APPS.filter { context.packageManager.getLaunchIntentForPackage(it.pkg) != null }
@@ -208,7 +212,9 @@ fun HomeScreen() {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        TextButton(onClick = { showPinDialog = true }) { Text(if (hasPin) "Alterar" else "Definir") }
+                        TextButton(onClick = { showPinDialog = true }, modifier = Modifier.testTag("pin_button")) {
+                            Text(if (hasPin) "Alterar" else "Definir")
+                        }
                     }
                 }
             }
@@ -237,13 +243,17 @@ fun HomeScreen() {
                 )
             },
             confirmButton = {
-                Button(onClick = {
+                Button(modifier = Modifier.testTag("disclosure_accept"), onClick = {
                     Prefs.disclosureAccepted = true
                     showDisclosure = false
                     openAccessibilitySettings(context)
                 }) { Text("Aceitar e ativar") }
             },
-            dismissButton = { TextButton(onClick = { showDisclosure = false }) { Text("Agora não") } },
+            dismissButton = {
+                TextButton(onClick = { showDisclosure = false }, modifier = Modifier.testTag("disclosure_dismiss")) {
+                    Text("Agora não")
+                }
+            },
         )
     }
 
@@ -298,12 +308,12 @@ private fun HealthCard(
             if (!accessibilityOn) {
                 Button(
                     onClick = onEnableAccessibility,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("enable_accessibility"),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 ) { Text("Ligar acessibilidade (recomendado)") }
             }
             if (!accessibilityOn && !overlayOn) {
-                OutlinedButton(onClick = onEnableOverlay, modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(onClick = onEnableOverlay, modifier = Modifier.fillMaxWidth().testTag("enable_overlay")) {
                     Text("Usar só a sobreposição (básico)")
                 }
             }
@@ -344,6 +354,7 @@ private fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -
                     value = pin,
                     onValueChange = { pin = it.filter(Char::isDigit).take(6) },
                     label = { Text("PIN (4 a 6 dígitos)") },
+                    modifier = Modifier.testTag("pin_new"),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -352,13 +363,16 @@ private fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -
                     value = confirm,
                     onValueChange = { confirm = it.filter(Char::isDigit).take(6) },
                     label = { Text("Repita o PIN") },
+                    modifier = Modifier.testTag("pin_confirm"),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                 )
             }
         },
-        confirmButton = { Button(onClick = { onSave(pin) }, enabled = valid) { Text("Salvar") } },
+        confirmButton = {
+            Button(onClick = { onSave(pin) }, enabled = valid, modifier = Modifier.testTag("pin_save")) { Text("Salvar") }
+        },
         dismissButton = {
             Row {
                 if (hasPin) TextButton(onClick = onRemove) { Text("Remover") }

@@ -36,6 +36,10 @@ class UnlockActivity : FragmentActivity() {
 
     private var pinError by mutableStateOf<String?>(null)
     private val challenge = Random.nextInt(6, 10) to Random.nextInt(6, 10)
+    private val gate: UnlockGate by lazy {
+        sharedGate?.takeIf { Prefs.hasPin } ?: UnlockGate(Prefs::checkPin, { Prefs.hasPin }, challenge)
+            .also { if (Prefs.hasPin) sharedGate = it }
+    }
 
     private val authenticators: Int
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -95,28 +99,10 @@ class UnlockActivity : FragmentActivity() {
     }
 
     private fun checkAnswer(answer: String) {
-        val now = System.currentTimeMillis()
-        if (now < lockedUntil) {
-            pinError = "Muitas tentativas. Aguarde ${(lockedUntil - now) / 1000 + 1} s."
-            return
-        }
-        val ok = if (Prefs.hasPin) {
-            Prefs.checkPin(answer)
-        } else {
-            answer.toIntOrNull() == challenge.first * challenge.second
-        }
-        if (ok) {
-            failures = 0
-            success()
-        } else {
-            failures += 1
-            if (failures >= MAX_FAILURES) {
-                failures = 0
-                lockedUntil = now + LOCKOUT_MS
-                pinError = "Muitas tentativas. Aguarde 30 s."
-            } else {
-                pinError = "Não confere. Tente de novo."
-            }
+        pinError = when (val r = gate.submit(answer)) {
+            UnlockGate.Result.Ok -> { success(); null }
+            UnlockGate.Result.Wrong -> "Não confere. Tente de novo."
+            is UnlockGate.Result.LockedOut -> "Muitas tentativas. Aguarde ${r.secondsLeft} s."
         }
     }
 
@@ -150,9 +136,8 @@ class UnlockActivity : FragmentActivity() {
 
     companion object {
         private const val TIMEOUT_MS = 20_000L
-        private const val MAX_FAILURES = 5
-        private const val LOCKOUT_MS = 30_000L
-        private var failures = 0
-        private var lockedUntil = 0L
+
+        // Fica no companion para o limite de tentativas valer mesmo se a tela for reaberta.
+        private var sharedGate: UnlockGate? = null
     }
 }

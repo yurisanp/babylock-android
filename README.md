@@ -22,6 +22,27 @@ O GitHub Actions compila a cada push e publica o APK de teste em **Actions > (ú
 
 Localmente: abra a pasta no Android Studio (Ladybug ou mais novo) ou rode `./gradlew assembleDebug`. Requer JDK 17+ e Android SDK 36.
 
+## Testes automatizados
+
+Rodam no GitHub Actions a cada push e pull request. O resumo de cada execução mostra quantos testes passaram, e os relatórios ficam em **Artifacts**.
+
+| Camada | Onde | O que cobre |
+| --- | --- | --- |
+| Unidade | `app/src/test/.../UnlockGateTest`, `PrefsTest` | Regras do PIN e da conta, limite de 5 erros + espera de 30 s, PIN guardado só com hash e sal |
+| Comportamento (Robolectric) | `LockOverlayViewTest`, `LockControllerTest`, `DeviceTipsTest` | Gesto do canto (tempo, soltar antes, segundo dedo, arrastar), escolha do motor, contagem regressiva, trava/destrava, dicas por marca |
+| Telas (Compose + Robolectric) | `HomeScreenTest`, `UnlockScreenTest`, `UnlockActivityTest` | Estados de permissão, divulgação da acessibilidade antes de abrir as configurações, PIN, desbloqueio certo/errado, cancelar e voltar retravam |
+| Ponta a ponta (emulador API 30 e 34) | `app/src/androidTest/.../LockEndToEndTest` | Liga o serviço de acessibilidade de verdade e confere: toques não chegam ao "app de vídeo", volume travado, barra de notificações fecha, gesto + PIN destrava, cancelar e PIN errado mantêm travado, toques rápidos no canto não destravam |
+| Lint e cobertura | Android Lint, Kover | Relatório HTML de lint e de cobertura |
+
+Rodar localmente:
+
+```bash
+./gradlew testDebugUnitTest koverHtmlReportDebug   # testes na JVM + cobertura
+./gradlew connectedDebugAndroidTest                # com um emulador ou celular conectado
+```
+
+O "app de vídeo" dos testes é a `TouchProbeActivity`, que existe só no build debug (`app/src/debug`).
+
 ## Testar no celular
 
 1. Instale o APK (permita "instalar apps desconhecidos").
