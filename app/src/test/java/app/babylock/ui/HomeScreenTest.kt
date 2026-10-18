@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowSettings
 
 @RunWith(AndroidJUnit4::class)
@@ -111,6 +112,9 @@ class HomeScreenTest {
     }
 
     @Test
+    // Com a tela grande dos outros testes, o AlertDialog com campos de texto nunca fica ocioso
+    // no Robolectric (acontece até com o tema padrão do Material). Na tela padrão ele funciona.
+    @Config(qualifiers = "w320dp-h470dp")
     fun `definir PIN exige 4 digitos e confirmacao igual`() {
         show()
         compose.onNodeWithTag("pin_button").performScrollTo().performClick()
