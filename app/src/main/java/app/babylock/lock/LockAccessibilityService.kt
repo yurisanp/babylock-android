@@ -1,7 +1,9 @@
 package app.babylock.lock
 
 import android.accessibilityservice.AccessibilityService
+import android.content.Intent
 import android.os.Build
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
@@ -16,6 +18,7 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     private var overlay: LockOverlayView? = null
     private var visible = false
+    private var lastDismiss = 0L
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -48,8 +51,14 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (!visible || !Prefs.closeShade || event == null) return
         // A barra de notificações e as Configurações rápidas pertencem ao pacote da System UI.
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && event.packageName == SYSTEM_UI) {
-            dismissShade()
+        // Conforme a versão, abrir a barra gera "estado da janela", "janelas" ou "conteúdo" mudou.
+        // Fechar a barra quando ela já está fechada não faz nada, então qualquer um desses sinais basta.
+        if (event.packageName == SYSTEM_UI || event.eventType == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
+            val now = SystemClock.uptimeMillis()
+            if (now - lastDismiss >= DISMISS_INTERVAL_MS) {
+                lastDismiss = now
+                dismissShade()
+            }
         }
     }
 
@@ -65,8 +74,10 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
         } else {
-            // Antes do Android 12 não há ação própria; "voltar" fecha a barra aberta.
-            performGlobalAction(GLOBAL_ACTION_BACK)
+            // Antes do Android 12 não há ação própria. Não usar "voltar": com a barra fechada,
+            // ele chegaria ao app de vídeo e poderia fechar o vídeo.
+            @Suppress("DEPRECATION")
+            sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
         }
     }
 
@@ -81,6 +92,7 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     companion object {
         private const val SYSTEM_UI = "com.android.systemui"
+        private const val DISMISS_INTERVAL_MS = 150L
 
         @Volatile
         var instance: LockAccessibilityService? = null

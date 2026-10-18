@@ -76,13 +76,21 @@ class LockEndToEndTest {
     @Test
     fun botoesDeVolumeFicamTravados() {
         val audio = context.getSystemService(AudioManager::class.java)
-        val max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, max / 2, 0)
+        // Volume baixo: acima do "volume seguro" o sistema pode recusar o aumento sozinho.
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, 1, 0)
+        SystemClock.sleep(300)
+
+        // Controle: sem bloqueio, a tecla muda o volume (prova que o teste não passa à toa).
+        volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
+        waitUntil("a tecla de volume funcionar sem bloqueio") {
+            audio.getStreamVolume(AudioManager.STREAM_MUSIC) == 2
+        }
+
         lock()
         val before = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
-        device.pressKeyCode(KeyEvent.KEYCODE_VOLUME_UP)
-        device.pressKeyCode(KeyEvent.KEYCODE_VOLUME_UP)
-        device.pressKeyCode(KeyEvent.KEYCODE_VOLUME_DOWN)
+        volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
+        volumeKey(KeyEvent.KEYCODE_VOLUME_UP)
+        volumeKey(KeyEvent.KEYCODE_VOLUME_DOWN)
         SystemClock.sleep(800)
         assertThat(audio.getStreamVolume(AudioManager.STREAM_MUSIC)).isEqualTo(before)
     }
@@ -106,7 +114,7 @@ class LockEndToEndTest {
         val answer = device.wait(Until.findObject(By.res("unlock_answer")), 5_000)
         assertThat(answer).isNotNull()
         answer.text = pin
-        device.findObject(By.res("unlock_confirm")).click()
+        confirmButton().click()
         waitUntil("destravar") { !LockController.locked.value }
 
         // Depois de destravar, o toque volta a chegar no vídeo.
@@ -136,7 +144,7 @@ class LockEndToEndTest {
         holdCorner()
         val answer = device.wait(Until.findObject(By.res("unlock_answer")), 5_000)
         answer.text = "0000"
-        device.findObject(By.res("unlock_confirm")).click()
+        confirmButton().click()
         assertThat(device.wait(Until.hasObject(By.textContains("Não confere")), 3_000)).isTrue()
         assertThat(LockController.locked.value).isTrue()
     }
@@ -176,6 +184,19 @@ class LockEndToEndTest {
         assertThat(LockController.availableEngine(context)).isEqualTo(LockController.Engine.ACCESSIBILITY)
         device.waitForIdle()
         SystemClock.sleep(500)
+    }
+
+    /** O botão só fica ativo depois que o campo recebe o texto; clicar antes não faz nada. */
+    private fun confirmButton() =
+        device.wait(Until.findObject(By.res("unlock_confirm").enabled(true)), 3_000)
+            ?: throw AssertionError("O botão Confirmar não ficou ativo")
+
+    /**
+     * Tecla de volume pelo comando `input`, como um botão físico.
+     * As teclas do UiAutomator vêm da própria acessibilidade e pulam o filtro de teclas do serviço.
+     */
+    private fun volumeKey(code: Int) {
+        device.executeShellCommand("input keyevent $code")
     }
 
     private fun corner(): Pair<Int, Int> = device.displayWidth - 30 to 30
