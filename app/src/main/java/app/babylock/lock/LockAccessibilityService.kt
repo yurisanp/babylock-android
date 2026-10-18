@@ -84,7 +84,8 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         }
     }
 
-    override fun onKeyEvent(event: KeyEvent): Boolean {
+    // Público para o teste no emulador poder chamar direto (no Android ele é protected).
+    public override fun onKeyEvent(event: KeyEvent): Boolean {
         if (!visible || !Prefs.lockVolume) return false
         return when (event.keyCode) {
             KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_MUTE -> true
