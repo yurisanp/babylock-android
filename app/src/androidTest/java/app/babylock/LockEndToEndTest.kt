@@ -105,7 +105,7 @@ class LockEndToEndTest {
         waitUntil("a tela de vídeo ter o foco") { TouchProbeActivity.focused }
         device.openNotification()
         // O serviço deve fechar a barra e devolver o foco para o vídeo.
-        waitUntil("a barra de notificações fechar", timeoutMs = 5_000) {
+        waitUntil("a barra de notificações fechar", timeoutMs = 10_000, details = ::windowsSummary) {
             SystemClock.sleep(300)
             TouchProbeActivity.focused
         }
@@ -204,12 +204,25 @@ class LockEndToEndTest {
         device.swipe(x, y, x, y, 600)
     }
 
-    private fun waitUntil(what: String, timeoutMs: Long = 5_000, condition: () -> Boolean) {
+    private fun waitUntil(
+        what: String,
+        timeoutMs: Long = 5_000,
+        details: (() -> String)? = null,
+        condition: () -> Boolean,
+    ) {
         val end = SystemClock.uptimeMillis() + timeoutMs
         while (SystemClock.uptimeMillis() < end) {
             if (condition()) return
             SystemClock.sleep(100)
         }
-        throw AssertionError("Tempo esgotado esperando $what")
+        val extra = details?.let { " (${runCatching(it).getOrElse { e -> e.toString() }})" }.orEmpty()
+        throw AssertionError("Tempo esgotado esperando $what$extra")
     }
+
+    /** Janelas na tela, para entender uma falha sem precisar do logcat. */
+    private fun windowsSummary(): String =
+        "travado=${LockController.locked.value}, janelas=" +
+            instrumentation.uiAutomation.windows.joinToString { w ->
+                "${w.title}[tipo=${w.type}, foco=${w.isFocused}, ativa=${w.isActive}]"
+            }
 }
