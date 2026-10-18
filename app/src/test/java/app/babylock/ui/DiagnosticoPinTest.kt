@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.IdlingPolicies
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.babylock.settings.Prefs
 import app.babylock.ui.theme.BabyLockTheme
@@ -18,7 +17,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import java.util.concurrent.TimeUnit
 
 /** Temporário: isola o que deixa o Compose sem ficar ocioso com o diálogo do PIN aberto. */
 @RunWith(AndroidJUnit4::class)
@@ -31,8 +29,6 @@ class DiagnosticoPinTest {
 
     @Before
     fun preparar() {
-        IdlingPolicies.setMasterPolicyTimeout(8, TimeUnit.SECONDS)
-        IdlingPolicies.setIdlingResourceTimeout(8, TimeUnit.SECONDS)
         context.getSharedPreferences("babylock", Context.MODE_PRIVATE).edit().clear().commit()
         Prefs.init(context)
         Settings.Global.putFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
