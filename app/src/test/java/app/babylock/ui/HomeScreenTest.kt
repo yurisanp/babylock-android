@@ -147,7 +147,7 @@ class HomeScreenTest {
         show()
         compose.onNodeWithTag("enable_accessibility").performClick()
         compose.onNodeWithText("toque em BabyLock e ligue a chave", substring = true).assertIsDisplayed()
-        compose.onNodeWithText("não lê a tela", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("Não lê textos nem outros apps", substring = true).assertIsDisplayed()
     }
 
     @Test
