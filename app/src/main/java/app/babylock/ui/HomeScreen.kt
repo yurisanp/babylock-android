@@ -263,16 +263,11 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingSwitch(
                             stringResource(R.string.setting_a11y_button),
-                            stringResource(
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) R.string.setting_a11y_button_hint
-                                else R.string.setting_a11y_button_hint_old,
-                            ),
+                            stringResource(R.string.setting_a11y_button_hint),
                             accessibilityButton,
                         ) {
                             accessibilityButton = it; Prefs.accessibilityButton = it
                             LockAccessibilityService.instance?.refreshButton()
-                            // No Android 11+ só o próprio adulto põe ou tira o botão, nas Configurações.
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) openAccessibilitySettings(context)
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingSwitch(stringResource(R.string.setting_corner_hint), stringResource(R.string.setting_corner_hint_hint), showCornerHint) {

@@ -163,8 +163,8 @@
 
     <!-- Botão de travar e cadeado do canto -->
     <string name="setting_a11y_button">Botón de bloqueo en pantalla</string>
-    <string name="setting_a11y_button_hint">Abre el video y toca el botón de accesibilidad para bloquear. Abriremos Ajustes: toca BabyLock y activa o desactiva el acceso directo.</string>
-    <string name="setting_a11y_button_hint_old">Botón de accesibilidad de Android: abre el video y tócalo para bloquear. Desactívalo para el uso normal del celular.</string>
+    <string name="setting_a11y_button_hint">Un botón redondo con candado queda sobre las apps. Abre el video y tócalo para bloquear. Arrástralo para moverlo. Desactívalo para el uso normal del celular.</string>
+    <string name="lock_bubble_description">Bloquear la pantalla</string>
     <string name="setting_corner_hint">Mostrar candado en la esquina</string>
     <string name="setting_corner_hint_hint">Recuerda dónde mantener presionado para desbloquear</string>
     <string name="corner_hint_description">Mantén presionado aquí para desbloquear</string>

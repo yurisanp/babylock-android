@@ -30,12 +30,21 @@ object Prefs {
         set(v) = sp.edit().putInt("hold_seconds", v.coerceIn(2, 6)).apply()
 
     /**
-     * Mostrar o botão de acessibilidade do Android para travar com um toque, já dentro do vídeo.
+     * Mostrar o botão flutuante do BabyLock para travar com um toque, já dentro do vídeo.
      * Desligado por padrão, para não aparecer no uso normal do celular.
      */
     var accessibilityButton: Boolean
         get() = sp.getBoolean("accessibility_button", false)
         set(v) = sp.edit().putBoolean("accessibility_button", v).apply()
+
+    /** Onde o adulto deixou o botão flutuante (em pixels; -1 = lugar padrão, na borda direita). */
+    var bubbleX: Int
+        get() = sp.getInt("bubble_x", -1)
+        set(v) = sp.edit().putInt("bubble_x", v).apply()
+
+    var bubbleY: Int
+        get() = sp.getInt("bubble_y", -1)
+        set(v) = sp.edit().putInt("bubble_y", v).apply()
 
     /** Mostrar um cadeado discreto no canto de desbloqueio enquanto travado. */
     var showCornerHint: Boolean
