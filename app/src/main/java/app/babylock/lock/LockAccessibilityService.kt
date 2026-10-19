@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
@@ -26,6 +27,9 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     /** Quantas tentativas seguidas de fechar a barra já foram feitas (0 = barra fechada). */
     private var attempts = 0
+    /** "Voltar" já enviados nesta abertura da barra (no máximo um, para nunca fechar o vídeo). */
+    private var backs = 0
+    private var openSince = 0L
     private var checkScheduled = false
     private val check = Runnable {
         checkScheduled = false
@@ -94,6 +98,7 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         }
         visible = true
         attempts = 0
+        backs = 0
         updateButton(locked = true)
         view.flashHint()
         main.removeCallbacks(watchdog)
@@ -137,6 +142,7 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         when (shadeState()) {
             ShadeState.CLOSED -> {
                 attempts = 0
+                backs = 0
                 return
             }
             ShadeState.UNKNOWN -> {
@@ -148,12 +154,19 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         }
         attempts++
         shadeOpenings++
+        val now = SystemClock.uptimeMillis()
         if (attempts == 1) {
+            openSince = now
             dismissShade()
-        } else {
+        } else if (backs == 0 && now - openSince >= BACK_AFTER_MS) {
+            // O pedido oficial teve tempo de agir e a barra continua aberta: agora sim, "voltar".
+            // Só um "voltar" por abertura: a lista de janelas demora a atualizar depois que a barra fecha,
+            // e um "voltar" a mais fecharia o vídeo. Se a barra continuar aberta, ela fica por baixo da
+            // camada de bloqueio (a criança não mexe nela) e o adulto recebe o aviso na tela inicial.
+            backs++
             backPresses++
             performGlobalAction(GLOBAL_ACTION_BACK)
-            if (attempts == 2) Prefs.shadeEscaped = true // avisa o adulto na tela inicial
+            if (backs == 1) Prefs.shadeEscaped = true // avisa o adulto na tela inicial
         }
         if (!checkScheduled) {
             checkScheduled = true
@@ -219,6 +232,7 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         private const val SYSTEM_UI = "com.android.systemui"
         private const val RECHECK_MS = 350L
         private const val WATCHDOG_MS = 500L
+        private const val BACK_AFTER_MS = 700L
 
         @Volatile
         var instance: LockAccessibilityService? = null
