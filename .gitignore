@@ -12,3 +12,4 @@ keystore.properties
 *.jks
 *.keystore
 play-service-account.json
+__pycache__/

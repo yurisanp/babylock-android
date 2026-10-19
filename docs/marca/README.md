@@ -26,9 +26,12 @@ As duas já estão no app, em `app/src/main/res/font` (licença OFL).
 |---|---|
 | `icone-512.png` | ícone da Play Store (512×512) |
 | `banner-1024x500.png` | gráfico de destaque da Play Store |
-| `tela-1.png` … `tela-5.png` | capturas para a Play Store (1080×1920) |
+| `tela-1.png` … `tela-5.png` | capturas para a Play Store em português (1080×1920) |
+| `fastlane/metadata/android/<idioma>/images/` | ícone, banner e as 5 capturas em pt-BR, en-US e es-419 |
 | `logo-fundo-escuro.png`, `logo-fundo-claro.png`, `logo-transparente.png` | logo com o nome |
 | `icon.svg`, `marca-clara.svg`, `marca-escura.svg` | símbolo em vetor |
+
+Para mudar um texto ou gerar de novo, edite `fonte/build.py` e siga as instruções no topo do arquivo.
 
 O ícone do app usa o mesmo desenho, em `res/drawable/ic_launcher_*.xml`. Ele inclui uma versão monocromática para os ícones temáticos do Android 13+.
 
