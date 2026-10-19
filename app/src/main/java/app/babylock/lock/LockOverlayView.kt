@@ -61,7 +61,7 @@ class LockOverlayView(
             setColor(Color.argb(110, 30, 33, 40))
         }
         alpha = CORNER_ALPHA
-        contentDescription = "Segure aqui para destravar"
+        contentDescription = context.getString(R.string.corner_hint_description)
         visibility = if (showCornerHint) VISIBLE else GONE
     }
 

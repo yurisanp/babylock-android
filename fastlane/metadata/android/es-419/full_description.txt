@@ -1,0 +1,31 @@
+Tu hijo mira. Tú descansas.
+
+Le prestas el celular a tu hijo para ver dibujos y, en segundos, el video se pausó, se abrió otra app o alguien recibió una llamada. BabyLock lo resuelve: bloquea los toques en la pantalla y el video sigue.
+
+CÓMO FUNCIONA
+1. Abre BabyLock y toca "Bloquear".
+2. Abre el video en menos de 5 segundos.
+3. Presta el celular. Los deditos no cambian nada.
+
+Para desbloquear, mantén presionada la esquina superior derecha unos segundos y confirma con tu huella, tu rostro, la contraseña del celular o un PIN. Un niño tocando la pantalla no lo desbloquea.
+
+QUÉ SE BLOQUEA
+• Toques y gestos en la pantalla
+• La barra de notificaciones
+• Los botones de volumen
+
+FÁCIL DE USAR
+• Un botón grande para bloquear
+• Acceso directo en Ajustes rápidos
+• Consejos para celulares Samsung, Xiaomi y Motorola
+• En español, portugués e inglés
+
+TU PRIVACIDAD
+• No recopila ningún dato personal
+• No lee tus textos ni graba la pantalla
+• No pide cuenta y funciona sin internet
+
+SOBRE EL PERMISO DE ACCESIBILIDAD
+BabyLock usa el servicio de accesibilidad de Android solo para bloquear toques, gestos y volumen mientras el bloqueo está activo y para cerrar la barra de notificaciones. Solo revisa si la barra está abierta, nunca lee textos ni otras apps y no envía nada a internet. Si prefieres no activar la accesibilidad, hay un modo más simple que bloquea solo los toques.
+
+Importante: ninguna app puede bloquear el botón de encendido. Reiniciar el celular siempre lo desbloquea.

@@ -25,6 +25,6 @@ class MainActivitySmokeTest {
         if (compose.onAllNodesWithTag("onboarding_skip").fetchSemanticsNodes().isNotEmpty()) {
             compose.onNodeWithTag("onboarding_skip").performClick()
         }
-        compose.onNodeWithText("Como destravar").assertExists()
+        compose.onNodeWithText(compose.activity.getString(R.string.howto_title)).assertExists()
     }
 }

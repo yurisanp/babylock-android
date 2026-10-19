@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Español (neutro, para Latinoamérica). -->
+<resources>
+    <string name="tile_label">BabyLock</string>
+    <string name="accessibility_service_label">BabyLock – bloquear la pantalla</string>
+    <string name="accessibility_service_description">Actívalo para que BabyLock bloquee toques, notificaciones y volumen mientras tu hijo mira. Solo revisa si la barra de notificaciones está abierta. No lee textos ni otras apps y no envía ningún dato.</string>
+    <string name="notification_channel">Bloqueo activo</string>
+    <string name="notification_text">Toques bloqueados. Para desbloquear, mantén presionada la esquina superior derecha por %1$d segundos.</string>
+
+    <!-- Bienvenida -->
+    <string name="onboarding_skip">Omitir</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_start">Empezar</string>
+    <string name="onboarding_1_title">El video sigue.\nLos deditos, no.</string>
+    <string name="onboarding_1_body">Bloquea la pantalla con un toque y presta el celular sin miedo a que pausen, cierren o llamen a alguien.</string>
+    <string name="onboarding_2_title">Solo tú desbloqueas.</string>
+    <string name="onboarding_2_body">Mantén presionada la esquina superior derecha y confirma con tu huella, tu rostro o tu PIN.</string>
+    <string name="onboarding_3_title">Nada sale de tu celular.</string>
+    <string name="onboarding_3_body">BabyLock no lee la pantalla, no pide cuenta y funciona sin internet.</string>
+
+    <!-- Inicio -->
+    <string name="status_full_title">Protección completa</string>
+    <string name="status_full_body">Toques, notificaciones y volumen bloqueados.</string>
+    <string name="status_basic_title">Protección básica</string>
+    <string name="status_basic_body">Solo se bloquean los toques. Activa la accesibilidad para bloquear todo.</string>
+    <string name="status_missing_title">Falta un permiso</string>
+    <string name="status_missing_body">Toca “Activar” aquí abajo para empezar.</string>
+    <string name="hero_hint">Toca, abre el video y presta el celular.</string>
+    <string name="lock_button">Bloquear</string>
+    <plurals name="lock_button_delay">
+        <item quantity="one">en %1$d segundo</item>
+        <item quantity="many">en %1$d segundos</item>
+        <item quantity="other">en %1$d segundos</item>
+    </plurals>
+    <string name="permission_badge">Recomendado</string>
+    <string name="permission_action">Activar</string>
+    <string name="permission_accessibility_title">Accesibilidad</string>
+    <string name="permission_accessibility_body">Bloquea toques, notificaciones y volumen.</string>
+    <string name="permission_overlay_title">Mostrar sobre otras apps</string>
+    <string name="permission_overlay_body">Opción más simple: bloquea solo los toques.</string>
+    <string name="guide_accessibility">Toca BabyLock y activa el interruptor. Si no lo ves, busca en “Apps instaladas”.</string>
+    <string name="guide_overlay">Activa el interruptor de BabyLock y vuelve.</string>
+    <string name="open_and_lock_title">Abrir y bloquear</string>
+    <string name="open_and_lock_hint">abre la app y bloquea sola</string>
+    <string name="howto_title">Cómo desbloquear</string>
+    <plurals name="howto_body">
+        <item quantity="one">Mantén presionada la esquina superior derecha con un dedo por %1$d segundo. Luego confirma con tu huella, tu rostro, la contraseña del celular o el PIN.</item>
+        <item quantity="many">Mantén presionada la esquina superior derecha con un dedo por %1$d segundos. Luego confirma con tu huella, tu rostro, la contraseña del celular o el PIN.</item>
+        <item quantity="other">Mantén presionada la esquina superior derecha con un dedo por %1$d segundos. Luego confirma con tu huella, tu rostro, la contraseña del celular o el PIN.</item>
+    </plurals>
+    <string name="howto_safety">Si algo sale mal, reiniciar el celular siempre lo desbloquea.</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Ajustes</string>
+    <string name="setting_volume">Bloquear botones de volumen</string>
+    <string name="setting_shade">Cerrar las notificaciones</string>
+    <string name="setting_needs_accessibility">Necesita la accesibilidad activada</string>
+    <plurals name="setting_hold">
+        <item quantity="one">Mantener la esquina %1$d segundo</item>
+        <item quantity="many">Mantener la esquina %1$d segundos</item>
+        <item quantity="other">Mantener la esquina %1$d segundos</item>
+    </plurals>
+    <string name="setting_hold_hint">Más tiempo es más difícil para el niño.</string>
+    <string name="setting_pin">PIN de BabyLock</string>
+    <string name="setting_pin_on">Definido</string>
+    <string name="setting_pin_off">Sin PIN: usa tu huella o una multiplicación</string>
+    <string name="action_change">Cambiar</string>
+    <string name="action_set">Definir</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_remove">Quitar</string>
+    <string name="action_ok">Entendido</string>
+    <string name="tips_title">Consejos para %1$s</string>
+
+    <!-- Ayuda -->
+    <string name="help_title">Ayuda</string>
+    <string name="help_tour">Ver cómo funciona otra vez</string>
+    <string name="help_privacy">Privacidad</string>
+    <string name="privacy_title">Tu privacidad</string>
+    <string name="privacy_body">• BabyLock no recopila, no guarda y no envía datos personales.\n• No lee textos ni otras apps y no graba la pantalla.\n• La app no tiene acceso a internet.\n• Tu PIN queda solo en este celular, protegido.\n\nLa accesibilidad se usa solo para bloquear toques, notificaciones y volumen mientras tu hijo mira.</string>
+
+    <!-- Aviso de accesibilidad (exigido por Google Play) -->
+    <string name="disclosure_title">Uso de la accesibilidad</string>
+    <string name="disclosure_body">BabyLock usa la accesibilidad de Android solo para:\n• bloquear toques, gestos y volumen mientras el bloqueo está activo\n• cerrar la barra de notificaciones\n\nSolo revisa si la barra de notificaciones está abierta. No lee textos ni otras apps, no recopila datos personales y no envía nada a internet.</string>
+    <string name="disclosure_next_step">En el siguiente paso, toca BabyLock y activa el interruptor.</string>
+    <string name="disclosure_accept">Aceptar y activar</string>
+    <string name="disclosure_dismiss">Ahora no</string>
+
+    <!-- Cuenta regresiva -->
+    <string name="countdown_label">BLOQUEANDO</string>
+    <string name="countdown_title">Abre el video ahora</string>
+    <plurals name="countdown_hint">
+        <item quantity="one">Bloqueando en %1$d segundo… abre el video</item>
+        <item quantity="many">Bloqueando en %1$d segundos… abre el video</item>
+        <item quantity="other">Bloqueando en %1$d segundos… abre el video</item>
+    </plurals>
+
+    <!-- PIN -->
+    <string name="pin_title_new">Definir PIN</string>
+    <string name="pin_title_change">Cambiar PIN</string>
+    <string name="pin_hint">Sirve para desbloquear cuando la huella no funciona.</string>
+    <string name="pin_field">PIN (4 a 6 números)</string>
+    <string name="pin_repeat">Repite el PIN</string>
+
+    <!-- Desbloqueo -->
+    <string name="unlock_pane">Confirmar que eres un adulto</string>
+    <string name="unlock_title">Confirma que eres tú</string>
+    <string name="unlock_biometric_hint">Toca para usar tu huella, tu rostro o la contraseña del celular</string>
+    <string name="unlock_biometric_button">Usar huella o rostro</string>
+    <string name="unlock_pin">PIN de BabyLock</string>
+    <string name="unlock_math">¿Cuánto es %1$d × %2$d?</string>
+    <plurals name="unlock_timeout_hint">
+        <item quantity="one">Sin respuesta, se bloquea otra vez en %1$d segundo.</item>
+        <item quantity="many">Sin respuesta, se bloquea otra vez en %1$d segundos.</item>
+        <item quantity="other">Sin respuesta, se bloquea otra vez en %1$d segundos.</item>
+    </plurals>
+    <string name="unlock_cancel">Seguir bloqueado</string>
+    <string name="unlock_key_backspace">Borrar</string>
+    <string name="unlock_key_confirm">Confirmar</string>
+    <string name="unlock_wrong">No coincide. Inténtalo de nuevo.</string>
+    <plurals name="unlock_locked_out">
+        <item quantity="one">Demasiados intentos. Espera %1$d segundo.</item>
+        <item quantity="many">Demasiados intentos. Espera %1$d segundos.</item>
+        <item quantity="other">Demasiados intentos. Espera %1$d segundos.</item>
+    </plurals>
+    <string name="unlock_prompt_title">Desbloquear BabyLock</string>
+    <string name="unlock_prompt_subtitle">Confirma que eres un adulto</string>
+
+    <!-- Consejos por marca (los menús cambian según el celular) -->
+    <string-array name="tips_samsung">
+        <item>Ajustes > Aplicaciones > BabyLock > Batería: elige “Sin restricciones”.</item>
+        <item>Mantenimiento del dispositivo > Batería > Límites de uso en segundo plano: agrega BabyLock a “Aplicaciones que nunca se suspenden”.</item>
+        <item>Para el Modo Fortaleza: Seguridad y privacidad > Más ajustes de seguridad > Fijar aplicaciones, con “Pedir PIN antes de desfijar”.</item>
+    </string-array>
+    <string-array name="tips_xiaomi">
+        <item>Ajustes > Aplicaciones > BabyLock > Ahorro de batería: “Sin restricciones”.</item>
+        <item>En la misma pantalla, activa “Inicio automático”.</item>
+        <item>Otros permisos: permite “Mostrar ventanas emergentes en segundo plano”.</item>
+        <item>En Recientes, mantén presionado BabyLock y toca el candado para que no se cierre.</item>
+        <item>Si la barra de notificaciones aún baja: en Ajustes, busca “Fijar aplicaciones” y actívalo. Mira los pasos en “¿La barra de notificaciones aún se abre?”.</item>
+    </string-array>
+    <string-array name="tips_motorola">
+        <item>Ajustes > Aplicaciones > BabyLock > Batería: “Sin restricciones”.</item>
+    </string-array>
+    <string-array name="tips_oppo">
+        <item>Ajustes > Batería: permite la actividad en segundo plano de BabyLock.</item>
+        <item>Activa el inicio automático y bloquea la app en Recientes.</item>
+    </string-array>
+    <!-- Barra de notificações que ainda abre -->
+    <string name="shade_help_title">¿La barra de notificaciones aún se abre?</string>
+    <string name="shade_help_alert">La barra de notificaciones se abrió durante el bloqueo</string>
+    <string name="shade_help_body">En algunos celulares (como Xiaomi, Redmi y POCO) el sistema deja bajar la barra incluso con BabyLock. No recibe toques y BabyLock intenta cerrarla, pero puedes bloquearla del todo:</string>
+    <string name="shade_help_settings">Abrir Ajustes</string>
+    <string name="shade_help_dismiss">Entendido</string>
+    <string name="action_expand">Abrir</string>
+    <string name="action_collapse">Cerrar</string>
+    <string-array name="shade_pin_steps">
+        <item>Abre Ajustes y busca “Fijar” (el nombre cambia: “Fijar aplicaciones”, “Fijar pantalla” o “Fijar app”).</item>
+        <item>Actívalo y también “Pedir PIN para dejar de fijar”, si aparece.</item>
+        <item>Abre el video, toca el botón de apps recientes, toca el ícono de la app y elige “Fijar”.</item>
+        <item>Después bloquea BabyLock como siempre. Con la app fijada, la barra de notificaciones no baja.</item>
+    </string-array>
+
+    <!-- Botão de travar e cadeado do canto -->
+    <string name="setting_a11y_button">Botón de bloqueo en pantalla</string>
+    <string name="setting_a11y_button_hint">Abre el video y toca el botón de accesibilidad para bloquear. Abriremos Ajustes: toca BabyLock y activa o desactiva el acceso directo.</string>
+    <string name="setting_a11y_button_hint_old">Botón de accesibilidad de Android: abre el video y tócalo para bloquear. Desactívalo para el uso normal del celular.</string>
+    <string name="setting_corner_hint">Mostrar candado en la esquina</string>
+    <string name="setting_corner_hint_hint">Recuerda dónde mantener presionado para desbloquear</string>
+    <string name="corner_hint_description">Mantén presionado aquí para desbloquear</string>
+</resources>

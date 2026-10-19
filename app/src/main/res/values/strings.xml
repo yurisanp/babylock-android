@@ -1,9 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Inglês: idioma padrão (usado quando o celular está num idioma que o app ainda não tem).
+  Português em values-pt, espanhol em values-es. Toda frase nova precisa entrar nos três arquivos (o lint confere).
+-->
 <resources>
-    <string name="app_name">BabyLock</string>
+    <string name="app_name" translatable="false">BabyLock</string>
     <string name="tile_label">BabyLock</string>
-    <string name="accessibility_service_label">BabyLock – bloqueio de toque</string>
-    <string name="accessibility_service_description">O BabyLock usa o serviço de acessibilidade apenas para bloquear toques, gestos e botões de volume enquanto o bloqueio está ativo e para fechar a barra de notificações (ele só confere se a barra está aberta). Ele não lê textos nem o conteúdo de outros apps e não envia nenhum dado.</string>
-    <string name="notification_channel">Bloqueio ativo</string>
-    <string name="notification_text">Toques bloqueados. Segure o canto superior direito por 3 segundos para desbloquear.</string>
+    <string name="accessibility_service_label">BabyLock – lock the screen</string>
+    <string name="accessibility_service_description">Turn this on so BabyLock can lock touches, notifications and volume while your child watches. It only checks whether the notification shade is open. It does not read text or other apps and sends no data.</string>
+    <string name="notification_channel">Lock active</string>
+    <string name="notification_text">Touches locked. To unlock, hold the top right corner for %1$d seconds.</string>
+
+    <!-- Welcome -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Start</string>
+    <string name="onboarding_1_title">The video keeps playing.\nLittle fingers can\'t stop it.</string>
+    <string name="onboarding_1_body">Lock the screen with one tap and hand over your phone without worrying about pauses, closed apps or surprise calls.</string>
+    <string name="onboarding_2_title">Only you can unlock.</string>
+    <string name="onboarding_2_body">Hold the top right corner, then confirm with your fingerprint, face or PIN.</string>
+    <string name="onboarding_3_title">Nothing leaves your phone.</string>
+    <string name="onboarding_3_body">BabyLock doesn\'t read the screen, needs no account and works offline.</string>
+
+    <!-- Home -->
+    <string name="status_full_title">Full protection</string>
+    <string name="status_full_body">Touches, notifications and volume are locked.</string>
+    <string name="status_basic_title">Basic protection</string>
+    <string name="status_basic_body">Only touches are locked. Turn on accessibility to lock everything.</string>
+    <string name="status_missing_title">One permission missing</string>
+    <string name="status_missing_body">Tap “Turn on” below to get started.</string>
+    <string name="hero_hint">Tap, open the video and hand over the phone.</string>
+    <string name="lock_button">Lock</string>
+    <plurals name="lock_button_delay">
+        <item quantity="one">in %1$d second</item>
+        <item quantity="other">in %1$d seconds</item>
+    </plurals>
+    <string name="permission_badge">Recommended</string>
+    <string name="permission_action">Turn on</string>
+    <string name="permission_accessibility_title">Accessibility</string>
+    <string name="permission_accessibility_body">Locks touches, notifications and volume.</string>
+    <string name="permission_overlay_title">Display over other apps</string>
+    <string name="permission_overlay_body">Simpler option: locks touches only.</string>
+    <string name="guide_accessibility">Tap BabyLock and turn the switch on. Can\'t find it? Look under “Installed apps”.</string>
+    <string name="guide_overlay">Turn on the switch for BabyLock and come back.</string>
+    <string name="open_and_lock_title">Open and lock</string>
+    <string name="open_and_lock_hint">opens the app and locks by itself</string>
+    <string name="howto_title">How to unlock</string>
+    <plurals name="howto_body">
+        <item quantity="one">Hold the top right corner with one finger for %1$d second. Then confirm with your fingerprint, face, phone password or PIN.</item>
+        <item quantity="other">Hold the top right corner with one finger for %1$d seconds. Then confirm with your fingerprint, face, phone password or PIN.</item>
+    </plurals>
+    <string name="howto_safety">If anything goes wrong, restarting the phone always unlocks it.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="setting_volume">Lock volume buttons</string>
+    <string name="setting_shade">Close notifications</string>
+    <string name="setting_needs_accessibility">Needs accessibility turned on</string>
+    <plurals name="setting_hold">
+        <item quantity="one">Hold the corner for %1$d second</item>
+        <item quantity="other">Hold the corner for %1$d seconds</item>
+    </plurals>
+    <string name="setting_hold_hint">Longer is harder for a child.</string>
+    <string name="setting_pin">BabyLock PIN</string>
+    <string name="setting_pin_on">Set</string>
+    <string name="setting_pin_off">No PIN: uses your fingerprint or a multiplication question</string>
+    <string name="action_change">Change</string>
+    <string name="action_set">Set</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_ok">Got it</string>
+    <string name="tips_title">Tips for %1$s</string>
+
+    <!-- Help -->
+    <string name="help_title">Help</string>
+    <string name="help_tour">See how it works again</string>
+    <string name="help_privacy">Privacy</string>
+    <string name="privacy_title">Your privacy</string>
+    <string name="privacy_body">• BabyLock does not collect, store or send personal data.\n• It does not read text or other apps and does not record the screen.\n• The app has no internet access.\n• Your PIN stays on this phone, protected.\n\nAccessibility is used only to lock touches, notifications and volume while your child watches.</string>
+
+    <!-- Accessibility disclosure (required by Google Play) -->
+    <string name="disclosure_title">How accessibility is used</string>
+    <string name="disclosure_body">BabyLock uses Android accessibility only to:\n• lock touches, gestures and volume while the lock is on\n• close the notification shade\n\nIt only checks whether the notification shade is open. It does not read text or other apps, does not collect personal data and sends nothing to the internet.</string>
+    <string name="disclosure_next_step">Next, tap BabyLock and turn the switch on.</string>
+    <string name="disclosure_accept">Accept and turn on</string>
+    <string name="disclosure_dismiss">Not now</string>
+
+    <!-- Countdown -->
+    <string name="countdown_label">LOCKING</string>
+    <string name="countdown_title">Open the video now</string>
+    <plurals name="countdown_hint">
+        <item quantity="one">Locking in %1$d second… open the video</item>
+        <item quantity="other">Locking in %1$d seconds… open the video</item>
+    </plurals>
+
+    <!-- PIN -->
+    <string name="pin_title_new">Set PIN</string>
+    <string name="pin_title_change">Change PIN</string>
+    <string name="pin_hint">Use it to unlock when your fingerprint doesn\'t work.</string>
+    <string name="pin_field">PIN (4 to 6 numbers)</string>
+    <string name="pin_repeat">Repeat the PIN</string>
+
+    <!-- Unlock -->
+    <string name="unlock_pane">Confirm you are an adult</string>
+    <string name="unlock_title">Confirm it\'s you</string>
+    <string name="unlock_biometric_hint">Tap to use your fingerprint, face or phone password</string>
+    <string name="unlock_biometric_button">Use fingerprint or face</string>
+    <string name="unlock_pin">BabyLock PIN</string>
+    <string name="unlock_math">What is %1$d × %2$d?</string>
+    <plurals name="unlock_timeout_hint">
+        <item quantity="one">No answer? It locks again in %1$d second.</item>
+        <item quantity="other">No answer? It locks again in %1$d seconds.</item>
+    </plurals>
+    <string name="unlock_cancel">Keep locked</string>
+    <string name="unlock_key_backspace">Delete</string>
+    <string name="unlock_key_confirm">Confirm</string>
+    <string name="unlock_wrong">That\'s not right. Try again.</string>
+    <plurals name="unlock_locked_out">
+        <item quantity="one">Too many tries. Wait %1$d second.</item>
+        <item quantity="other">Too many tries. Wait %1$d seconds.</item>
+    </plurals>
+    <string name="unlock_prompt_title">Unlock BabyLock</string>
+    <string name="unlock_prompt_subtitle">Confirm you are an adult</string>
+
+    <!-- Tips by brand (menu names vary by phone and language) -->
+    <string-array name="tips_samsung">
+        <item>Settings > Apps > BabyLock > Battery: choose “Unrestricted”.</item>
+        <item>Device care > Battery > Background usage limits: add BabyLock to “Never sleeping apps”.</item>
+        <item>For Fortress Mode: Security and privacy > More security settings > Pin app, with “Ask for PIN before unpinning”.</item>
+    </string-array>
+    <string-array name="tips_xiaomi">
+        <item>Settings > Apps > BabyLock > Battery saver: “No restrictions”.</item>
+        <item>On the same screen, turn on “Autostart”.</item>
+        <item>Other permissions: allow “Display pop-up windows while running in the background”.</item>
+        <item>In Recents, hold BabyLock and tap the lock so it isn\'t closed.</item>
+        <item>If the notification shade still comes down: in Settings, search for “App pinning” and turn it on. See the steps in “Does the notification shade still open?”.</item>
+    </string-array>
+    <string-array name="tips_motorola">
+        <item>Settings > Apps > BabyLock > Battery: “Unrestricted”.</item>
+    </string-array>
+    <string-array name="tips_oppo">
+        <item>Settings > Battery: allow background activity for BabyLock.</item>
+        <item>Turn on auto launch and lock the app in Recents.</item>
+    </string-array>
+    <!-- Barra de notificações que ainda abre -->
+    <string name="shade_help_title">Does the notification shade still open?</string>
+    <string name="shade_help_alert">The notification shade opened during the lock</string>
+    <string name="shade_help_body">On some phones (like Xiaomi, Redmi and POCO) the system lets the shade come down even with BabyLock. It gets no touches and BabyLock tries to close it, but you can block it for good:</string>
+    <string name="shade_help_settings">Open Settings</string>
+    <string name="shade_help_dismiss">Got it</string>
+    <string name="action_expand">Open</string>
+    <string name="action_collapse">Close</string>
+    <string-array name="shade_pin_steps">
+        <item>Open Settings and search for “Pin” (the name varies: “App pinning”, “Screen pinning” or “Pin app”).</item>
+        <item>Turn it on, and also “Ask for PIN before unpinning” if you see it.</item>
+        <item>Open the video, tap the recent apps button, tap the app icon and choose “Pin”.</item>
+        <item>Then lock BabyLock as usual. With the app pinned, the notification shade won\'t come down.</item>
+    </string-array>
+
+    <!-- Botão de travar e cadeado do canto -->
+    <string name="setting_a11y_button">Lock button on screen</string>
+    <string name="setting_a11y_button_hint">Open the video and tap the accessibility button to lock. We\'ll open Settings: tap BabyLock and turn the shortcut on or off.</string>
+    <string name="setting_a11y_button_hint_old">Android accessibility button: open the video and tap it to lock. Turn it off for normal phone use.</string>
+    <string name="setting_corner_hint">Show lock in the corner</string>
+    <string name="setting_corner_hint_hint">Reminds you where to hold to unlock</string>
+    <string name="corner_hint_description">Hold here to unlock</string>
 </resources>

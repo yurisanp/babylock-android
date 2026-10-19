@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Português (Brasil): idioma principal do app. Textos curtos e simples: o público são mães e pais com pouco tempo. -->
+<resources>
+    <string name="tile_label">BabyLock</string>
+    <string name="accessibility_service_label">BabyLock – travar a tela</string>
+    <string name="accessibility_service_description">Ligue para o BabyLock travar toques, notificações e volume enquanto a criança assiste. Ele só confere se a barra de notificações está aberta. Não lê textos nem outros apps e não envia nenhum dado.</string>
+    <string name="notification_channel">Bloqueio ativo</string>
+    <string name="notification_text">Toques travados. Para destravar, segure o canto de cima, à direita, por %1$d segundos.</string>
+
+    <!-- Boas-vindas -->
+    <string name="onboarding_skip">Pular</string>
+    <string name="onboarding_next">Próximo</string>
+    <string name="onboarding_start">Começar</string>
+    <string name="onboarding_1_title">O vídeo continua.\nOs dedinhos, não.</string>
+    <string name="onboarding_1_body">Trave a tela com um toque e entregue o celular sem medo de pausar, fechar ou ligar para alguém.</string>
+    <string name="onboarding_2_title">Só você destrava.</string>
+    <string name="onboarding_2_body">Segure o canto de cima, à direita, e confirme com a digital, o rosto ou o seu PIN.</string>
+    <string name="onboarding_3_title">Nada sai do seu celular.</string>
+    <string name="onboarding_3_body">O BabyLock não lê a tela, não pede conta e funciona sem internet.</string>
+
+    <!-- Início -->
+    <string name="status_full_title">Proteção completa</string>
+    <string name="status_full_body">Toques, notificações e volume travados.</string>
+    <string name="status_basic_title">Proteção básica</string>
+    <string name="status_basic_body">Só os toques travam. Ligue a acessibilidade para travar tudo.</string>
+    <string name="status_missing_title">Falta uma permissão</string>
+    <string name="status_missing_body">Toque em “Ligar” logo abaixo para começar.</string>
+    <string name="hero_hint">Toque, abra o vídeo e entregue o celular.</string>
+    <string name="lock_button">Travar</string>
+    <plurals name="lock_button_delay">
+        <item quantity="one">em %1$d segundo</item>
+        <item quantity="many">em %1$d segundos</item>
+        <item quantity="other">em %1$d segundos</item>
+    </plurals>
+    <string name="permission_badge">Recomendado</string>
+    <string name="permission_action">Ligar</string>
+    <string name="permission_accessibility_title">Acessibilidade</string>
+    <string name="permission_accessibility_body">Trava toques, notificações e volume.</string>
+    <string name="permission_overlay_title">Mostrar sobre outros apps</string>
+    <string name="permission_overlay_body">Opção mais simples: trava só os toques.</string>
+    <string name="guide_accessibility">Toque em BabyLock e ligue a chave. Se não achar, procure em “Apps instalados”.</string>
+    <string name="guide_overlay">Ligue a chave do BabyLock e volte.</string>
+    <string name="open_and_lock_title">Abrir e travar</string>
+    <string name="open_and_lock_hint">abre o app e trava sozinho</string>
+    <string name="howto_title">Como destravar</string>
+    <plurals name="howto_body">
+        <item quantity="one">Segure o canto de cima, à direita, com um dedo por %1$d segundo. Depois confirme com a digital, o rosto, a senha do celular ou o PIN.</item>
+        <item quantity="many">Segure o canto de cima, à direita, com um dedo por %1$d segundos. Depois confirme com a digital, o rosto, a senha do celular ou o PIN.</item>
+        <item quantity="other">Segure o canto de cima, à direita, com um dedo por %1$d segundos. Depois confirme com a digital, o rosto, a senha do celular ou o PIN.</item>
+    </plurals>
+    <string name="howto_safety">Se algo der errado, reiniciar o celular sempre destrava.</string>
+
+    <!-- Configurações -->
+    <string name="settings_title">Configurações</string>
+    <string name="setting_volume">Travar botões de volume</string>
+    <string name="setting_shade">Fechar as notificações</string>
+    <string name="setting_needs_accessibility">Precisa da acessibilidade ligada</string>
+    <plurals name="setting_hold">
+        <item quantity="one">Segurar o canto por %1$d segundo</item>
+        <item quantity="many">Segurar o canto por %1$d segundos</item>
+        <item quantity="other">Segurar o canto por %1$d segundos</item>
+    </plurals>
+    <string name="setting_hold_hint">Mais tempo é mais difícil para a criança.</string>
+    <string name="setting_pin">PIN do BabyLock</string>
+    <string name="setting_pin_on">Definido</string>
+    <string name="setting_pin_off">Sem PIN: usa a digital ou uma conta de multiplicar</string>
+    <string name="action_change">Alterar</string>
+    <string name="action_set">Definir</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_save">Salvar</string>
+    <string name="action_remove">Remover</string>
+    <string name="action_ok">Entendi</string>
+    <string name="tips_title">Dicas para %1$s</string>
+
+    <!-- Ajuda -->
+    <string name="help_title">Ajuda</string>
+    <string name="help_tour">Ver como funciona de novo</string>
+    <string name="help_privacy">Privacidade</string>
+    <string name="privacy_title">Sua privacidade</string>
+    <string name="privacy_body">• O BabyLock não coleta, não guarda e não envia dados pessoais.\n• Ele não lê textos nem outros apps e não grava a tela.\n• O app não tem acesso à internet.\n• O PIN fica só neste celular, protegido.\n\nA acessibilidade serve só para travar toques, notificações e volume enquanto a criança assiste.</string>
+
+    <!-- Divulgação da acessibilidade (exigência do Google Play) -->
+    <string name="disclosure_title">Uso da acessibilidade</string>
+    <string name="disclosure_body">O BabyLock usa a acessibilidade do Android só para:\n• travar toques, gestos e volume enquanto o bloqueio está ligado\n• fechar a barra de notificações\n\nEle só confere se a barra de notificações está aberta. Não lê textos nem outros apps, não coleta dados pessoais e não envia nada para a internet.</string>
+    <string name="disclosure_next_step">No próximo passo, toque em BabyLock e ligue a chave.</string>
+    <string name="disclosure_accept">Aceitar e ativar</string>
+    <string name="disclosure_dismiss">Agora não</string>
+
+    <!-- Contagem -->
+    <string name="countdown_label">TRAVANDO</string>
+    <string name="countdown_title">Abra o vídeo agora</string>
+    <plurals name="countdown_hint">
+        <item quantity="one">Travando em %1$d segundo… abra o vídeo</item>
+        <item quantity="many">Travando em %1$d segundos… abra o vídeo</item>
+        <item quantity="other">Travando em %1$d segundos… abra o vídeo</item>
+    </plurals>
+
+    <!-- PIN -->
+    <string name="pin_title_new">Definir PIN</string>
+    <string name="pin_title_change">Alterar PIN</string>
+    <string name="pin_hint">Serve para destravar quando a digital não funcionar.</string>
+    <string name="pin_field">PIN (4 a 6 números)</string>
+    <string name="pin_repeat">Repita o PIN</string>
+
+    <!-- Desbloqueio -->
+    <string name="unlock_pane">Confirmar que é um adulto</string>
+    <string name="unlock_title">Confirme que é você</string>
+    <string name="unlock_biometric_hint">Toque para usar a digital, o rosto ou a senha do celular</string>
+    <string name="unlock_biometric_button">Usar digital ou rosto</string>
+    <string name="unlock_pin">PIN do BabyLock</string>
+    <string name="unlock_math">Quanto é %1$d × %2$d?</string>
+    <plurals name="unlock_timeout_hint">
+        <item quantity="one">Sem resposta, volta a travar em %1$d segundo.</item>
+        <item quantity="many">Sem resposta, volta a travar em %1$d segundos.</item>
+        <item quantity="other">Sem resposta, volta a travar em %1$d segundos.</item>
+    </plurals>
+    <string name="unlock_cancel">Continuar bloqueado</string>
+    <string name="unlock_key_backspace">Apagar</string>
+    <string name="unlock_key_confirm">Confirmar</string>
+    <string name="unlock_wrong">Não confere. Tente de novo.</string>
+    <plurals name="unlock_locked_out">
+        <item quantity="one">Muitas tentativas. Espere %1$d segundo.</item>
+        <item quantity="many">Muitas tentativas. Espere %1$d segundos.</item>
+        <item quantity="other">Muitas tentativas. Espere %1$d segundos.</item>
+    </plurals>
+    <string name="unlock_prompt_title">Destravar o BabyLock</string>
+    <string name="unlock_prompt_subtitle">Confirme que é um adulto</string>
+
+    <!-- Dicas por fabricante -->
+    <string-array name="tips_samsung">
+        <item>Configurações > Apps > BabyLock > Bateria: escolha “Sem restrição”.</item>
+        <item>Cuidados com o dispositivo > Bateria > Limites de uso em segundo plano: coloque o BabyLock em “Apps que nunca suspendem”.</item>
+        <item>Para o Modo Fortaleza: Segurança e privacidade > Mais configurações de segurança > Fixar app, com “Pedir PIN antes de desafixar”.</item>
+    </string-array>
+    <string-array name="tips_xiaomi">
+        <item>Configurações > Apps > BabyLock > Economia de bateria: “Sem restrições”.</item>
+        <item>Na mesma tela, ative “Inicialização automática”.</item>
+        <item>Outras permissões: permita “Exibir janelas pop-up em segundo plano”.</item>
+        <item>Em Recentes, segure o BabyLock e toque no cadeado para ele não ser fechado.</item>
+        <item>Se a barra de notificações ainda descer: em Configurações, procure “Fixar apps” e ative. Veja o passo a passo em “A barra de notificações ainda abre?”.</item>
+    </string-array>
+    <string-array name="tips_motorola">
+        <item>Configurações > Apps > BabyLock > Bateria: “Sem restrição”.</item>
+    </string-array>
+    <string-array name="tips_oppo">
+        <item>Configurações > Bateria: permita atividade em segundo plano para o BabyLock.</item>
+        <item>Ative a inicialização automática e trave o app em Recentes.</item>
+    </string-array>
+    <!-- Barra de notificações que ainda abre -->
+    <string name="shade_help_title">A barra de notificações ainda abre?</string>
+    <string name="shade_help_alert">A barra de notificações abriu durante o bloqueio</string>
+    <string name="shade_help_body">Em alguns celulares (como Xiaomi, Redmi e POCO) o sistema deixa a barra descer mesmo com o BabyLock. Ela não recebe toques e o BabyLock tenta fechá-la, mas dá para barrar de vez:</string>
+    <string name="shade_help_settings">Abrir Configurações</string>
+    <string name="shade_help_dismiss">Entendi</string>
+    <string name="action_expand">Abrir</string>
+    <string name="action_collapse">Fechar</string>
+    <string-array name="shade_pin_steps">
+        <item>Abra as Configurações e procure por “Fixar” (o nome muda: “Fixar apps”, “Fixação de tela” ou “Fixar app”).</item>
+        <item>Ative a opção e também “Pedir senha para desafixar”, se aparecer.</item>
+        <item>Abra o vídeo, toque no botão de apps recentes, toque no ícone do app e escolha “Fixar”.</item>
+        <item>Depois trave o BabyLock como sempre. Com o app fixado, a barra de notificações não desce.</item>
+    </string-array>
+
+    <!-- Botão de travar e cadeado do canto -->
+    <string name="setting_a11y_button">Botão de travar na tela</string>
+    <string name="setting_a11y_button_hint">Abra o vídeo e toque no botão de acessibilidade para travar. Vamos abrir as Configurações: toque em BabyLock e ligue ou desligue o atalho.</string>
+    <string name="setting_a11y_button_hint_old">Botão de acessibilidade do Android: abra o vídeo e toque nele para travar. Desligue para o uso normal do celular.</string>
+    <string name="setting_corner_hint">Mostrar cadeado no canto</string>
+    <string name="setting_corner_hint_hint">Lembra onde segurar para destravar</string>
+    <string name="corner_hint_description">Segure aqui para destravar</string>
+</resources>

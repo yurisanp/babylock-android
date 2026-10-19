@@ -1,0 +1,31 @@
+Seu filho assiste. Você relaxa.
+
+Sabe quando você entrega o celular para a criança ver um desenho e, em segundos, o vídeo pausou, outro app abriu ou alguém recebeu uma ligação? O BabyLock resolve isso: ele trava os toques na tela e o vídeo continua tocando.
+
+COMO FUNCIONA
+1. Abra o BabyLock e toque em "Travar".
+2. Abra o vídeo em até 5 segundos.
+3. Entregue o celular. Os dedinhos não mudam nada.
+
+Para destravar, segure o canto de cima, à direita, por alguns segundos e confirme com a sua digital, o seu rosto, a senha do celular ou um PIN. Criança batendo na tela não destrava.
+
+O QUE FICA TRAVADO
+• Toques e gestos na tela
+• Barra de notificações
+• Botões de volume
+
+SIMPLES DE USAR
+• Um botão grande para travar
+• Atalho nas Configurações rápidas
+• Dicas para celulares Samsung, Xiaomi e Motorola
+• Em português, inglês e espanhol
+
+SUA PRIVACIDADE
+• Não coleta nenhum dado pessoal
+• Não lê seus textos nem grava a tela
+• Não pede conta e funciona sem internet
+
+SOBRE A PERMISSÃO DE ACESSIBILIDADE
+O BabyLock usa o serviço de acessibilidade do Android só para travar toques, gestos e volume enquanto o bloqueio está ligado e para fechar a barra de notificações. Ele só confere se a barra está aberta, nunca lê textos nem outros apps e não envia nada para a internet. Se preferir não ligar a acessibilidade, existe um modo mais simples que trava só os toques.
+
+Importante: o botão de ligar e desligar não pode ser travado por nenhum app. Reiniciar o celular sempre destrava.

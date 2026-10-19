@@ -1,0 +1,81 @@
+name: Versão para a Play
+
+# Gera o pacote (.aab) assinado para a Google Play.
+# Roda ao criar uma tag v* (ex.: v1.0.0) ou pelo botão "Run workflow" em Actions.
+#
+# Segredos usados (Settings > Secrets and variables > Actions):
+#   BABYLOCK_KEYSTORE_BASE64   keystore de envio em base64 (obrigatório para assinar)
+#   BABYLOCK_KEYSTORE_PASSWORD senha do keystore
+#   BABYLOCK_KEY_ALIAS         apelido da chave
+#   BABYLOCK_KEY_PASSWORD      senha da chave
+#   PLAY_SERVICE_ACCOUNT_JSON  (opcional) conta de serviço da Play; com ela o pacote sobe sozinho
+#                              para o teste interno como rascunho. Veja docs/PLAY_STORE.md.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Faixa da Play (internal, alpha = teste fechado, beta, production)"
+        default: internal
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    name: Gerar e enviar o pacote da Play
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # A Play exige um número de versão maior a cada envio.
+      BABYLOCK_VERSION_CODE: ${{ github.run_number }}
+      HAS_KEYSTORE: ${{ secrets.BABYLOCK_KEYSTORE_BASE64 != '' }}
+      HAS_PLAY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Preparar o keystore
+        if: env.HAS_KEYSTORE == 'true'
+        run: |
+          echo "${{ secrets.BABYLOCK_KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/upload.jks"
+          echo "BABYLOCK_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Gerar o pacote (.aab)
+        env:
+          BABYLOCK_KEYSTORE_PASSWORD: ${{ secrets.BABYLOCK_KEYSTORE_PASSWORD }}
+          BABYLOCK_KEY_ALIAS: ${{ secrets.BABYLOCK_KEY_ALIAS }}
+          BABYLOCK_KEY_PASSWORD: ${{ secrets.BABYLOCK_KEY_PASSWORD }}
+        run: ./gradlew --no-daemon testDebugUnitTest bundleRelease
+
+      - name: Aviso sem assinatura
+        if: env.HAS_KEYSTORE != 'true'
+        run: echo "::warning::Sem o segredo BABYLOCK_KEYSTORE_BASE64 o pacote sai sem assinatura e a Play não aceita. Veja docs/PLAY_STORE.md."
+
+      - name: Publicar o pacote e o mapa do R8
+        uses: actions/upload-artifact@v4
+        with:
+          name: babylock-play-${{ github.run_number }}
+          path: |
+            app/build/outputs/bundle/release/*.aab
+            app/build/outputs/mapping/release/mapping.txt
+
+      - name: Enviar para a Play
+        if: env.HAS_KEYSTORE == 'true' && env.HAS_PLAY == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: app.babylock
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          mappingFile: app/build/outputs/mapping/release/mapping.txt
+          track: ${{ github.event.inputs.track || 'internal' }}
+          # Enquanto o app não foi revisado pela primeira vez, a Play só aceita rascunho.
+          status: draft
+          whatsNewDirectory: distribution/whatsnew

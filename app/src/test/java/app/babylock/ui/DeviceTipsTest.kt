@@ -11,7 +11,7 @@ class DeviceTipsTest {
 
     private fun tipFor(manufacturer: String): DeviceTips.Tip? {
         ShadowBuild.setManufacturer(manufacturer)
-        return DeviceTips.current()
+        return DeviceTips.current(androidx.test.core.app.ApplicationProvider.getApplicationContext())
     }
 
     @Test
@@ -34,9 +34,10 @@ class DeviceTipsTest {
 
     @Test
     fun `passo a passo de fixar o app manda procurar Fixar nas configuracoes`() {
-        assertThat(DeviceTips.pinSteps).isNotEmpty()
-        assertThat(DeviceTips.pinSteps.first()).contains("procure por \"Fixar\"")
-        assertThat(DeviceTips.pinSteps.joinToString()).contains("recentes")
+        val steps = DeviceTips.pinSteps(androidx.test.core.app.ApplicationProvider.getApplicationContext())
+        assertThat(steps).isNotEmpty()
+        assertThat(steps.first()).contains("procure por “Fixar”")
+        assertThat(steps.joinToString()).contains("recentes")
     }
 
     @Test

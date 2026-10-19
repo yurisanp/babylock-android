@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
@@ -44,6 +45,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Shield
@@ -79,6 +81,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -88,6 +92,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.babylock.R
 import app.babylock.lock.LockAccessibilityService
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
@@ -123,13 +128,14 @@ private val VIDEO_APPS = listOf(
 private const val OPEN_AND_LOCK_SECONDS = 5
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onShowTour: () -> Unit = {}) {
     val context = LocalContext.current
     val view = LocalView.current
     var accessibilityOn by remember { mutableStateOf(false) }
     var overlayOn by remember { mutableStateOf(false) }
     var showDisclosure by remember { mutableStateOf(false) }
     var showPinDialog by remember { mutableStateOf(false) }
+    var showPrivacy by remember { mutableStateOf(false) }
     var lockVolume by remember { mutableStateOf(Prefs.lockVolume) }
     var closeShade by remember { mutableStateOf(Prefs.closeShade) }
     var showCornerHint by remember { mutableStateOf(Prefs.showCornerHint) }
@@ -174,7 +180,7 @@ fun HomeScreen() {
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 Text(
-                    "BabyLock",
+                    stringResource(R.string.app_name),
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.enterUp(0).semantics { heading() },
                 )
@@ -198,9 +204,9 @@ fun HomeScreen() {
 
                 if (!accessibilityOn) {
                     PermissionCard(
-                        title = "Acessibilidade",
-                        badge = "Recomendado",
-                        body = "Bloqueia toques, a barra de notificações e o volume.",
+                        title = stringResource(R.string.permission_accessibility_title),
+                        badge = stringResource(R.string.permission_badge),
+                        body = stringResource(R.string.permission_accessibility_body),
                         onClick = {
                             if (Prefs.disclosureAccepted) openAccessibilitySettings(context) else showDisclosure = true
                         },
@@ -209,9 +215,9 @@ fun HomeScreen() {
                 }
                 if (!accessibilityOn && !overlayOn) {
                     PermissionCard(
-                        title = "Sobreposição de tela",
+                        title = stringResource(R.string.permission_overlay_title),
                         badge = null,
-                        body = "Plano B: bloqueia só os toques, se a acessibilidade estiver desligada.",
+                        body = stringResource(R.string.permission_overlay_body),
                         onClick = { openOverlaySettings(context) },
                         modifier = Modifier.enterUp(3).testTag("enable_overlay"),
                     )
@@ -220,9 +226,9 @@ fun HomeScreen() {
                 val installed = VIDEO_APPS.filter { context.packageManager.getLaunchIntentForPackage(it.pkg) != null }
                 if (installed.isNotEmpty()) {
                     Row(Modifier.enterUp(4), verticalAlignment = Alignment.Bottom) {
-                        SectionTitle("Abrir e travar", Modifier.weight(1f))
+                        SectionTitle(stringResource(R.string.open_and_lock_title), Modifier.weight(1f))
                         Text(
-                            "abre o app e trava sozinho",
+                            stringResource(R.string.open_and_lock_hint),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -244,26 +250,23 @@ fun HomeScreen() {
 
                 UnlockHowTo(holdSeconds, Modifier.enterUp(9))
 
-                SectionTitle("Configurações")
+                SectionTitle(stringResource(R.string.settings_title))
                 Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
                     Column(Modifier.padding(vertical = 8.dp)) {
-                        SettingSwitch("Travar botões de volume", "Só com a acessibilidade ligada", lockVolume) {
+                        SettingSwitch(stringResource(R.string.setting_volume), stringResource(R.string.setting_needs_accessibility), lockVolume) {
                             lockVolume = it; Prefs.lockVolume = it
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        SettingSwitch("Fechar a barra de notificações", "Só com a acessibilidade ligada", closeShade) {
+                        SettingSwitch(stringResource(R.string.setting_shade), stringResource(R.string.setting_needs_accessibility), closeShade) {
                             closeShade = it; Prefs.closeShade = it
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingSwitch(
-                            "Botão de travar na tela",
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                "Abra o vídeo e toque no botão de acessibilidade para travar. Vamos abrir as " +
-                                    "Configurações: toque em BabyLock e ligue ou desligue o atalho."
-                            } else {
-                                "Botão de acessibilidade do Android: abra o vídeo e toque nele para travar. " +
-                                    "Desligue para o uso normal do celular."
-                            },
+                            stringResource(R.string.setting_a11y_button),
+                            stringResource(
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) R.string.setting_a11y_button_hint
+                                else R.string.setting_a11y_button_hint_old,
+                            ),
                             accessibilityButton,
                         ) {
                             accessibilityButton = it; Prefs.accessibilityButton = it
@@ -272,12 +275,17 @@ fun HomeScreen() {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) openAccessibilitySettings(context)
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        SettingSwitch("Mostrar cadeado no canto", "Lembra onde segurar para destravar", showCornerHint) {
+                        SettingSwitch(stringResource(R.string.setting_corner_hint), stringResource(R.string.setting_corner_hint_hint), showCornerHint) {
                             showCornerHint = it; Prefs.showCornerHint = it
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            Text("Segurar o canto por $holdSeconds s", style = MaterialTheme.typography.bodyLarge)
+                            Text(pluralStringResource(R.plurals.setting_hold, holdSeconds, holdSeconds), style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                stringResource(R.string.setting_hold_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                             Slider(
                                 value = holdSeconds.toFloat(),
                                 onValueChange = {
@@ -298,15 +306,15 @@ fun HomeScreen() {
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Column(Modifier.weight(1f)) {
-                                Text("PIN do BabyLock", style = MaterialTheme.typography.bodyLarge)
+                                Text(stringResource(R.string.setting_pin), style = MaterialTheme.typography.bodyLarge)
                                 Text(
-                                    if (hasPin) "Definido" else "Sem PIN: usa biometria ou uma conta de multiplicar",
+                                    stringResource(if (hasPin) R.string.setting_pin_on else R.string.setting_pin_off),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                             TextButton(onClick = { showPinDialog = true }, modifier = Modifier.testTag("pin_button")) {
-                                Text(if (hasPin) "Alterar" else "Definir")
+                                Text(stringResource(if (hasPin) R.string.action_change else R.string.action_set))
                             }
                         }
                     }
@@ -320,12 +328,20 @@ fun HomeScreen() {
                     )
                 }
 
-                DeviceTips.current()?.let { tip ->
-                    SectionTitle("Dicas para ${tip.brand}")
+                DeviceTips.current(context)?.let { tip ->
+                    SectionTitle(stringResource(R.string.tips_title, tip.brand))
                     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceVariant) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             tip.steps.forEachIndexed { i, s -> Text("${i + 1}. $s", style = MaterialTheme.typography.bodyMedium) }
                         }
+                    }
+                }
+                SectionTitle(stringResource(R.string.help_title))
+                Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
+                    Column(Modifier.padding(vertical = 4.dp)) {
+                        HelpRow(stringResource(R.string.help_tour), onShowTour, Modifier.testTag("help_tour"))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        HelpRow(stringResource(R.string.help_privacy), { showPrivacy = true }, Modifier.testTag("help_privacy"))
                     }
                 }
                 Spacer(Modifier.height(24.dp))
@@ -350,25 +366,41 @@ fun HomeScreen() {
         AlertDialog(
             onDismissRequest = { showDisclosure = false },
             icon = { Icon(Icons.Outlined.Shield, null, tint = MaterialTheme.colorScheme.primary) },
-            title = { Text("Uso da acessibilidade") },
+            title = { Text(stringResource(R.string.disclosure_title)) },
             text = {
-                Text(
-                    "O BabyLock usa o serviço de acessibilidade do Android apenas para bloquear toques, gestos e " +
-                        "botões de volume enquanto o bloqueio está ativo e para fechar a barra de notificações.\n\n" +
-                        "Para isso ele só confere se a barra de notificações está aberta. Ele não lê textos nem o " +
-                        "conteúdo de outros apps, não coleta dados pessoais e não envia nada para a internet.",
-                )
+                Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(stringResource(R.string.disclosure_body))
+                    Text(
+                        stringResource(R.string.disclosure_next_step),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
             },
             confirmButton = {
                 Button(modifier = Modifier.testTag("disclosure_accept"), onClick = {
                     Prefs.disclosureAccepted = true
                     showDisclosure = false
                     openAccessibilitySettings(context)
-                }) { Text("Aceitar e ativar") }
+                }) { Text(stringResource(R.string.disclosure_accept)) }
             },
             dismissButton = {
                 TextButton(onClick = { showDisclosure = false }, modifier = Modifier.testTag("disclosure_dismiss")) {
-                    Text("Agora não")
+                    Text(stringResource(R.string.disclosure_dismiss))
+                }
+            },
+        )
+    }
+
+    if (showPrivacy) {
+        AlertDialog(
+            onDismissRequest = { showPrivacy = false },
+            icon = { Icon(Icons.Outlined.Shield, null, tint = MaterialTheme.colorScheme.primary) },
+            title = { Text(stringResource(R.string.privacy_title)) },
+            text = { Text(stringResource(R.string.privacy_body), Modifier.verticalScroll(rememberScrollState())) },
+            confirmButton = {
+                TextButton(onClick = { showPrivacy = false }, modifier = Modifier.testTag("privacy_ok")) {
+                    Text(stringResource(R.string.action_ok))
                 }
             },
         )
@@ -394,9 +426,9 @@ private fun HeroCard(
     modifier: Modifier = Modifier,
 ) {
     val (title, sub) = when {
-        accessibilityOn -> "Proteção completa" to "Toques, barra de notificações e volume bloqueados."
-        overlayOn -> "Proteção básica" to "Toques bloqueados. Ligue a acessibilidade para travar também a barra e o volume."
-        else -> "Falta uma permissão" to "Ligue a acessibilidade (recomendado) ou a sobreposição de tela."
+        accessibilityOn -> stringResource(R.string.status_full_title) to stringResource(R.string.status_full_body)
+        overlayOn -> stringResource(R.string.status_basic_title) to stringResource(R.string.status_basic_body)
+        else -> stringResource(R.string.status_missing_title) to stringResource(R.string.status_missing_body)
     }
     val dot by animateColorAsState(
         when {
@@ -432,7 +464,7 @@ private fun HeroCard(
         LockOrb(enabled = enabled, onClick = onLock)
 
         Text(
-            "Toque, abra o vídeo e entregue o celular.",
+            stringResource(R.string.hero_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = NightMuted,
             textAlign = TextAlign.Center,
@@ -504,8 +536,12 @@ private fun LockOrb(enabled: Boolean, onClick: () -> Unit) {
         ) {
             LockGlyph(Modifier.size(width = 36.dp, height = 42.dp), body = ink, hole = face)
             Spacer(Modifier.height(8.dp))
-            Text("Travar", style = MaterialTheme.typography.titleLarge, color = ink)
-            Text("em $OPEN_AND_LOCK_SECONDS segundos", style = MaterialTheme.typography.bodySmall, color = ink.copy(alpha = 0.7f))
+            Text(stringResource(R.string.lock_button), style = MaterialTheme.typography.titleLarge, color = ink)
+            Text(
+                pluralStringResource(R.plurals.lock_button_delay, OPEN_AND_LOCK_SECONDS, OPEN_AND_LOCK_SECONDS),
+                style = MaterialTheme.typography.bodySmall,
+                color = ink.copy(alpha = 0.7f),
+            )
         }
     }
 }
@@ -547,7 +583,7 @@ private fun PermissionCard(title: String, badge: String?, body: String, onClick:
             Text(body, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.width(8.dp))
-        Text("Ligar", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+        Text(stringResource(R.string.permission_action), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -599,12 +635,15 @@ private fun UnlockHowTo(holdSeconds: Int, modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.width(14.dp))
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("Como destravar", style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
+            Text(stringResource(R.string.howto_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
             Text(
-                "Segure o canto superior direito da tela com um dedo por $holdSeconds segundos. " +
-                    "Depois confirme com digital, rosto, senha do celular ou PIN. " +
-                    "Se algo der errado, reiniciar o celular sempre desfaz o bloqueio.",
+                pluralStringResource(R.plurals.howto_body, holdSeconds, holdSeconds),
                 style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                stringResource(R.string.howto_safety),
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -630,9 +669,9 @@ private fun CountdownOverlay(seconds: Int, total: Int, onCancel: () -> Unit) {
             .padding(horizontal = 28.dp, vertical = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("TRAVANDO", style = MaterialTheme.typography.labelMedium, color = Lilac)
+        Text(stringResource(R.string.countdown_label), style = MaterialTheme.typography.labelMedium, color = Lilac)
         Spacer(Modifier.height(10.dp))
-        Text("Abra o vídeo agora", style = MaterialTheme.typography.headlineMedium, color = Cream, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.countdown_title), style = MaterialTheme.typography.headlineMedium, color = Cream, textAlign = TextAlign.Center)
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
             Box(Modifier.size(252.dp), contentAlignment = Alignment.Center) {
                 ProgressRing(ring.value, Modifier.size(252.dp), color = Lilac, track = Color(0xFF232B52))
@@ -649,7 +688,7 @@ private fun CountdownOverlay(seconds: Int, total: Int, onCancel: () -> Unit) {
             }
         }
         Text(
-            "Travando em $seconds s… abra o vídeo",
+            pluralStringResource(R.plurals.countdown_hint, seconds, seconds),
             style = MaterialTheme.typography.bodyMedium,
             color = NightMuted,
             textAlign = TextAlign.Center,
@@ -659,7 +698,7 @@ private fun CountdownOverlay(seconds: Int, total: Int, onCancel: () -> Unit) {
             onClick = onCancel,
             modifier = Modifier.fillMaxWidth().height(56.dp).testTag("cancel_countdown"),
             border = BorderStroke(2.dp, NightLine),
-        ) { Text("Cancelar", style = MaterialTheme.typography.labelLarge, color = Cream) }
+        ) { Text(stringResource(R.string.action_cancel), style = MaterialTheme.typography.labelLarge, color = Cream) }
     }
 }
 
@@ -702,13 +741,14 @@ private fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -
     val valid = pin.length in 4..6 && pin == confirm
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (hasPin) "Alterar PIN" else "Definir PIN") },
+        title = { Text(stringResource(if (hasPin) R.string.pin_title_change else R.string.pin_title_new)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(R.string.pin_hint), style = MaterialTheme.typography.bodyMedium)
                 OutlinedTextField(
                     value = pin,
                     onValueChange = { pin = it.filter(Char::isDigit).take(6) },
-                    label = { Text("PIN (4 a 6 dígitos)") },
+                    label = { Text(stringResource(R.string.pin_field)) },
                     modifier = Modifier.testTag("pin_new"),
                     singleLine = true,
                     shape = MaterialTheme.shapes.medium,
@@ -718,7 +758,7 @@ private fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -
                 OutlinedTextField(
                     value = confirm,
                     onValueChange = { confirm = it.filter(Char::isDigit).take(6) },
-                    label = { Text("Repita o PIN") },
+                    label = { Text(stringResource(R.string.pin_repeat)) },
                     modifier = Modifier.testTag("pin_confirm"),
                     singleLine = true,
                     shape = MaterialTheme.shapes.medium,
@@ -728,15 +768,29 @@ private fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -
             }
         },
         confirmButton = {
-            Button(onClick = { onSave(pin) }, enabled = valid, modifier = Modifier.testTag("pin_save")) { Text("Salvar") }
+            Button(onClick = { onSave(pin) }, enabled = valid, modifier = Modifier.testTag("pin_save")) { Text(stringResource(R.string.action_save)) }
         },
         dismissButton = {
             Row {
-                if (hasPin) TextButton(onClick = onRemove) { Text("Remover") }
-                TextButton(onClick = onDismiss) { Text("Cancelar") }
+                if (hasPin) TextButton(onClick = onRemove) { Text(stringResource(R.string.action_remove)) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
             }
         },
     )
+}
+
+@Composable
+private fun HelpRow(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
 }
 
 /**
@@ -761,11 +815,11 @@ private fun ShadeHelpCard(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .clickable(role = Role.Button, onClickLabel = if (expanded) "Fechar" else "Abrir") { expanded = !expanded },
+                    .clickable(role = Role.Button, onClickLabel = stringResource(if (expanded) R.string.action_collapse else R.string.action_expand)) { expanded = !expanded },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    if (highlight) "A barra de notificações abriu durante o bloqueio" else "A barra de notificações ainda abre?",
+                    stringResource(if (highlight) R.string.shade_help_alert else R.string.shade_help_title),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.weight(1f).semantics { heading() },
                 )
@@ -773,20 +827,19 @@ private fun ShadeHelpCard(
             }
             if (expanded) {
                 Text(
-                    "Em alguns celulares (como Xiaomi, Redmi e POCO) o sistema deixa a barra descer mesmo com o " +
-                        "BabyLock. Ela não recebe toques e o BabyLock tenta fechá-la, mas dá para barrar de vez:",
+                    stringResource(R.string.shade_help_body),
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                DeviceTips.pinSteps.forEachIndexed { i, step ->
+                DeviceTips.pinSteps(LocalContext.current).forEachIndexed { i, step ->
                     Text("${i + 1}. $step", style = MaterialTheme.typography.bodyMedium)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(onClick = onOpenSettings, modifier = Modifier.testTag("shade_help_settings")) {
-                        Text("Abrir Configurações")
+                        Text(stringResource(R.string.shade_help_settings))
                     }
                     if (onDismiss != null) {
                         TextButton(onClick = onDismiss, modifier = Modifier.testTag("shade_help_dismiss")) {
-                            Text("Entendi")
+                            Text(stringResource(R.string.shade_help_dismiss))
                         }
                     }
                 }
@@ -799,8 +852,10 @@ private fun openSettings(context: Context) {
     context.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }
 
+/** Abre as configurações e deixa um lembrete curto do que fazer lá (o Toast aparece por cima delas). */
 private fun openAccessibilitySettings(context: Context) {
     context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    Toast.makeText(context, R.string.guide_accessibility, Toast.LENGTH_LONG).show()
 }
 
 private fun openOverlaySettings(context: Context) {
@@ -808,4 +863,5 @@ private fun openOverlaySettings(context: Context) {
         Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
     )
+    Toast.makeText(context, R.string.guide_overlay, Toast.LENGTH_LONG).show()
 }

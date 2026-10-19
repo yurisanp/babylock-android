@@ -1,5 +1,6 @@
 package app.babylock.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.animateColorAsState
@@ -49,9 +50,11 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import app.babylock.R
 import app.babylock.ui.components.Haptics
 import app.babylock.ui.components.LockGlyph
 import app.babylock.ui.components.pressScale
@@ -65,21 +68,12 @@ import app.babylock.ui.theme.Motion
 import app.babylock.ui.theme.Night
 import app.babylock.ui.theme.NightSky
 
-private data class Page(val title: String, val body: String)
+private data class Page(@param:StringRes val title: Int, @param:StringRes val body: Int)
 
 private val PAGES = listOf(
-    Page(
-        "O vídeo continua.\nOs dedinhos, não.",
-        "Trave a tela com um toque e entregue o celular sem medo de pausar, fechar ou ligar para alguém.",
-    ),
-    Page(
-        "Só você destrava.",
-        "Segure o canto de cima por alguns segundos e confirme com a digital, o rosto ou o seu PIN.",
-    ),
-    Page(
-        "Nada sai do seu celular.",
-        "O BabyLock não lê a tela, não pede conta e funciona sem internet.",
-    ),
+    Page(R.string.onboarding_1_title, R.string.onboarding_1_body),
+    Page(R.string.onboarding_2_title, R.string.onboarding_2_body),
+    Page(R.string.onboarding_3_title, R.string.onboarding_3_body),
 )
 
 /** Três páginas de boas-vindas, mostradas só na primeira vez que o app abre. */
@@ -98,9 +92,9 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 .padding(horizontal = 28.dp, vertical = 16.dp),
         ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("BabyLock", style = MaterialTheme.typography.titleLarge, color = Cream, modifier = Modifier.weight(1f))
+                Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge, color = Cream, modifier = Modifier.weight(1f))
                 TextButton(onClick = onDone, modifier = Modifier.testTag("onboarding_skip")) {
-                    Text("Pular", style = MaterialTheme.typography.labelLarge, color = Lilac)
+                    Text(stringResource(R.string.onboarding_skip), style = MaterialTheme.typography.labelLarge, color = Lilac)
                 }
             }
 
@@ -118,12 +112,12 @@ fun OnboardingScreen(onDone: () -> Unit) {
             ) { i ->
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
-                        PAGES[i].title,
+                        stringResource(PAGES[i].title),
                         style = MaterialTheme.typography.headlineLarge,
                         color = Cream,
                         modifier = Modifier.semantics { heading() },
                     )
-                    Text(PAGES[i].body, style = MaterialTheme.typography.bodyLarge, color = Color(0xFFC3C6DA))
+                    Text(stringResource(PAGES[i].body), style = MaterialTheme.typography.bodyLarge, color = Color(0xFFC3C6DA))
                 }
             }
 
@@ -148,7 +142,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(containerColor = bg, contentColor = if (last) MintDeep else NightSky),
                 ) {
                     AnimatedContent(targetState = last, label = "cta-label") { l ->
-                        Text(if (l) "Começar" else "Próximo", style = MaterialTheme.typography.labelLarge)
+                        Text(stringResource(if (l) R.string.onboarding_start else R.string.onboarding_next), style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }

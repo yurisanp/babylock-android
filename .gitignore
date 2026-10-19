@@ -6,3 +6,9 @@ build/
 .DS_Store
 /captures
 .kotlin/
+
+# Assinatura da Play: nunca versionar
+keystore.properties
+*.jks
+*.keystore
+play-service-account.json

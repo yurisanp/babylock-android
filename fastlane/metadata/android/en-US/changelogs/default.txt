@@ -1,0 +1,1 @@
+First version of BabyLock: lock the screen with one tap while your child watches, and unlock with your fingerprint, face or PIN.

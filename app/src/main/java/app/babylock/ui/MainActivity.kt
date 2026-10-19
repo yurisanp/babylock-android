@@ -18,11 +18,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import app.babylock.settings.Prefs
 import app.babylock.ui.theme.BabyLockTheme
 import app.babylock.ui.theme.Motion
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,9 +51,14 @@ class MainActivity : ComponentActivity() {
                             fadeOut(tween(240))
                     },
                     label = "root",
+                    // Expõe as testTags como resource-id para os testes no emulador (UiAutomator).
+                    modifier = Modifier.semantics { testTagsAsResourceId = true },
                 ) { done ->
                     if (done) {
-                        HomeScreen()
+                        HomeScreen(onShowTour = {
+                            Prefs.onboardingDone = false
+                            onboarded = false
+                        })
                     } else {
                         OnboardingScreen(onDone = {
                             Prefs.onboardingDone = true

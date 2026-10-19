@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import app.babylock.R
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
 import app.babylock.ui.theme.BabyLockTheme
@@ -92,8 +93,8 @@ class UnlockActivity : FragmentActivity() {
     private fun showPrompt() {
         authInProgress = true
         val info = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Desbloquear o BabyLock")
-            .setSubtitle("Confirme que é um adulto")
+            .setTitle(getString(R.string.unlock_prompt_title))
+            .setSubtitle(getString(R.string.unlock_prompt_subtitle))
             .setAllowedAuthenticators(authenticators)
             .build()
         prompt.authenticate(info)
@@ -102,8 +103,8 @@ class UnlockActivity : FragmentActivity() {
     private fun checkAnswer(answer: String) {
         pinError = when (val r = gate.submit(answer)) {
             UnlockGate.Result.Ok -> { success(); null }
-            UnlockGate.Result.Wrong -> "Não confere. Tente de novo."
-            is UnlockGate.Result.LockedOut -> "Muitas tentativas. Aguarde ${r.secondsLeft} s."
+            UnlockGate.Result.Wrong -> getString(R.string.unlock_wrong)
+            is UnlockGate.Result.LockedOut -> r.secondsLeft.toInt().let { n -> resources.getQuantityString(R.plurals.unlock_locked_out, n, n) }
         }
     }
 
