@@ -3,7 +3,7 @@
     <string name="app_name">BabyLock</string>
     <string name="tile_label">BabyLock</string>
     <string name="accessibility_service_label">BabyLock – bloqueio de toque</string>
-    <string name="accessibility_service_description">O BabyLock usa o serviço de acessibilidade apenas para bloquear toques, gestos e botões de volume enquanto o bloqueio está ativo e para fechar a barra de notificações. Ele não lê o conteúdo da tela e não envia nenhum dado.</string>
+    <string name="accessibility_service_description">O BabyLock usa o serviço de acessibilidade apenas para bloquear toques, gestos e botões de volume enquanto o bloqueio está ativo e para fechar a barra de notificações (ele só confere se a barra está aberta). Ele não lê textos nem o conteúdo de outros apps e não envia nenhum dado.</string>
     <string name="notification_channel">Bloqueio ativo</string>
     <string name="notification_text">Toques bloqueados. Segure o canto superior direito por 3 segundos para desbloquear.</string>
 </resources>

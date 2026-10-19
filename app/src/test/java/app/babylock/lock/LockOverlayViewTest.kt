@@ -112,4 +112,30 @@ class LockOverlayViewTest {
         advance(5_000)
         assertThat(unlockRequests).isEqualTo(0)
     }
+
+    @Test
+    fun `cadeado do canto aparece por padrao e pode ser desligado`() {
+        assertThat(view.cornerHint.visibility).isEqualTo(View.VISIBLE)
+        assertThat(view.cornerHint.contentDescription.toString()).contains("destravar")
+        val semDica = LockOverlayView(context, holdMillis = 3_000, showCornerHint = false) { }
+        assertThat(semDica.cornerHint.visibility).isEqualTo(View.GONE)
+    }
+
+    @Test
+    fun `cadeado fica dentro da area do canto`() {
+        val hint = view.cornerHint
+        val cornerPx = 96 * context.resources.displayMetrics.density
+        assertThat(hint.left.toFloat()).isAtLeast(w - cornerPx)
+        assertThat(hint.bottom.toFloat()).isAtMost(cornerPx)
+    }
+
+    @Test
+    fun `segurar em cima do cadeado tambem destrava`() {
+        val hint = view.cornerHint
+        val x = (hint.left + hint.right) / 2f
+        val y = (hint.top + hint.bottom) / 2f
+        view.dispatchTouchEvent(event(MotionEvent.ACTION_DOWN, x, y))
+        advance(3_100)
+        assertThat(unlockRequests).isEqualTo(1)
+    }
 }
