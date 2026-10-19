@@ -169,4 +169,8 @@
     <string name="setting_corner_hint">Mostrar candado en la esquina</string>
     <string name="setting_corner_hint_hint">Recuerda dónde mantener presionado para desbloquear</string>
     <string name="corner_hint_description">Mantén presionado aquí para desbloquear</string>
+    <string name="pro_title">Sin anuncios para siempre</string>
+    <string name="pro_body">Paga una sola vez. Sin mensualidad. Sirve también en tu próximo celular.</string>
+    <string name="pro_buy">Quitar anuncios por %1$s</string>
+    <string name="pro_owned">BabyLock Pro activo. Sin anuncios. ¡Gracias!</string>
 </resources>

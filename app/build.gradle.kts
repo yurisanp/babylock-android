@@ -138,6 +138,7 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.play.services.ads)
     implementation(libs.ump)
+    implementation(libs.billing)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 

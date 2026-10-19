@@ -3,6 +3,7 @@ package app.babylock.ads
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import app.babylock.billing.Pro
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -42,7 +43,8 @@ object Ads {
 
     /** Chamado quando a tela inicial aparece (depois das boas-vindas). Seguro de chamar várias vezes. */
     fun start(activity: Activity) {
-        if (suppressed || !started.compareAndSet(false, true)) return
+        // Quem comprou o Pro não vê anúncio nem o pedido de consentimento.
+        if (suppressed || Pro.owned.value || !started.compareAndSet(false, true)) return
         val consent = UserMessagingPlatform.getConsentInformation(activity)
         consent.requestConsentInfoUpdate(
             activity,

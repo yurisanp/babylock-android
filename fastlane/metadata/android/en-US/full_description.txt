@@ -25,6 +25,7 @@ YOUR PRIVACY
 • Does not read your text or record the screen
 • Locks even without internet
 • Free, with ads only on the adult screen. Never during the video.
+• BabyLock Pro: pay once and remove ads forever. No subscription.
 
 ABOUT THE ACCESSIBILITY PERMISSION
 BabyLock uses the Android accessibility service only to lock touches, gestures and volume while the lock is on, and to close the notification shade. It only checks whether the shade is open, never reads text or other apps, and nothing it sees leaves your phone. If you prefer not to turn on accessibility, a simpler mode locks touches only.

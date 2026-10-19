@@ -169,4 +169,8 @@
     <string name="setting_corner_hint">Mostrar cadeado no canto</string>
     <string name="setting_corner_hint_hint">Lembra onde segurar para destravar</string>
     <string name="corner_hint_description">Segure aqui para destravar</string>
+    <string name="pro_title">Sem anúncios para sempre</string>
+    <string name="pro_body">Pague uma vez só. Sem mensalidade. Vale também no próximo celular.</string>
+    <string name="pro_buy">Tirar anúncios por %1$s</string>
+    <string name="pro_owned">BabyLock Pro ativo. Sem anúncios. Obrigado!</string>
 </resources>

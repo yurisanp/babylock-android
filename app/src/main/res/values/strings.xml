@@ -167,4 +167,8 @@
     <string name="setting_corner_hint">Show lock in the corner</string>
     <string name="setting_corner_hint_hint">Reminds you where to hold to unlock</string>
     <string name="corner_hint_description">Hold here to unlock</string>
+    <string name="pro_title">No ads, forever</string>
+    <string name="pro_body">Pay only once. No monthly fee. Works on your next phone too.</string>
+    <string name="pro_buy">Remove ads for %1$s</string>
+    <string name="pro_owned">BabyLock Pro is on. No ads. Thank you!</string>
 </resources>

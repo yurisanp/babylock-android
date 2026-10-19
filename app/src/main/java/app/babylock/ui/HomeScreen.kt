@@ -96,6 +96,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.babylock.R
 import app.babylock.ads.AdBanner
 import app.babylock.ads.Ads
+import app.babylock.billing.Pro
 import app.babylock.lock.LockAccessibilityService
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
@@ -148,6 +149,8 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
     var hasPin by remember { mutableStateOf(Prefs.hasPin) }
     val countdown by LockController.countdown.collectAsStateWithLifecycle()
     val privacyOptionsRequired by Ads.privacyOptionsRequired.collectAsStateWithLifecycle()
+    val pro by Pro.owned.collectAsStateWithLifecycle()
+    val proPrice by Pro.price.collectAsStateWithLifecycle()
 
     // Reavalia as permissões sempre que o adulto volta das Configurações.
     LifecycleResumeEffect(Unit) {
@@ -336,6 +339,12 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
                             }
                         }
                     }
+                    // Só aparece quando a Play já respondeu com o preço, ou para agradecer quem comprou.
+                    val price = proPrice
+                    if (pro || price != null) {
+                        ProCard(owned = pro, price = price, onBuy = { (context as? Activity)?.let { Pro.buy(it) } })
+                    }
+
                     SectionTitle(stringResource(R.string.help_title))
                     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
                         Column(Modifier.padding(vertical = 4.dp)) {
@@ -875,4 +884,26 @@ private fun openOverlaySettings(context: Context) {
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
     )
     Toast.makeText(context, R.string.guide_overlay, Toast.LENGTH_LONG).show()
+}
+
+/** Compra única que tira os anúncios. Depois de comprado, só agradece. */
+@Composable
+private fun ProCard(owned: Boolean, price: String?, onBuy: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.testTag("pro_card")) {
+        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (owned) {
+                Text(stringResource(R.string.pro_owned), style = MaterialTheme.typography.titleMedium)
+            } else {
+                Text(stringResource(R.string.pro_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.pro_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Button(onClick = onBuy, modifier = Modifier.fillMaxWidth().testTag("pro_buy")) {
+                    Text(stringResource(R.string.pro_buy, price.orEmpty()))
+                }
+            }
+        }
+    }
 }

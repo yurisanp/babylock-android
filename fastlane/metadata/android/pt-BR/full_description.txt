@@ -25,6 +25,7 @@ SUA PRIVACIDADE
 • Não lê seus textos nem grava a tela
 • Trava mesmo sem internet
 • Grátis, com anúncios só na tela do adulto. Nunca durante o vídeo.
+• BabyLock Pro: pague uma vez e fique sem anúncios para sempre. Sem mensalidade.
 
 SOBRE A PERMISSÃO DE ACESSIBILIDADE
 O BabyLock usa o serviço de acessibilidade do Android só para travar toques, gestos e volume enquanto o bloqueio está ligado e para fechar a barra de notificações. Ele só confere se a barra está aberta, nunca lê textos nem outros apps, e nada do que ele vê sai do celular. Se preferir não ligar a acessibilidade, existe um modo mais simples que trava só os toques.

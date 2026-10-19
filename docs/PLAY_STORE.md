@@ -16,11 +16,13 @@ Tudo o que dá para preparar sem a conta de desenvolvedor já está no repositó
 | Divulgação da acessibilidade dentro do app | Início > Acessibilidade > aviso antes das configurações |
 | App em 3 idiomas, com escolha de idioma no Android 13+ | `app/src/main/res/values*/strings.xml` |
 | Anúncios AdMob (banner não personalizado só na tela inicial, consentimento UMP) | `app/src/main/java/app/babylock/ads/` |
+| BabyLock Pro: compra única que tira os anúncios (Play Billing) | `app/src/main/java/app/babylock/billing/Pro.kt` |
+| Contato na política: yurisantp@gmail.com | `docs/privacidade/index.html` |
 
 ## O que precisa das suas mãos
 
 1. **Conta de desenvolvedor** (US$ 25, uma vez): https://play.google.com/console/signup. Escolha conta pessoal e faça a verificação de identidade.
-2. **Contato na política de privacidade**: troque `[E-MAIL DE CONTATO]` (e as versões em inglês e espanhol) em `docs/privacidade/index.html` por um e-mail público do app.
+2. **Perfil de pagamentos**: no Play Console, Configuração > Perfil de pagamentos. Sem ele não dá para vender o Pro (o app continua gratuito).
 3. **Ligar o GitHub Pages**: Settings > Pages > Source: **GitHub Actions**. Depois rode o workflow "Site (política de privacidade)". O endereço fica `https://yurisanp.github.io/babylock-android/privacidade/`.
 4. **Chave de envio (keystore)**: no seu computador, com Java instalado:
    ```bash
@@ -31,12 +33,13 @@ Tudo o que dá para preparar sem a conta de desenvolvedor já está no repositó
    Guarde o `.jks` e as senhas num lugar seguro (sem eles não dá para atualizar o app). Em GitHub > Settings > Secrets and variables > Actions, crie:
    `BABYLOCK_KEYSTORE_BASE64` (conteúdo do `.b64`), `BABYLOCK_KEYSTORE_PASSWORD`, `BABYLOCK_KEY_ALIAS` (`babylock-upload`), `BABYLOCK_KEY_PASSWORD`.
 5. **Gerar o primeiro pacote**: GitHub > Actions > "Versão para a Play" > Run workflow. Baixe o artefato `babylock-play-N` (tem o `app-release.aab`).
-6. **Criar o app no Play Console**: nome "BabyLock", idioma padrão **Português (Brasil)**, app gratuito. Aceite a **Assinatura de apps do Google Play**.
+6. **Criar o app no Play Console**: nome "BabyLock", idioma padrão **Português (Brasil)**, app gratuito. Aceite a **Assinatura de apps do Google Play**. E-mail de contato da ficha: `yurisantp@gmail.com`.
 7. **Primeiro envio manual**: Teste > Teste interno > Criar versão > envie o `.aab`. (A Play não deixa a API enviar antes do primeiro envio manual.)
 8. **Preencher a ficha e os formulários** com as respostas abaixo.
 9. **Teste fechado obrigatório**: contas pessoais novas precisam de **12 testadores por 14 dias seguidos** num teste fechado antes de pedir produção. Chame amigas e familiares com Android (é só um e-mail do Google de cada).
 10. **AdMob**: crie a conta em https://admob.google.com, adicione o app (depois que ele estiver na Play), crie um bloco **Banner** e salve os dois IDs nos segredos `ADMOB_APP_ID` (`ca-app-pub-…~…`) e `ADMOB_BANNER_ID` (`ca-app-pub-…/…`). Sem eles o release usa os IDs de teste e não ganha nada. Detalhes no roteiro da loja.
-11. **(Opcional) Envio automático**: no Google Cloud, crie uma conta de serviço, gere a chave JSON, convide o e-mail dela no Play Console (Usuários e permissões, permissão de "Lançar em faixas de teste") e salve o JSON no segredo `PLAY_SERVICE_ACCOUNT_JSON`. A partir daí cada tag `v*` sobe sozinha para o teste interno.
+11. **BabyLock Pro**: depois do primeiro envio (o pacote já tem a biblioteca de pagamentos), vá em Monetizar > Produtos > **Produtos no app** > Criar produto. ID do produto: **`babylock_pro`** (exatamente assim, não dá para mudar depois). Nome: "BabyLock Pro, sem anúncios". Descrição: "Pague uma vez e tire os anúncios para sempre." Preço: **R$ 14,99** (deixe a Play converter para os outros países). Ative o produto. Para testar sem pagar, adicione seu e-mail em Configuração > Teste de licença: a compra aparece como "Pedido de teste".
+12. **(Opcional) Envio automático**: no Google Cloud, crie uma conta de serviço, gere a chave JSON, convide o e-mail dela no Play Console (Usuários e permissões, permissão de "Lançar em faixas de teste") e salve o JSON no segredo `PLAY_SERVICE_ACCOUNT_JSON`. A partir daí cada tag `v*` sobe sozinha para o teste interno.
 
 ## Respostas para os formulários do Play Console
 
@@ -50,7 +53,8 @@ Tudo o que dá para preparar sem a conta de desenvolvedor já está no repositó
 ### Público-alvo e conteúdo
 - Faixa etária do público-alvo: **18 anos ou mais**. O app é usado por mães e pais; não marque faixas infantis (isso levaria ao programa Famílias, que não permite o uso de acessibilidade).
 - O app pode atrair crianças sem querer? **Não**: as telas e a loja falam com o adulto.
-- Anúncios: **Sim, o app contém anúncios** (AdMob, só na tela inicial do adulto).
+- Anúncios: **Sim, o app contém anúncios** (AdMob, só na tela inicial do adulto; somem com o BabyLock Pro).
+- Compras no app: **Sim** (BabyLock Pro, compra única de R$ 14,99).
 - Classificação de conteúdo (IARC): categoria **Utilitário/Ferramenta**, responda "Não" para violência, sexo, drogas, apostas, compartilhamento de localização e interação entre usuários. Resultado esperado: Livre.
 - Acesso ao app: **todas as funções estão disponíveis sem login**.
 - App de notícias / saúde / governo / financeiro: **Não**.
@@ -66,6 +70,7 @@ Os dados abaixo são coletados pelo SDK do Google AdMob (o app em si não envia 
   - Informações e desempenho do app: **Registros de falhas** e **Diagnóstico**.
   - Identificadores do dispositivo ou outros: **ID do dispositivo ou outros IDs** (identificador de publicidade).
 - O app não coleta nome, e-mail, contatos, fotos, arquivos, mensagens nem conteúdo da tela.
+- Compras: o pagamento do Pro é feito pela Google Play. Informações financeiras **não** são coletadas pelo app (a Play cuida disso e ela não entra no formulário).
 
 ### Declaração de permissões
 **Serviço de acessibilidade (AccessibilityService)**
