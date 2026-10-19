@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Igual a xml/accessibility_service_config.xml, mais flagRequestAccessibilityButton.
+  A partir do Android 11, se o adulto puser o BabyLock no atalho de acessibilidade do sistema (botão
+  flutuante, canto, teclas de volume), o toque só chega ao app se o serviço pedir o botão. Sem esse pedido
+  o sistema usa o atalho para LIGAR/DESLIGAR o serviço. O pedido tem que estar aqui: desde o Android 12 o
+  sistema ignora esse flag quando o app tenta ligá-lo em tempo de execução (setServiceInfo).
+  Até o Android 10 o pedido faria aparecer um botão do sistema na barra de navegação, por isso fica só no v30.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowsChanged|typeWindowContentChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagRequestFilterKeyEvents|flagRetrieveInteractiveWindows|flagRequestAccessibilityButton"
+    android:canRequestFilterKeyEvents="true"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_service_description"
+    android:isAccessibilityTool="false"
+    android:notificationTimeout="50" />
