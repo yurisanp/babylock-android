@@ -138,7 +138,7 @@ class HomeScreenTest {
         Prefs.holdSeconds = 4
         show()
         compose.onNodeWithText("Segure o canto de cima, à direita", substring = true).assertExists()
-        compose.onNodeWithText("por 4 segundos", substring = true).assertExists()
+        compose.onNodeWithText("com um dedo por 4 segundos", substring = true).assertExists()
         compose.onNodeWithText("Segurar o canto por 4 segundos").assertExists()
     }
 
