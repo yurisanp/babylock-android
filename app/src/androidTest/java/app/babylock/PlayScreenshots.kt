@@ -1,8 +1,12 @@
 package app.babylock
 
+import android.app.LocaleManager
 import android.os.Build
+import android.os.LocaleList
 import android.os.SystemClock
+import androidx.annotation.RequiresApi
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import androidx.test.filters.LargeTest
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Until
@@ -19,6 +23,8 @@ import org.junit.runner.RunWith
  * De quebra é mais um teste de ponta a ponta: cada tela precisa abrir em cada idioma.
  */
 @LargeTest
+@SdkSuppress(minSdkVersion = 33)
+@RequiresApi(33)
 @RunWith(AndroidJUnit4::class)
 class PlayScreenshots : EndToEndBase() {
 
@@ -26,7 +32,7 @@ class PlayScreenshots : EndToEndBase() {
 
     @Before
     fun preparar() {
-        // Idioma por app (cmd locale) só existe a partir do Android 13.
+        // Idioma por app só existe a partir do Android 13.
         assumeTrue(Build.VERSION.SDK_INT >= 33)
         prepareDevice()
         enableAccessibilityService()
@@ -46,15 +52,14 @@ class PlayScreenshots : EndToEndBase() {
     fun depois() {
         if (Build.VERSION.SDK_INT >= 33) {
             device.executeShellCommand("am broadcast -a com.android.systemui.demo -e command exit")
-            device.executeShellCommand("cmd locale set-app-locales ${context.packageName} --locales en-US")
+            setAppLocale("")
         }
     }
 
     @Test
     fun capturasEmTresIdiomas() {
         listOf("pt-BR", "en-US", "es-419").forEach { locale ->
-            device.executeShellCommand("cmd locale set-app-locales ${context.packageName} --locales $locale")
-            SystemClock.sleep(1_000)
+            setAppLocale(locale)
             shootLocale(locale)
         }
     }
@@ -71,12 +76,13 @@ class PlayScreenshots : EndToEndBase() {
         // 2. Início com a proteção completa
         Prefs.onboardingDone = true
         openApp()
+        SystemClock.sleep(2_000)
         byTag("lock_button")
-        SystemClock.sleep(800)
         shot(locale, "2-inicio")
 
         // 3. Contagem para abrir o vídeo
         byTag("lock_button").click()
+        if (!device.wait(Until.hasObject(By.res("cancel_countdown")), 3_000)) byTag("lock_button").click()
         byTag("cancel_countdown")
         SystemClock.sleep(300)
         shot(locale, "3-contagem")
@@ -91,6 +97,16 @@ class PlayScreenshots : EndToEndBase() {
         shot(locale, "4-desbloqueio")
         byTag("unlock_cancel").click()
         device.wait(Until.gone(By.res("unlock_cancel")), 3_000)
+    }
+
+    /** Idioma só do app (o mesmo que Configurações > Apps > BabyLock > Idioma). Vazio volta ao do sistema. */
+    private fun setAppLocale(tag: String) {
+        val manager = context.getSystemService(LocaleManager::class.java)
+        instrumentation.runOnMainSync { manager.applicationLocales = LocaleList.forLanguageTags(tag) }
+        SystemClock.sleep(1_500)
+        check(tag.isEmpty() || manager.applicationLocales.toLanguageTags() == tag) {
+            "O idioma do app não mudou para $tag (está ${manager.applicationLocales.toLanguageTags()})"
+        }
     }
 
     private fun shot(locale: String, name: String) {
