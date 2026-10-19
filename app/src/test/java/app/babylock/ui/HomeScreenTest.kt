@@ -157,7 +157,7 @@ class HomeScreenTest {
         assertThat(tours).isEqualTo(1)
         compose.onNodeWithTag("help_privacy").performScrollTo().performClick()
         compose.onNodeWithText("Sua privacidade").assertIsDisplayed()
-        compose.onNodeWithText("não tem acesso à internet", substring = true).assertExists()
+        compose.onNodeWithText("nunca durante o vídeo", substring = true).assertExists()
         compose.onNodeWithTag("privacy_ok").performClick()
         compose.onNodeWithText("Sua privacidade").assertDoesNotExist()
     }

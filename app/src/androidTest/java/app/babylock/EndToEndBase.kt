@@ -10,6 +10,7 @@ import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
+import app.babylock.ads.Ads
 import app.babylock.lock.LockAccessibilityService
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
@@ -34,6 +35,11 @@ abstract class EndToEndBase {
     }
 
     protected val pin = "1357"
+
+    init {
+        // Sem anúncios nos testes: a tela fica igual a cada execução (e as capturas da Play saem limpas).
+        Ads.suppressed = true
+    }
 
     protected fun prepareDevice() {
         device.wakeUp()

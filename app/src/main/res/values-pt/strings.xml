@@ -76,12 +76,13 @@
     <string name="help_title">Ajuda</string>
     <string name="help_tour">Ver como funciona de novo</string>
     <string name="help_privacy">Privacidade</string>
+    <string name="help_ad_choices">Escolhas de anúncios</string>
     <string name="privacy_title">Sua privacidade</string>
-    <string name="privacy_body">• O BabyLock não coleta, não guarda e não envia dados pessoais.\n• Ele não lê textos nem outros apps e não grava a tela.\n• O app não tem acesso à internet.\n• O PIN fica só neste celular, protegido.\n\nA acessibilidade serve só para travar toques, notificações e volume enquanto a criança assiste.</string>
+    <string name="privacy_body">• O BabyLock não pede conta e não guarda seus dados pessoais.\n• Ele não lê textos nem outros apps e não grava a tela.\n• O PIN fica só neste celular, protegido.\n• Os anúncios aparecem só nesta tela, nunca durante o vídeo, e não são personalizados. Eles vêm do Google AdMob.\n\nA acessibilidade serve só para travar toques, notificações e volume enquanto a criança assiste.</string>
 
     <!-- Divulgação da acessibilidade (exigência do Google Play) -->
     <string name="disclosure_title">Uso da acessibilidade</string>
-    <string name="disclosure_body">O BabyLock usa a acessibilidade do Android só para:\n• travar toques, gestos e volume enquanto o bloqueio está ligado\n• fechar a barra de notificações\n\nEle só confere se a barra de notificações está aberta. Não lê textos nem outros apps, não coleta dados pessoais e não envia nada para a internet.</string>
+    <string name="disclosure_body">O BabyLock usa a acessibilidade do Android só para:\n• travar toques, gestos e volume enquanto o bloqueio está ligado\n• fechar a barra de notificações\n\nEle só confere se a barra de notificações está aberta. Não lê textos nem outros apps, não coleta dados pessoais e nada do que ele vê sai do celular.</string>
     <string name="disclosure_next_step">No próximo passo, toque em BabyLock e ligue a chave.</string>
     <string name="disclosure_accept">Aceitar e ativar</string>
     <string name="disclosure_dismiss">Agora não</string>

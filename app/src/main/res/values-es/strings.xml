@@ -76,12 +76,13 @@
     <string name="help_title">Ayuda</string>
     <string name="help_tour">Ver cómo funciona otra vez</string>
     <string name="help_privacy">Privacidad</string>
+    <string name="help_ad_choices">Opciones de anuncios</string>
     <string name="privacy_title">Tu privacidad</string>
-    <string name="privacy_body">• BabyLock no recopila, no guarda y no envía datos personales.\n• No lee textos ni otras apps y no graba la pantalla.\n• La app no tiene acceso a internet.\n• Tu PIN queda solo en este celular, protegido.\n\nLa accesibilidad se usa solo para bloquear toques, notificaciones y volumen mientras tu hijo mira.</string>
+    <string name="privacy_body">• BabyLock no pide cuenta y no guarda tus datos personales.\n• No lee textos ni otras apps y no graba la pantalla.\n• Tu PIN queda solo en este celular, protegido.\n• Los anuncios aparecen solo en esta pantalla, nunca durante el video, y no son personalizados. Vienen de Google AdMob.\n\nLa accesibilidad se usa solo para bloquear toques, notificaciones y volumen mientras tu hijo mira.</string>
 
     <!-- Aviso de accesibilidad (exigido por Google Play) -->
     <string name="disclosure_title">Uso de la accesibilidad</string>
-    <string name="disclosure_body">BabyLock usa la accesibilidad de Android solo para:\n• bloquear toques, gestos y volumen mientras el bloqueo está activo\n• cerrar la barra de notificaciones\n\nSolo revisa si la barra de notificaciones está abierta. No lee textos ni otras apps, no recopila datos personales y no envía nada a internet.</string>
+    <string name="disclosure_body">BabyLock usa la accesibilidad de Android solo para:\n• bloquear toques, gestos y volumen mientras el bloqueo está activo\n• cerrar la barra de notificaciones\n\nSolo revisa si la barra de notificaciones está abierta. No lee textos ni otras apps, no recopila datos personales y nada de lo que ve sale del celular.</string>
     <string name="disclosure_next_step">En el siguiente paso, toca BabyLock y activa el interruptor.</string>
     <string name="disclosure_accept">Aceptar y activar</string>
     <string name="disclosure_dismiss">Ahora no</string>

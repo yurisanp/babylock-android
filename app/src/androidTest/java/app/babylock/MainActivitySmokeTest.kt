@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.babylock.ads.Ads
 import app.babylock.ui.MainActivity
 import org.junit.Rule
 import org.junit.Test
@@ -14,6 +15,11 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class MainActivitySmokeTest {
+
+    init {
+        // Sem anúncios nos testes: a tela fica igual a cada execução.
+        Ads.suppressed = true
+    }
 
     @get:Rule
     val compose = createAndroidComposeRule<MainActivity>()
