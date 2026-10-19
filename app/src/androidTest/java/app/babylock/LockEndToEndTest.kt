@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityWindowInfo
@@ -105,31 +106,36 @@ class LockEndToEndTest {
     }
 
     @Test
-    fun botaoDeAcessibilidadeTravaESomeEnquantoTravado() {
+    fun botaoDeAcessibilidadeTravaEIgnoraToqueEnquantoTravado() {
         val service = LockAccessibilityService.instance!!
         val flag = AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON
         fun buttonOn() = (service.serviceInfo.flags and flag) != 0
 
-        // Desligado por padrão: o celular fica como sempre.
-        Prefs.accessibilityButton = false
-        instrumentation.runOnMainSync { service.refreshButton() }
-        assertThat(buttonOn()).isFalse()
-
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // Até o Android 10 o app mostra e esconde o botão. Desligado por padrão.
+            Prefs.accessibilityButton = false
+            instrumentation.runOnMainSync { service.refreshButton() }
+            assertThat(buttonOn()).isFalse()
+        }
+        // Do Android 11 em diante quem põe o botão na tela é o adulto, nas Configurações.
         Prefs.accessibilityButton = true
         instrumentation.runOnMainSync { service.refreshButton() }
-        assertThat(buttonOn()).isTrue()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isTrue()
 
-        // Tocar no botão trava, e o botão some enquanto travado.
+        // Tocar no botão trava.
         instrumentation.runOnMainSync { service.onButtonClicked() }
         assertThat(LockController.locked.value).isTrue()
-        assertThat(buttonOn()).isFalse()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isFalse()
+
+        // Travado, tocar de novo no botão não muda nada e a tela continua bloqueada.
+        instrumentation.runOnMainSync { service.onButtonClicked() }
+        assertThat(LockController.locked.value).isTrue()
         repeat(3) { device.click(device.displayWidth / 2, device.displayHeight / 2) }
         SystemClock.sleep(500)
         assertThat(TouchProbeActivity.touches.get()).isEqualTo(0)
 
-        // Destravou: o botão volta.
         instrumentation.runOnMainSync { LockController.unlock(context) }
-        assertThat(buttonOn()).isTrue()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isTrue()
     }
 
     @Test

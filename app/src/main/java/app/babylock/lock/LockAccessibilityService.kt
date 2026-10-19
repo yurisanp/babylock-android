@@ -54,9 +54,14 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         updateButton(locked = LockController.locked.value)
     }
 
-    /** O adulto tocou no botão de acessibilidade: trava na hora, por cima do que estiver aberto. */
+    /**
+     * O adulto tocou no botão de acessibilidade: trava na hora, por cima do que estiver aberto.
+     * Travado, o toque é ignorado (a criança não consegue destravar nem desligar nada por ele).
+     */
     internal fun onButtonClicked() {
-        if (Prefs.accessibilityButton && !LockController.locked.value) LockController.lockNow(this)
+        if (LockController.locked.value) return
+        // No Android 11+ o botão só existe se o adulto o colocou nas Configurações: isso já é o "ligar".
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || Prefs.accessibilityButton) LockController.lockNow(this)
     }
 
     /** Liga ou desliga o botão conforme a configuração. Some enquanto travado, para não ficar sobre o vídeo. */
@@ -64,7 +69,10 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     private fun updateButton(locked: Boolean) {
         val info = serviceInfo ?: return
-        val want = Prefs.accessibilityButton && !locked
+        // Até o Android 10 este pedido mostra ou esconde o botão. Do 11 em diante quem mostra o botão é o
+        // adulto, nas Configurações de acessibilidade; o pedido fica sempre ligado para o toque chegar aqui
+        // (sem ele, tocar no botão desligaria o serviço).
+        val want = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) true else Prefs.accessibilityButton && !locked
         val flags = if (want) {
             info.flags or AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON
         } else {

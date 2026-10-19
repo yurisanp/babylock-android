@@ -257,12 +257,19 @@ fun HomeScreen() {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingSwitch(
                             "Botão de travar na tela",
-                            "Botão de acessibilidade do Android: abra o vídeo e toque nele para travar. " +
-                                "Desligue para o uso normal do celular.",
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                "Abra o vídeo e toque no botão de acessibilidade para travar. Vamos abrir as " +
+                                    "Configurações: toque em BabyLock e ligue ou desligue o atalho."
+                            } else {
+                                "Botão de acessibilidade do Android: abra o vídeo e toque nele para travar. " +
+                                    "Desligue para o uso normal do celular."
+                            },
                             accessibilityButton,
                         ) {
                             accessibilityButton = it; Prefs.accessibilityButton = it
                             LockAccessibilityService.instance?.refreshButton()
+                            // No Android 11+ só o próprio adulto põe ou tira o botão, nas Configurações.
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) openAccessibilitySettings(context)
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         SettingSwitch("Mostrar cadeado no canto", "Lembra onde segurar para destravar", showCornerHint) {
