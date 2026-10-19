@@ -60,14 +60,17 @@ class PlayScreenshots : EndToEndBase() {
     }
 
     private fun shootLocale(locale: String) {
-        // 1. Boas-vindas
+        // 1. Boas-vindas. A troca de idioma recria a tela logo depois de abrir:
+        // espera um pouco para a captura não pegar a tela antiga.
         Prefs.onboardingDone = false
         openApp()
+        SystemClock.sleep(2_500)
         byTag("onboarding_next")
         shot(locale, "1-boas-vindas")
-        byTag("onboarding_skip").click()
 
         // 2. Início com a proteção completa
+        Prefs.onboardingDone = true
+        openApp()
         byTag("lock_button")
         SystemClock.sleep(800)
         shot(locale, "2-inicio")

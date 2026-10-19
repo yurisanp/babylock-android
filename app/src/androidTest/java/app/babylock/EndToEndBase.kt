@@ -15,6 +15,7 @@ import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
 import app.babylock.ui.MainActivity
 import org.junit.After
+import java.util.regex.Pattern
 
 /**
  * Ajudantes comuns dos testes de ponta a ponta no emulador.
@@ -119,7 +120,14 @@ abstract class EndToEndBase {
 
     protected fun byTag(tag: String, timeoutMs: Long = 5_000): UiObject2 =
         device.wait(Until.findObject(By.res(tag)), timeoutMs)
-            ?: throw AssertionError("Não achei o elemento \"$tag\" na tela")
+            ?: throw AssertionError("Não achei o elemento \"$tag\" na tela. ${screenSummary()}")
+
+    /** O que está na tela agora, para entender uma falha sem o logcat. */
+    protected fun screenSummary(): String {
+        val ids = device.findObjects(By.res(Pattern.compile(".+"))).mapNotNull { it.resourceName }.distinct().take(25)
+        val texts = device.findObjects(By.text(Pattern.compile(".+"))).mapNotNull { it.text }.distinct().take(10)
+        return "Pacote: ${device.currentPackageName}; ids: $ids; textos: $texts"
+    }
 
     /** Faz o gesto e digita o PIN na tela de confirmação. */
     protected fun unlockWithPin(code: String = pin) {

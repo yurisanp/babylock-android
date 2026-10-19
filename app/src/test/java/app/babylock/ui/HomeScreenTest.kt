@@ -137,7 +137,7 @@ class HomeScreenTest {
     fun `explica como destravar com o tempo configurado`() {
         Prefs.holdSeconds = 4
         show()
-        compose.onNodeWithText("Segure o canto superior direito", substring = true).assertExists()
+        compose.onNodeWithText("Segure o canto de cima, à direita", substring = true).assertExists()
         compose.onNodeWithText("por 4 segundos", substring = true).assertExists()
         compose.onNodeWithText("Segurar o canto por 4 segundos").assertExists()
     }

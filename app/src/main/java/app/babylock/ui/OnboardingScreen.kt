@@ -68,7 +68,7 @@ import app.babylock.ui.theme.Motion
 import app.babylock.ui.theme.Night
 import app.babylock.ui.theme.NightSky
 
-private data class Page(@StringRes val title: Int, @StringRes val body: Int)
+private data class Page(@param:StringRes val title: Int, @param:StringRes val body: Int)
 
 private val PAGES = listOf(
     Page(R.string.onboarding_1_title, R.string.onboarding_1_body),
