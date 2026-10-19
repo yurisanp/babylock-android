@@ -123,7 +123,7 @@ class UnlockActivity : FragmentActivity() {
         if (done) return
         done = true
         main.removeCallbacks(timeout)
-        LockController.relock()
+        LockController.relock(this)
         finish()
     }
 

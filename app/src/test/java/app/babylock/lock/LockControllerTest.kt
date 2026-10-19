@@ -4,12 +4,14 @@ import android.app.Application
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.babylock.R
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowSettings
+import org.robolectric.shadows.ShadowToast
 import java.time.Duration
 
 @RunWith(AndroidJUnit4::class)
@@ -106,7 +108,7 @@ class LockControllerTest {
         LockController.lockNow(app)
         val surface = FakeSurface()
         LockController.activeSurface = surface
-        LockController.relock()
+        LockController.relock(app)
         assertThat(surface.shown).isEqualTo(1)
     }
 
@@ -119,6 +121,32 @@ class LockControllerTest {
         LockController.onSurfaceLost(surface, app)
         assertThat(LockController.locked.value).isFalse()
         assertThat(LockController.activeSurface).isNull()
+    }
+
+    @Test
+    fun `travar e destravar mostram um aviso rapido`() {
+        ShadowSettings.setCanDrawOverlays(true)
+        LockController.lockNow(app)
+        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(app.getString(R.string.notice_locked))
+        LockController.unlock(app)
+        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(app.getString(R.string.notice_unlocked))
+    }
+
+    @Test
+    fun `destravar sem estar travado nao mostra aviso`() {
+        ShadowToast.reset()
+        LockController.unlock(app)
+        assertThat(ShadowToast.shownToastCount()).isEqualTo(0)
+    }
+
+    @Test
+    fun `motor que some sozinho avisa que o bloqueio desligou`() {
+        val surface = FakeSurface()
+        ShadowSettings.setCanDrawOverlays(true)
+        LockController.lockNow(app)
+        LockController.activeSurface = surface
+        LockController.onSurfaceLost(surface, app)
+        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(app.getString(R.string.notice_stopped))
     }
 
     private class FakeSurface : LockSurface {

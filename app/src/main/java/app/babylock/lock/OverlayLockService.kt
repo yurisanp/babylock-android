@@ -76,6 +76,9 @@ class OverlayLockService : Service(), LockSurface {
             .setContentTitle(getString(R.string.app_name))
             .setContentText(getString(R.string.notification_text, Prefs.holdSeconds))
             .setOngoing(true)
+            .setSilent(true)
+            .setShowWhen(false)
+            .setLocalOnly(true)
             .setContentIntent(open)
             .build()
     }

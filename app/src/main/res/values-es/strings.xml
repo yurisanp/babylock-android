@@ -173,4 +173,10 @@
     <string name="pro_body">Paga una sola vez. Sin mensualidad. Sirve también en tu próximo celular.</string>
     <string name="pro_buy">Quitar anuncios por %1$s</string>
     <string name="pro_owned">BabyLock Pro activo. Sin anuncios. ¡Gracias!</string>
+
+    <!-- Avisos rápidos (somem sozinhos, sem nada na barra de notificações) -->
+    <string name="notice_locked">Pantalla bloqueada. Mantén presionada la esquina para desbloquear.</string>
+    <string name="notice_unlocked">Pantalla desbloqueada</string>
+    <string name="notice_relocked">Bloqueada de nuevo</string>
+    <string name="notice_stopped">El bloqueo se desactivó</string>
 </resources>
