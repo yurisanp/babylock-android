@@ -40,8 +40,7 @@ Tudo o que dá para preparar sem a conta de desenvolvedor já está no repositó
 
 ### Ficha da loja
 - Textos: copie de `fastlane/metadata/android/<idioma>/` (título, descrição curta, descrição completa). Adicione as traduções em Inglês (Estados Unidos) e Espanhol (Latinoamérica).
-- Ícone: `docs/marca/icone-512.png`. Gráfico de destaque: `docs/marca/banner-1024x500.png`.
-- Capturas de celular: `docs/marca/tela-1..5.png` (português) e as do artefato `capturas-play` para inglês e espanhol.
+- Ícone, gráfico de destaque e as 5 capturas de cada idioma: `fastlane/metadata/android/<idioma>/images/` (`icon.png`, `featureGraphic.png`, `phoneScreenshots/1..5.png`).
 - Categoria: **Ferramentas** (ou **Criação de filhos**, se aparecer). Tags: controle dos pais, bloqueio de tela.
 - Política de privacidade: o endereço do GitHub Pages do passo 3.
 

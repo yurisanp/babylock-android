@@ -1,0 +1,90 @@
+<style>
+body{margin:0}
+a{color:#2E3A6E}a:hover{color:#121833}
+.bl-pulse{animation:bl-pulse 2.4s ease-out infinite}
+@keyframes bl-pulse{0%{box-shadow:0 0 0 0 rgba(91,200,168,.6)}70%{box-shadow:0 0 0 8px rgba(91,200,168,0)}100%{box-shadow:0 0 0 0 rgba(91,200,168,0)}}
+.bl-breathe{animation:bl-breathe 3.6s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes bl-breathe{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.12);opacity:.12}}
+.bl-breathe2{animation:bl-breathe 3.6s cubic-bezier(.45,0,.55,1) 1.2s infinite}
+.bl-lockbtn{transition:transform 220ms cubic-bezier(.34,1.56,.64,1)}
+.bl-lockbtn:hover{transform:scale(1.03)}
+.bl-lockbtn:active{transform:scale(.94)}
+.bl-lockbtn:focus-visible{outline:3px solid #C9BEF5;outline-offset:6px}
+.bl-rise{animation:bl-rise 600ms cubic-bezier(.2,0,0,1) both}
+@keyframes bl-rise{from{opacity:0;transform:translateY(22px) scale(.98)}to{opacity:1;transform:none}}
+.bl-tile{transition:transform 180ms cubic-bezier(.2,0,0,1),background-color 200ms ease}
+.bl-tile:hover{background-color:#FFFFFF}
+.bl-tile:active{transform:scale(.95)}
+.bl-tile:focus-visible{outline:3px solid #9C8CD9;outline-offset:2px}
+.bl-demo-ring{animation:bl-ring 3.4s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes bl-ring{0%,8%{stroke-dashoffset:88}80%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+.bl-demo-finger{animation:bl-finger 3.4s ease-in-out infinite}
+@keyframes bl-finger{0%{opacity:0;transform:scale(1.4)}8%{opacity:1;transform:scale(1)}85%{opacity:1}100%{opacity:0}}
+</style>
+<div style="width: 390px; height: 844px; background: #F6EFE3; color: #1E2128; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; box-sizing: border-box; padding: 56px 20px 28px; gap: 18px; overflow: hidden">
+
+  <div class="bl-rise" style="display: flex; justify-content: space-between; align-items: center">
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -0.4px">BabyLock</h1>
+    <button aria-label="Configurações" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #EDE5D8; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="#1E2128" stroke-width="2"></circle><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="#1E2128" stroke-width="2" stroke-linecap="round"></path></svg>
+    </button>
+  </div>
+
+  <section class="bl-rise" style="animation-delay: 70ms; background: #121833; color: #F6EFE3; border-radius: 32px; padding: 22px 22px 26px; display: flex; flex-direction: column; align-items: center; gap: 18px; position: relative; overflow: hidden">
+    <div style="align-self: stretch; display: flex; align-items: center; gap: 10px">
+      <span class="bl-pulse" style="width: 10px; height: 10px; border-radius: 5px; background: #5BC8A8"></span>
+      <span style="font-size: 14px; font-weight: 600; color: #BDEBDC">Proteção completa</span>
+      <span style="flex: 1"></span>
+      <span style="font-size: 13px; color: #9DA3C4">toque, barra e volume</span>
+    </div>
+
+    <div style="position: relative; width: 196px; height: 196px; display: flex; align-items: center; justify-content: center">
+      <span class="bl-breathe" aria-hidden="true" style="position: absolute; inset: 0; border-radius: 50%; background: #9C8CD9"></span>
+      <span class="bl-breathe2" aria-hidden="true" style="position: absolute; inset: 0; border-radius: 50%; background: #9C8CD9"></span>
+      <a class="bl-lockbtn" href="Countdown.dc.html" style="position: relative; width: 156px; height: 156px; border-radius: 50%; background: #F6EFE3; color: #121833; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 18px 40px -10px rgba(0,0,0,.55)">
+        <svg width="40" height="44" viewBox="0 0 40 44" aria-hidden="true"><path d="M11 20v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#121833" stroke-width="4" stroke-linecap="round"></path><rect x="4" y="18" width="32" height="24" rx="8" fill="#121833"></rect><circle cx="20" cy="30" r="3" fill="#F6EFE3"></circle></svg>
+        <span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px">Travar</span>
+        <span style="font-size: 13px; color: #555866">em 5 segundos</span>
+      </a>
+    </div>
+    <p style="margin: 0; font-size: 14px; color: #9DA3C4; text-align: center">Toque, abra o vídeo e entregue o celular.</p>
+  </section>
+
+  <div class="bl-rise" style="animation-delay: 140ms; display: flex; justify-content: space-between; align-items: baseline">
+    <h2 style="margin: 0; font-size: 17px; font-weight: 700">Abrir e travar</h2>
+    <span style="font-size: 13px; color: #6B6E7B">abre o app e trava sozinho</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+    <a class="bl-tile bl-rise" href="Countdown.dc.html" style="animation-delay: 180ms; height: 64px; border-radius: 20px; background: #FFFBF5; text-decoration: none; color: #1E2128; display: flex; align-items: center; gap: 12px; padding: 0 14px; border: 1px solid #E8DFD0">
+      <span style="width: 36px; height: 36px; border-radius: 12px; background: #F3D9D2; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" fill="#A23A28"></path></svg></span>
+      <span style="font-weight: 600; font-size: 15px">YouTube</span>
+    </a>
+    <a class="bl-tile bl-rise" href="Countdown.dc.html" style="animation-delay: 220ms; height: 64px; border-radius: 20px; background: #FFFBF5; text-decoration: none; color: #1E2128; display: flex; align-items: center; gap: 12px; padding: 0 14px; border: 1px solid #E8DFD0">
+      <span style="width: 36px; height: 36px; border-radius: 12px; background: #F8E3C4; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" fill="#8A5A12"></path></svg></span>
+      <span style="font-weight: 600; font-size: 15px">YouTube Kids</span>
+    </a>
+    <a class="bl-tile bl-rise" href="Countdown.dc.html" style="animation-delay: 260ms; height: 64px; border-radius: 20px; background: #FFFBF5; text-decoration: none; color: #1E2128; display: flex; align-items: center; gap: 12px; padding: 0 14px; border: 1px solid #E8DFD0">
+      <span style="width: 36px; height: 36px; border-radius: 12px; background: #E3DEF6; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" fill="#4B3D96"></path></svg></span>
+      <span style="font-weight: 600; font-size: 15px">Netflix</span>
+    </a>
+    <a class="bl-tile bl-rise" href="Countdown.dc.html" style="animation-delay: 300ms; height: 64px; border-radius: 20px; background: #FFFBF5; text-decoration: none; color: #1E2128; display: flex; align-items: center; gap: 12px; padding: 0 14px; border: 1px solid #E8DFD0">
+      <span style="width: 36px; height: 36px; border-radius: 12px; background: #D4E6F1; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9l7.5-4.5z" fill="#1F5578"></path></svg></span>
+      <span style="font-weight: 600; font-size: 15px">Disney+</span>
+    </a>
+  </div>
+
+  <div class="bl-rise" style="animation-delay: 340ms; display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 24px; background: #EDE5D8">
+    <div aria-hidden="true" style="position: relative; width: 64px; height: 76px; border-radius: 14px; background: #1E2128; flex-shrink: 0; overflow: hidden">
+      <svg width="34" height="34" viewBox="0 0 34 34" style="position: absolute; right: -1px; top: -1px">
+        <circle cx="17" cy="17" r="14" fill="none" stroke="#3B4050" stroke-width="3"></circle>
+        <circle class="bl-demo-ring" cx="17" cy="17" r="14" fill="none" stroke="#5BC8A8" stroke-width="3" stroke-linecap="round" stroke-dasharray="88" transform="rotate(-90 17 17)"></circle>
+        <circle class="bl-demo-finger" cx="17" cy="17" r="6" fill="#F6EFE3" style="transform-origin: 17px 17px"></circle>
+      </svg>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-weight: 700; font-size: 15px">Para destravar</span>
+      <span style="font-size: 14px; line-height: 1.45; color: #4A4D5A">Segure o canto de cima, à direita, por 3 s. Depois confirme com a digital ou o PIN.</span>
+    </div>
+  </div>
+</div>
