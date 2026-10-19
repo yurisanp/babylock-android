@@ -23,6 +23,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -131,6 +132,9 @@ fun HomeScreen() {
     var showPinDialog by remember { mutableStateOf(false) }
     var lockVolume by remember { mutableStateOf(Prefs.lockVolume) }
     var closeShade by remember { mutableStateOf(Prefs.closeShade) }
+    var showCornerHint by remember { mutableStateOf(Prefs.showCornerHint) }
+    var accessibilityButton by remember { mutableStateOf(Prefs.accessibilityButton) }
+    var shadeEscaped by remember { mutableStateOf(Prefs.shadeEscaped) }
     var holdSeconds by remember { mutableIntStateOf(Prefs.holdSeconds) }
     var hasPin by remember { mutableStateOf(Prefs.hasPin) }
     val countdown by LockController.countdown.collectAsStateWithLifecycle()
@@ -139,6 +143,7 @@ fun HomeScreen() {
     LifecycleResumeEffect(Unit) {
         accessibilityOn = LockAccessibilityService.instance != null
         overlayOn = Settings.canDrawOverlays(context)
+        shadeEscaped = Prefs.shadeEscaped
         onPauseOrDispose { }
     }
 
@@ -181,6 +186,15 @@ fun HomeScreen() {
                     onLock = { startLock(OPEN_AND_LOCK_SECONDS) },
                     modifier = Modifier.enterUp(1),
                 )
+
+                if (shadeEscaped) {
+                    ShadeHelpCard(
+                        highlight = true,
+                        onOpenSettings = { openSettings(context) },
+                        onDismiss = { shadeEscaped = false; Prefs.shadeEscaped = false },
+                        modifier = Modifier.enterUp(2),
+                    )
+                }
 
                 if (!accessibilityOn) {
                     PermissionCard(
@@ -241,6 +255,20 @@ fun HomeScreen() {
                             closeShade = it; Prefs.closeShade = it
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        SettingSwitch(
+                            "Botão de travar na tela",
+                            "Botão de acessibilidade do Android: abra o vídeo e toque nele para travar. " +
+                                "Desligue para o uso normal do celular.",
+                            accessibilityButton,
+                        ) {
+                            accessibilityButton = it; Prefs.accessibilityButton = it
+                            LockAccessibilityService.instance?.refreshButton()
+                        }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        SettingSwitch("Mostrar cadeado no canto", "Lembra onde segurar para destravar", showCornerHint) {
+                            showCornerHint = it; Prefs.showCornerHint = it
+                        }
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                             Text("Segurar o canto por $holdSeconds s", style = MaterialTheme.typography.bodyLarge)
                             Slider(
@@ -275,6 +303,14 @@ fun HomeScreen() {
                             }
                         }
                     }
+                }
+
+                if (!shadeEscaped) {
+                    ShadeHelpCard(
+                        highlight = false,
+                        onOpenSettings = { openSettings(context) },
+                        onDismiss = null,
+                    )
                 }
 
                 DeviceTips.current()?.let { tip ->
@@ -312,7 +348,8 @@ fun HomeScreen() {
                 Text(
                     "O BabyLock usa o serviço de acessibilidade do Android apenas para bloquear toques, gestos e " +
                         "botões de volume enquanto o bloqueio está ativo e para fechar a barra de notificações.\n\n" +
-                        "Ele não lê o conteúdo da tela, não coleta dados pessoais e não envia nada para a internet.",
+                        "Para isso ele só confere se a barra de notificações está aberta. Ele não lê textos nem o " +
+                        "conteúdo de outros apps, não coleta dados pessoais e não envia nada para a internet.",
                 )
             },
             confirmButton = {
@@ -626,8 +663,12 @@ private fun SectionTitle(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun SettingSwitch(title: String, subtitle: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    // A linha inteira liga e desliga (alvo de toque maior e um só item para o leitor de tela).
     Row(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
@@ -636,7 +677,7 @@ private fun SettingSwitch(title: String, subtitle: String, checked: Boolean, onC
         }
         Switch(
             checked = checked,
-            onCheckedChange = onChange,
+            onCheckedChange = null,
             thumbContent = if (checked) {
                 { Icon(Icons.Filled.Check, null, Modifier.size(SwitchDefaults.IconSize), tint = MintDeep) }
             } else {
@@ -689,6 +730,66 @@ private fun PinDialog(hasPin: Boolean, onDismiss: () -> Unit, onSave: (String) -
             }
         },
     )
+}
+
+/**
+ * Como barrar a barra de notificações de vez: fixar o app do vídeo.
+ * Destacado quando a barra chegou a abrir durante um bloqueio; senão fica fechado, como uma dúvida comum.
+ */
+@Composable
+private fun ShadeHelpCard(
+    highlight: Boolean,
+    onOpenSettings: () -> Unit,
+    onDismiss: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by remember { mutableStateOf(highlight) }
+    Surface(
+        shape = MaterialTheme.shapes.large,
+        color = if (highlight) Color(0xFFFFF1DC) else MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = if (highlight) Color(0xFF4A3110) else MaterialTheme.colorScheme.onSurface,
+        modifier = modifier.fillMaxWidth().testTag("shade_help"),
+    ) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(role = Role.Button, onClickLabel = if (expanded) "Fechar" else "Abrir") { expanded = !expanded },
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    if (highlight) "A barra de notificações abriu durante o bloqueio" else "A barra de notificações ainda abre?",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f).semantics { heading() },
+                )
+                Text(if (expanded) "−" else "+", style = MaterialTheme.typography.titleMedium)
+            }
+            if (expanded) {
+                Text(
+                    "Em alguns celulares (como Xiaomi, Redmi e POCO) o sistema deixa a barra descer mesmo com o " +
+                        "BabyLock. Ela não recebe toques e o BabyLock tenta fechá-la, mas dá para barrar de vez:",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                DeviceTips.pinSteps.forEachIndexed { i, step ->
+                    Text("${i + 1}. $step", style = MaterialTheme.typography.bodyMedium)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = onOpenSettings, modifier = Modifier.testTag("shade_help_settings")) {
+                        Text("Abrir Configurações")
+                    }
+                    if (onDismiss != null) {
+                        TextButton(onClick = onDismiss, modifier = Modifier.testTag("shade_help_dismiss")) {
+                            Text("Entendi")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun openSettings(context: Context) {
+    context.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }
 
 private fun openAccessibilitySettings(context: Context) {

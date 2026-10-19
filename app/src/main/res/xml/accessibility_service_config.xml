@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Configuração mínima de propósito (ajuda na revisão do Google Play):
-  - sem canRetrieveWindowContent: o app NÃO lê o conteúdo da tela
-  - só eventos de mudança de janela/conteúdo (sem ler o conteúdo), para saber quando a barra de notificações abre
+  - canRetrieveWindowContent só para listar as janelas (tipo e foco) e saber se a barra de
+    notificações abriu por cima do vídeo; o app nunca lê textos nem o conteúdo de outros apps
+  - eventos de mudança de janela/conteúdo, só como gatilho para essa conferência
   - filtro de teclas para bloquear o volume durante o bloqueio
 -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
@@ -10,7 +11,7 @@
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityFlags="flagRequestFilterKeyEvents|flagRetrieveInteractiveWindows"
     android:canRequestFilterKeyEvents="true"
-    android:canRetrieveWindowContent="false"
+    android:canRetrieveWindowContent="true"
     android:description="@string/accessibility_service_description"
     android:isAccessibilityTool="false"
     android:notificationTimeout="50" />
