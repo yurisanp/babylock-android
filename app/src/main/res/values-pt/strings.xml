@@ -173,4 +173,10 @@
     <string name="pro_body">Pague uma vez só. Sem mensalidade. Vale também no próximo celular.</string>
     <string name="pro_buy">Tirar anúncios por %1$s</string>
     <string name="pro_owned">BabyLock Pro ativo. Sem anúncios. Obrigado!</string>
+
+    <!-- Avisos rápidos (somem sozinhos, sem nada na barra de notificações) -->
+    <string name="notice_locked">Tela travada. Segure o canto para destravar.</string>
+    <string name="notice_unlocked">Tela destravada</string>
+    <string name="notice_relocked">Travada de novo</string>
+    <string name="notice_stopped">O bloqueio foi desligado</string>
 </resources>

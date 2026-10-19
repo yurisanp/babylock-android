@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import androidx.core.content.ContextCompat
+import app.babylock.R
 import app.babylock.unlock.UnlockActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,6 +54,7 @@ object LockController {
         }
         _locked.value = true
         LockTileService.refresh(app)
+        QuickNotice.show(app, R.string.notice_locked)
         return true
     }
 
@@ -94,18 +96,23 @@ object LockController {
     }
 
     /** O adulto não confirmou (cancelou, saiu ou o tempo acabou): volta a travar. */
-    fun relock() {
-        if (_locked.value) activeSurface?.showOverlay()
+    fun relock(context: Context) {
+        if (_locked.value) {
+            activeSurface?.showOverlay()
+            QuickNotice.show(context, R.string.notice_relocked)
+        }
     }
 
     /** Desbloqueio confirmado. */
     fun unlock(context: Context) {
         val app = context.applicationContext
+        val wasLocked = _locked.value
         activeSurface?.release()
         activeSurface = null
         app.stopService(Intent(app, OverlayLockService::class.java))
         _locked.value = false
         LockTileService.refresh(app)
+        if (wasLocked) QuickNotice.show(app, R.string.notice_unlocked)
     }
 
     /** Chamado quando o motor some sozinho (ex.: o sistema desligou o serviço). */
@@ -114,6 +121,7 @@ object LockController {
             activeSurface = null
             _locked.value = false
             LockTileService.refresh(context.applicationContext)
+            QuickNotice.show(context, R.string.notice_stopped)
         }
     }
 }
