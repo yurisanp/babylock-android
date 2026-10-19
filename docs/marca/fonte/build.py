@@ -33,7 +33,7 @@ T = {
   ],
   pill='Toques bloqueados',
   checks=[('Não lê sua tela', 'Só bloqueia os toques'), ('Não pede conta', 'Nem e-mail, nem cadastro'),
-          ('Trava mesmo sem internet', 'O bloqueio não precisa de rede'), ('Anúncio só na sua tela', 'Nunca aparece no vídeo')],
+          ('Trava mesmo sem internet', 'O bloqueio não precisa de rede'), ('Anúncio só na sua tela', 'Nunca aparece no vídeo'), ('Pague uma vez, sem mensalidade', 'O Pro tira os anúncios')],
   locking='TRAVANDO', open_video='Abra o vídeo agora', auto='A tela trava sozinha.<br>O vídeo continua tocando.', cancel='Cancelar',
   confirm='Confirme que é você', sensor='Toque no sensor de digital', pin='Usar PIN',
   home={},
@@ -49,7 +49,7 @@ T = {
   ],
   pill='Touches blocked',
   checks=[('Doesn’t read your screen', 'It only blocks touches'), ('No account needed', 'No email, no sign-up'),
-          ('Locks even offline', 'Locking needs no internet'), ('Ads only on your screen', 'Never on the video')],
+          ('Locks even offline', 'Locking needs no internet'), ('Ads only on your screen', 'Never on the video'), ('Pay once, no subscription', 'Pro removes the ads')],
   locking='LOCKING', open_video='Open the video now', auto='The screen locks by itself.<br>The video keeps playing.', cancel='Cancel',
   confirm='Confirm it’s you', sensor='Touch the fingerprint sensor', pin='Use PIN',
   home={'aria-label="Configurações"': 'aria-label="Settings"', 'Proteção completa': 'Full protection',
@@ -71,7 +71,7 @@ T = {
   ],
   pill='Toques bloqueados',
   checks=[('No lee tu pantalla', 'Solo bloquea los toques'), ('No pide cuenta', 'Ni correo, ni registro'),
-          ('Bloquea incluso sin internet', 'El bloqueo no necesita red'), ('Anuncios solo en tu pantalla', 'Nunca sobre el video')],
+          ('Bloquea incluso sin internet', 'El bloqueo no necesita red'), ('Anuncios solo en tu pantalla', 'Nunca sobre el video'), ('Paga una vez, sin mensualidad', 'Pro quita los anuncios')],
   locking='BLOQUEANDO', open_video='Abre el video ahora', auto='La pantalla se bloquea sola.<br>El video sigue.', cancel='Cancelar',
   confirm='Confirma que eres tú', sensor='Toca el sensor de huella', pin='Usar PIN',
   home={'aria-label="Configurações"': 'aria-label="Ajustes"', 'Proteção completa': 'Protección completa',
@@ -208,8 +208,8 @@ def check(title, sub):
 
 
 def s_priv(t):
-    return (f'<div class="b" style="width:390px;height:844px;background:#121833;color:#F6EFE3;padding:80px 22px 0;display:flex;flex-direction:column;gap:14px">'
-            f'<div style="align-self:center;margin-bottom:26px">{mark_svg(130)}</div>{"".join(check(*c) for c in t["checks"])}</div>')
+    return (f'<div class="b" style="width:390px;height:844px;background:#121833;color:#F6EFE3;padding:62px 22px 0;display:flex;flex-direction:column;gap:12px">'
+            f'<div style="align-self:center;margin-bottom:10px">{mark_svg(100)}</div>{"".join(check(*c) for c in t["checks"])}</div>')
 
 
 THEMES = {'night': ('#121833', '#F6EFE3', '#9DA3C4', '#5BC8A8', '#0E2A22'),
