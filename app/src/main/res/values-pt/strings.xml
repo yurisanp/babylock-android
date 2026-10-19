@@ -164,8 +164,8 @@
 
     <!-- Botão de travar e cadeado do canto -->
     <string name="setting_a11y_button">Botão de travar na tela</string>
-    <string name="setting_a11y_button_hint">Abra o vídeo e toque no botão de acessibilidade para travar. Vamos abrir as Configurações: toque em BabyLock e ligue ou desligue o atalho.</string>
-    <string name="setting_a11y_button_hint_old">Botão de acessibilidade do Android: abra o vídeo e toque nele para travar. Desligue para o uso normal do celular.</string>
+    <string name="setting_a11y_button_hint">Um botão redondo com cadeado fica por cima dos apps. Abra o vídeo e toque nele para travar. Arraste para mudar de lugar. Desligue para o uso normal do celular.</string>
+    <string name="lock_bubble_description">Travar a tela</string>
     <string name="setting_corner_hint">Mostrar cadeado no canto</string>
     <string name="setting_corner_hint_hint">Lembra onde segurar para destravar</string>
     <string name="corner_hint_description">Segure aqui para destravar</string>

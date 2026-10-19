@@ -198,7 +198,7 @@ class HomeScreenTest {
         assertThat(Prefs.accessibilityButton).isFalse()
         compose.onNodeWithText("Botão de travar na tela").performScrollTo().performClick()
         assertThat(Prefs.accessibilityButton).isTrue()
-        // No Android 11+ o adulto põe o botão nas Configurações de acessibilidade.
-        assertThat(startedActions()).contains(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        // O botão é do próprio BabyLock: não precisa mexer no atalho de acessibilidade do sistema.
+        assertThat(startedActions()).doesNotContain(Settings.ACTION_ACCESSIBILITY_SETTINGS)
     }
 }

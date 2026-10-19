@@ -4,7 +4,6 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityWindowInfo
@@ -106,36 +105,46 @@ class LockEndToEndTest {
     }
 
     @Test
-    fun botaoDeAcessibilidadeTravaEIgnoraToqueEnquantoTravado() {
+    fun botaoFlutuanteTravaSomeEnquantoTravadoEVolta() {
         val service = LockAccessibilityService.instance!!
-        val flag = AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON
-        fun buttonOn() = (service.serviceInfo.flags and flag) != 0
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            // Até o Android 10 o app mostra e esconde o botão. Desligado por padrão.
-            Prefs.accessibilityButton = false
-            instrumentation.runOnMainSync { service.refreshButton() }
-            assertThat(buttonOn()).isFalse()
+        fun shown(): Boolean {
+            var r = false
+            instrumentation.runOnMainSync { r = service.bubbleShown }
+            return r
         }
-        // Do Android 11 em diante quem põe o botão na tela é o adulto, nas Configurações.
+        fun center(): Pair<Int, Int>? {
+            var r: Pair<Int, Int>? = null
+            instrumentation.runOnMainSync { r = service.bubbleCenter() }
+            return r
+        }
+
+        // Desligado por padrão: o celular fica como sempre.
+        assertThat(shown()).isFalse()
+
         Prefs.accessibilityButton = true
         instrumentation.runOnMainSync { service.refreshButton() }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isTrue()
+        waitUntil("o botão flutuante aparecer") { center() != null }
+        val (x, y) = center()!!
 
-        // Tocar no botão trava.
-        instrumentation.runOnMainSync { service.onButtonClicked() }
-        assertThat(LockController.locked.value).isTrue()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isFalse()
+        // Um toque no botão (de verdade, pela tela) trava, e o botão some.
+        device.click(x, y)
+        waitUntil("travar pelo botão flutuante") { LockController.locked.value }
+        assertThat(shown()).isFalse()
+        assertThat(LockAccessibilityService.instance).isNotNull() // o serviço continua ligado
 
-        // Travado, tocar de novo no botão não muda nada e a tela continua bloqueada.
-        instrumentation.runOnMainSync { service.onButtonClicked() }
-        assertThat(LockController.locked.value).isTrue()
+        // Travado, tocar onde o botão estava não faz nada: a tela continua bloqueada.
+        device.click(x, y)
         repeat(3) { device.click(device.displayWidth / 2, device.displayHeight / 2) }
         SystemClock.sleep(500)
+        assertThat(LockController.locked.value).isTrue()
         assertThat(TouchProbeActivity.touches.get()).isEqualTo(0)
 
+        // Destravou: o botão volta. Desligado na configuração, some.
         instrumentation.runOnMainSync { LockController.unlock(context) }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isTrue()
+        assertThat(shown()).isTrue()
+        Prefs.accessibilityButton = false
+        instrumentation.runOnMainSync { service.refreshButton() }
+        assertThat(shown()).isFalse()
     }
 
     @Test

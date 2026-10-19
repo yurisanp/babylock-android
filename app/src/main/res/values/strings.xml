@@ -162,8 +162,8 @@
 
     <!-- Botão de travar e cadeado do canto -->
     <string name="setting_a11y_button">Lock button on screen</string>
-    <string name="setting_a11y_button_hint">Open the video and tap the accessibility button to lock. We\'ll open Settings: tap BabyLock and turn the shortcut on or off.</string>
-    <string name="setting_a11y_button_hint_old">Android accessibility button: open the video and tap it to lock. Turn it off for normal phone use.</string>
+    <string name="setting_a11y_button_hint">A round lock button floats over your apps. Open the video and tap it to lock. Drag it to move it. Turn it off for normal phone use.</string>
+    <string name="lock_bubble_description">Lock the screen</string>
     <string name="setting_corner_hint">Show lock in the corner</string>
     <string name="setting_corner_hint_hint">Reminds you where to hold to unlock</string>
     <string name="corner_hint_description">Hold here to unlock</string>
