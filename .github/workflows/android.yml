@@ -138,9 +138,7 @@ jobs:
           profile: pixel_2
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: |
-            ./gradlew --no-daemon connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=app.babylock.PlayScreenshots
-            adb pull /data/local/tmp/babylock-shots app/build/play-screenshots
+          script: bash .github/scripts/play_screenshots.sh
 
       - name: Publicar as capturas
         if: always()
