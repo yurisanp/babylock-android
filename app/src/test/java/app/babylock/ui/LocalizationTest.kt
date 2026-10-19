@@ -44,6 +44,8 @@ class LocalizationTest {
         compose.setContent { BabyLockTheme { HomeScreen() } }
         compose.onNodeWithText("One permission missing").assertIsDisplayed()
         compose.onNodeWithText("How to unlock").assertExists()
+        compose.onNodeWithText("Does the notification shade still open?").assertExists()
+        compose.onNodeWithText("Show lock in the corner").assertExists()
     }
 
     @Test
@@ -91,5 +93,7 @@ class LocalizationTest {
         val es = DeviceTips.current(inLocale("es"))!!
         assertThat(en.steps.first()).contains("Unrestricted")
         assertThat(es.steps.first()).contains("Sin restricciones")
+        assertThat(DeviceTips.pinSteps(inLocale("en")).first()).contains("“Pin”")
+        assertThat(DeviceTips.pinSteps(inLocale("es")).first()).contains("“Fijar”")
     }
 }

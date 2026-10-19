@@ -22,10 +22,10 @@ EASY TO USE
 
 YOUR PRIVACY
 • Collects no personal data
-• Does not read or record the screen
+• Does not read your text or record the screen
 • No account needed, works offline
 
 ABOUT THE ACCESSIBILITY PERMISSION
-BabyLock uses the Android accessibility service only to lock touches, gestures and volume while the lock is on, and to close the notification shade. It does not read screen content and sends nothing to the internet. If you prefer not to turn on accessibility, a simpler mode locks touches only.
+BabyLock uses the Android accessibility service only to lock touches, gestures and volume while the lock is on, and to close the notification shade. It only checks whether the shade is open, never reads text or other apps and sends nothing to the internet. If you prefer not to turn on accessibility, a simpler mode locks touches only.
 
 Note: no app can lock the power button. Restarting the phone always unlocks it.

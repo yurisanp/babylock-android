@@ -9,6 +9,12 @@ import app.babylock.R
 object DeviceTips {
     data class Tip(val brand: String, val steps: List<String>)
 
+    /**
+     * Fixar o app do vídeo é o jeito do próprio Android de barrar a barra de notificações de vez.
+     * Serve para todas as marcas; o nome da opção muda, por isso o passo manda procurar "Fixar".
+     */
+    fun pinSteps(context: Context): List<String> = context.resources.getStringArray(R.array.shade_pin_steps).toList()
+
     fun current(context: Context): Tip? {
         val m = Build.MANUFACTURER.lowercase()
         fun tip(brand: String, @ArrayRes steps: Int) = Tip(brand, context.resources.getStringArray(steps).toList())

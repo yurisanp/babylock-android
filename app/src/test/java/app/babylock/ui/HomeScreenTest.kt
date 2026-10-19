@@ -161,4 +161,44 @@ class HomeScreenTest {
         compose.onNodeWithTag("privacy_ok").performClick()
         compose.onNodeWithText("Sua privacidade").assertDoesNotExist()
     }
+
+    @Test
+    fun `ajuda da barra fica fechada quando nada aconteceu`() {
+        show()
+        compose.onNodeWithText("A barra de notificações ainda abre?").assertExists()
+        compose.onNodeWithTag("shade_help_settings").assertDoesNotExist()
+        compose.onNodeWithText("A barra de notificações ainda abre?").performScrollTo().performClick()
+        compose.onNodeWithText("procure por", substring = true).assertExists()
+        compose.onNodeWithTag("shade_help_dismiss").assertDoesNotExist()
+    }
+
+    @Test
+    fun `barra que abriu durante o bloqueio vira aviso com passo a passo`() {
+        Prefs.shadeEscaped = true
+        show()
+        compose.onNodeWithText("A barra de notificações abriu durante o bloqueio").assertIsDisplayed()
+        compose.onNodeWithTag("shade_help_settings").performScrollTo().performClick()
+        assertThat(startedActions()).contains(Settings.ACTION_SETTINGS)
+        compose.onNodeWithTag("shade_help_dismiss").performScrollTo().performClick()
+        assertThat(Prefs.shadeEscaped).isFalse()
+        compose.onNodeWithText("A barra de notificações abriu durante o bloqueio").assertDoesNotExist()
+        compose.onNodeWithText("A barra de notificações ainda abre?").assertExists()
+    }
+
+    @Test
+    fun `cadeado do canto pode ser desligado nas configuracoes`() {
+        show()
+        compose.onNodeWithText("Mostrar cadeado no canto").performScrollTo().performClick()
+        assertThat(Prefs.showCornerHint).isFalse()
+    }
+
+    @Test
+    fun `botao de travar na tela comeca desligado e pode ser ligado`() {
+        show()
+        assertThat(Prefs.accessibilityButton).isFalse()
+        compose.onNodeWithText("Botão de travar na tela").performScrollTo().performClick()
+        assertThat(Prefs.accessibilityButton).isTrue()
+        // No Android 11+ o adulto põe o botão nas Configurações de acessibilidade.
+        assertThat(startedActions()).contains(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+    }
 }

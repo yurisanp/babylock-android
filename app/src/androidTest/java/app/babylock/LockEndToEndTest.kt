@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityWindowInfo
@@ -57,6 +58,9 @@ class LockEndToEndTest {
 
     @After
     fun limpar() {
+        Prefs.shadeEscaped = false
+        Prefs.accessibilityButton = false
+        LockAccessibilityService.instance?.let { s -> instrumentation.runOnMainSync { s.refreshButton() } }
         instrumentation.runOnMainSync { LockController.unlock(context) }
         Prefs.clearPin()
         TouchProbeActivity.current?.finish()
@@ -102,6 +106,39 @@ class LockEndToEndTest {
     }
 
     @Test
+    fun botaoDeAcessibilidadeTravaEIgnoraToqueEnquantoTravado() {
+        val service = LockAccessibilityService.instance!!
+        val flag = AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON
+        fun buttonOn() = (service.serviceInfo.flags and flag) != 0
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // Até o Android 10 o app mostra e esconde o botão. Desligado por padrão.
+            Prefs.accessibilityButton = false
+            instrumentation.runOnMainSync { service.refreshButton() }
+            assertThat(buttonOn()).isFalse()
+        }
+        // Do Android 11 em diante quem põe o botão na tela é o adulto, nas Configurações.
+        Prefs.accessibilityButton = true
+        instrumentation.runOnMainSync { service.refreshButton() }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isTrue()
+
+        // Tocar no botão trava.
+        instrumentation.runOnMainSync { service.onButtonClicked() }
+        assertThat(LockController.locked.value).isTrue()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isFalse()
+
+        // Travado, tocar de novo no botão não muda nada e a tela continua bloqueada.
+        instrumentation.runOnMainSync { service.onButtonClicked() }
+        assertThat(LockController.locked.value).isTrue()
+        repeat(3) { device.click(device.displayWidth / 2, device.displayHeight / 2) }
+        SystemClock.sleep(500)
+        assertThat(TouchProbeActivity.touches.get()).isEqualTo(0)
+
+        instrumentation.runOnMainSync { LockController.unlock(context) }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) assertThat(buttonOn()).isTrue()
+    }
+
+    @Test
     fun barraDeNotificacoesFechaSozinha() {
         lock()
         waitUntil("a tela de vídeo ter o foco") { TouchProbeActivity.focused }
@@ -112,18 +149,14 @@ class LockEndToEndTest {
         assertWithMessage(windowsSummary()).that(top?.type)
             .isEqualTo(AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY)
 
-        // O serviço deve fechar a barra e devolver o foco para o vídeo.
-        val end = SystemClock.uptimeMillis() + 10_000
-        while (!TouchProbeActivity.focused && SystemClock.uptimeMillis() < end) SystemClock.sleep(300)
-        if (!TouchProbeActivity.focused) {
-            // Só é aceitável se o próprio sistema recusou fechar a barra (visto em alguns emuladores
-            // do Android 14). Nesse caso a barra continua por baixo da camada, sem receber toques.
-            assertWithMessage("A barra não fechou e o sistema não recusou: ${windowsSummary()}")
-                .that(LockAccessibilityService.lastDismissResult).isFalse()
-            assertWithMessage(windowsSummary()).that(automation().windows.firstOrNull()?.type)
-                .isEqualTo(AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY)
-            device.pressBack() // limpa a tela para os próximos testes
+        // O serviço deve fechar a barra (pedido oficial e, se o sistema recusar, "voltar")
+        // e devolver o foco para o vídeo.
+        waitUntil("a barra de notificações fechar", timeoutMs = 10_000, details = ::windowsSummary) {
+            SystemClock.sleep(300)
+            TouchProbeActivity.focused
         }
+        // O vídeo continua lá: o "voltar" do plano B foi para a barra, não para o app.
+        assertThat(TouchProbeActivity.current).isNotNull()
     }
 
     @Test
@@ -241,7 +274,8 @@ class LockEndToEndTest {
     private fun windowsSummary(): String =
         "travado=${LockController.locked.value}, fechamentos=${LockAccessibilityService.dismissCalls}, " +
             "resultado=${LockAccessibilityService.lastDismissResult}, " +
-            "eventosSystemUi=${LockAccessibilityService.systemUiEvents}, janelas=" +
+            "eventosSystemUi=${LockAccessibilityService.systemUiEvents}, " +
+            "barraAberta=${LockAccessibilityService.shadeOpenings}, voltar=${LockAccessibilityService.backPresses}, janelas=" +
             automation().windows.joinToString { w ->
                 "${w.title}[tipo=${w.type}, foco=${w.isFocused}, ativa=${w.isActive}]"
             }

@@ -24,6 +24,7 @@ import app.babylock.R
 class LockOverlayView(
     context: Context,
     private val holdMillis: Long,
+    showCornerHint: Boolean = true,
     private val onUnlockRequested: () -> Unit,
 ) : FrameLayout(context) {
 
@@ -47,6 +48,23 @@ class LockOverlayView(
         }
     }
 
+    /**
+     * Cadeado pequeno e meio transparente no canto de desbloqueio, sempre visível enquanto travado,
+     * para o adulto lembrar onde segurar. Pequeno o bastante para não atrapalhar o vídeo.
+     */
+    internal val cornerHint = ImageView(context).apply {
+        setImageResource(R.drawable.ic_lock)
+        val pad = (7 * resources.displayMetrics.density).toInt()
+        setPadding(pad, pad, pad, pad)
+        background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.argb(110, 30, 33, 40))
+        }
+        alpha = CORNER_ALPHA
+        contentDescription = context.getString(R.string.corner_hint_description)
+        visibility = if (showCornerHint) VISIBLE else GONE
+    }
+
     /** Anel de progresso no canto, só enquanto o canto está sendo segurado. */
     private val ring = HoldRingView(context)
 
@@ -56,11 +74,28 @@ class LockOverlayView(
         addView(hint, LayoutParams(size, size, Gravity.CENTER))
         val ringSize = (64 * resources.displayMetrics.density).toInt()
         val inset = ((cornerPx - ringSize) / 2f).toInt()
+        val markSize = (32 * resources.displayMetrics.density).toInt()
+        val markInset = ((cornerPx - markSize) / 2f).toInt()
+        addView(
+            cornerHint,
+            LayoutParams(markSize, markSize, Gravity.TOP or Gravity.END).apply { setMargins(0, markInset, markInset, 0) },
+        )
         addView(ring, LayoutParams(ringSize, ringSize, Gravity.TOP or Gravity.END).apply { setMargins(0, inset, inset, 0) })
     }
 
     /** Mostra o cadeado por um instante (com um pequeno salto) e some, para o adulto saber que travou. */
     fun flashHint() {
+        // O cadeado do canto pulsa junto, para mostrar onde fica o desbloqueio.
+        if (cornerHint.visibility == VISIBLE) {
+            cornerHint.animate().cancel()
+            cornerHint.alpha = 1f
+            cornerHint.scaleX = 1.35f
+            cornerHint.scaleY = 1.35f
+            cornerHint.animate().alpha(CORNER_ALPHA).scaleX(1f).scaleY(1f)
+                .setStartDelay(1200).setDuration(700)
+                .setInterpolator(PathInterpolator(0.2f, 0f, 0f, 1f))
+                .start()
+        }
         hint.animate().cancel()
         hint.alpha = 0f
         hint.scaleX = 0.8f
@@ -105,5 +140,9 @@ class LockOverlayView(
     override fun onDetachedFromWindow() {
         cancelHold()
         super.onDetachedFromWindow()
+    }
+
+    private companion object {
+        const val CORNER_ALPHA = 0.55f
     }
 }

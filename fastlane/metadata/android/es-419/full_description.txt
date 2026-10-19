@@ -22,10 +22,10 @@ FÁCIL DE USAR
 
 TU PRIVACIDAD
 • No recopila ningún dato personal
-• No lee ni graba la pantalla
+• No lee tus textos ni graba la pantalla
 • No pide cuenta y funciona sin internet
 
 SOBRE EL PERMISO DE ACCESIBILIDAD
-BabyLock usa el servicio de accesibilidad de Android solo para bloquear toques, gestos y volumen mientras el bloqueo está activo y para cerrar la barra de notificaciones. No lee el contenido de la pantalla y no envía nada a internet. Si prefieres no activar la accesibilidad, hay un modo más simple que bloquea solo los toques.
+BabyLock usa el servicio de accesibilidad de Android solo para bloquear toques, gestos y volumen mientras el bloqueo está activo y para cerrar la barra de notificaciones. Solo revisa si la barra está abierta, nunca lee textos ni otras apps y no envía nada a internet. Si prefieres no activar la accesibilidad, hay un modo más simple que bloquea solo los toques.
 
 Importante: ninguna app puede bloquear el botón de encendido. Reiniciar el celular siempre lo desbloquea.

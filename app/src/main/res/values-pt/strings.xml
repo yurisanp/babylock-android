@@ -3,7 +3,7 @@
 <resources>
     <string name="tile_label">BabyLock</string>
     <string name="accessibility_service_label">BabyLock – travar a tela</string>
-    <string name="accessibility_service_description">Ligue para o BabyLock travar toques, notificações e volume enquanto a criança assiste. Ele não lê a tela e não envia nenhum dado.</string>
+    <string name="accessibility_service_description">Ligue para o BabyLock travar toques, notificações e volume enquanto a criança assiste. Ele só confere se a barra de notificações está aberta. Não lê textos nem outros apps e não envia nenhum dado.</string>
     <string name="notification_channel">Bloqueio ativo</string>
     <string name="notification_text">Toques travados. Para destravar, segure o canto de cima, à direita, por %1$d segundos.</string>
 
@@ -77,11 +77,11 @@
     <string name="help_tour">Ver como funciona de novo</string>
     <string name="help_privacy">Privacidade</string>
     <string name="privacy_title">Sua privacidade</string>
-    <string name="privacy_body">• O BabyLock não coleta, não guarda e não envia dados pessoais.\n• Ele não lê nem grava a tela.\n• O app não tem acesso à internet.\n• O PIN fica só neste celular, protegido.\n\nA acessibilidade serve só para travar toques, notificações e volume enquanto a criança assiste.</string>
+    <string name="privacy_body">• O BabyLock não coleta, não guarda e não envia dados pessoais.\n• Ele não lê textos nem outros apps e não grava a tela.\n• O app não tem acesso à internet.\n• O PIN fica só neste celular, protegido.\n\nA acessibilidade serve só para travar toques, notificações e volume enquanto a criança assiste.</string>
 
     <!-- Divulgação da acessibilidade (exigência do Google Play) -->
     <string name="disclosure_title">Uso da acessibilidade</string>
-    <string name="disclosure_body">O BabyLock usa a acessibilidade do Android só para:\n• travar toques, gestos e volume enquanto o bloqueio está ligado\n• fechar a barra de notificações\n\nEle não lê a tela, não coleta dados pessoais e não envia nada para a internet.</string>
+    <string name="disclosure_body">O BabyLock usa a acessibilidade do Android só para:\n• travar toques, gestos e volume enquanto o bloqueio está ligado\n• fechar a barra de notificações\n\nEle só confere se a barra de notificações está aberta. Não lê textos nem outros apps, não coleta dados pessoais e não envia nada para a internet.</string>
     <string name="disclosure_next_step">No próximo passo, toque em BabyLock e ligue a chave.</string>
     <string name="disclosure_accept">Aceitar e ativar</string>
     <string name="disclosure_dismiss">Agora não</string>
@@ -137,6 +137,7 @@
         <item>Na mesma tela, ative “Inicialização automática”.</item>
         <item>Outras permissões: permita “Exibir janelas pop-up em segundo plano”.</item>
         <item>Em Recentes, segure o BabyLock e toque no cadeado para ele não ser fechado.</item>
+        <item>Se a barra de notificações ainda descer: em Configurações, procure “Fixar apps” e ative. Veja o passo a passo em “A barra de notificações ainda abre?”.</item>
     </string-array>
     <string-array name="tips_motorola">
         <item>Configurações > Apps > BabyLock > Bateria: “Sem restrição”.</item>
@@ -145,4 +146,26 @@
         <item>Configurações > Bateria: permita atividade em segundo plano para o BabyLock.</item>
         <item>Ative a inicialização automática e trave o app em Recentes.</item>
     </string-array>
+    <!-- Barra de notificações que ainda abre -->
+    <string name="shade_help_title">A barra de notificações ainda abre?</string>
+    <string name="shade_help_alert">A barra de notificações abriu durante o bloqueio</string>
+    <string name="shade_help_body">Em alguns celulares (como Xiaomi, Redmi e POCO) o sistema deixa a barra descer mesmo com o BabyLock. Ela não recebe toques e o BabyLock tenta fechá-la, mas dá para barrar de vez:</string>
+    <string name="shade_help_settings">Abrir Configurações</string>
+    <string name="shade_help_dismiss">Entendi</string>
+    <string name="action_expand">Abrir</string>
+    <string name="action_collapse">Fechar</string>
+    <string-array name="shade_pin_steps">
+        <item>Abra as Configurações e procure por “Fixar” (o nome muda: “Fixar apps”, “Fixação de tela” ou “Fixar app”).</item>
+        <item>Ative a opção e também “Pedir senha para desafixar”, se aparecer.</item>
+        <item>Abra o vídeo, toque no botão de apps recentes, toque no ícone do app e escolha “Fixar”.</item>
+        <item>Depois trave o BabyLock como sempre. Com o app fixado, a barra de notificações não desce.</item>
+    </string-array>
+
+    <!-- Botão de travar e cadeado do canto -->
+    <string name="setting_a11y_button">Botão de travar na tela</string>
+    <string name="setting_a11y_button_hint">Abra o vídeo e toque no botão de acessibilidade para travar. Vamos abrir as Configurações: toque em BabyLock e ligue ou desligue o atalho.</string>
+    <string name="setting_a11y_button_hint_old">Botão de acessibilidade do Android: abra o vídeo e toque nele para travar. Desligue para o uso normal do celular.</string>
+    <string name="setting_corner_hint">Mostrar cadeado no canto</string>
+    <string name="setting_corner_hint_hint">Lembra onde segurar para destravar</string>
+    <string name="corner_hint_description">Segure aqui para destravar</string>
 </resources>

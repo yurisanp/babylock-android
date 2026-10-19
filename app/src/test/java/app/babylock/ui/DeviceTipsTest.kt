@@ -28,7 +28,16 @@ class DeviceTipsTest {
             val tip = tipFor(it)!!
             assertThat(tip.brand).isEqualTo("Xiaomi")
             assertThat(tip.steps.joinToString()).contains("pop-up")
+            assertThat(tip.steps.joinToString()).contains("Fixar apps")
         }
+    }
+
+    @Test
+    fun `passo a passo de fixar o app manda procurar Fixar nas configuracoes`() {
+        val steps = DeviceTips.pinSteps(androidx.test.core.app.ApplicationProvider.getApplicationContext())
+        assertThat(steps).isNotEmpty()
+        assertThat(steps.first()).contains("procure por “Fixar”")
+        assertThat(steps.joinToString()).contains("recentes")
     }
 
     @Test

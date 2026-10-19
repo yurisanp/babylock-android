@@ -26,6 +26,9 @@ class PrefsTest {
         assertThat(Prefs.holdSeconds).isEqualTo(3)
         assertThat(Prefs.disclosureAccepted).isFalse()
         assertThat(Prefs.hasPin).isFalse()
+        assertThat(Prefs.showCornerHint).isTrue()
+        assertThat(Prefs.shadeEscaped).isFalse()
+        assertThat(Prefs.accessibilityButton).isFalse()
     }
 
     @Test

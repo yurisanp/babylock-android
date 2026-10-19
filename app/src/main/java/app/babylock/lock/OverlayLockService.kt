@@ -40,7 +40,7 @@ class OverlayLockService : Service(), LockSurface {
 
     override fun showOverlay() {
         val wm = getSystemService(WindowManager::class.java)
-        val view = overlay ?: LockOverlayView(this, Prefs.holdSeconds * 1000L) {
+        val view = overlay ?: LockOverlayView(this, Prefs.holdSeconds * 1000L, Prefs.showCornerHint) {
             LockController.requestUnlock(this)
         }.also { overlay = it }
         if (view.parent == null) {

@@ -7,7 +7,7 @@
     <string name="app_name" translatable="false">BabyLock</string>
     <string name="tile_label">BabyLock</string>
     <string name="accessibility_service_label">BabyLock – lock the screen</string>
-    <string name="accessibility_service_description">Turn this on so BabyLock can lock touches, notifications and volume while your child watches. It does not read the screen and sends no data.</string>
+    <string name="accessibility_service_description">Turn this on so BabyLock can lock touches, notifications and volume while your child watches. It only checks whether the notification shade is open. It does not read text or other apps and sends no data.</string>
     <string name="notification_channel">Lock active</string>
     <string name="notification_text">Touches locked. To unlock, hold the top right corner for %1$d seconds.</string>
 
@@ -78,11 +78,11 @@
     <string name="help_tour">See how it works again</string>
     <string name="help_privacy">Privacy</string>
     <string name="privacy_title">Your privacy</string>
-    <string name="privacy_body">• BabyLock does not collect, store or send personal data.\n• It does not read or record the screen.\n• The app has no internet access.\n• Your PIN stays on this phone, protected.\n\nAccessibility is used only to lock touches, notifications and volume while your child watches.</string>
+    <string name="privacy_body">• BabyLock does not collect, store or send personal data.\n• It does not read text or other apps and does not record the screen.\n• The app has no internet access.\n• Your PIN stays on this phone, protected.\n\nAccessibility is used only to lock touches, notifications and volume while your child watches.</string>
 
     <!-- Accessibility disclosure (required by Google Play) -->
     <string name="disclosure_title">How accessibility is used</string>
-    <string name="disclosure_body">BabyLock uses Android accessibility only to:\n• lock touches, gestures and volume while the lock is on\n• close the notification shade\n\nIt does not read the screen, does not collect personal data and sends nothing to the internet.</string>
+    <string name="disclosure_body">BabyLock uses Android accessibility only to:\n• lock touches, gestures and volume while the lock is on\n• close the notification shade\n\nIt only checks whether the notification shade is open. It does not read text or other apps, does not collect personal data and sends nothing to the internet.</string>
     <string name="disclosure_next_step">Next, tap BabyLock and turn the switch on.</string>
     <string name="disclosure_accept">Accept and turn on</string>
     <string name="disclosure_dismiss">Not now</string>
@@ -135,6 +135,7 @@
         <item>On the same screen, turn on “Autostart”.</item>
         <item>Other permissions: allow “Display pop-up windows while running in the background”.</item>
         <item>In Recents, hold BabyLock and tap the lock so it isn\'t closed.</item>
+        <item>If the notification shade still comes down: in Settings, search for “App pinning” and turn it on. See the steps in “Does the notification shade still open?”.</item>
     </string-array>
     <string-array name="tips_motorola">
         <item>Settings > Apps > BabyLock > Battery: “Unrestricted”.</item>
@@ -143,4 +144,26 @@
         <item>Settings > Battery: allow background activity for BabyLock.</item>
         <item>Turn on auto launch and lock the app in Recents.</item>
     </string-array>
+    <!-- Barra de notificações que ainda abre -->
+    <string name="shade_help_title">Does the notification shade still open?</string>
+    <string name="shade_help_alert">The notification shade opened during the lock</string>
+    <string name="shade_help_body">On some phones (like Xiaomi, Redmi and POCO) the system lets the shade come down even with BabyLock. It gets no touches and BabyLock tries to close it, but you can block it for good:</string>
+    <string name="shade_help_settings">Open Settings</string>
+    <string name="shade_help_dismiss">Got it</string>
+    <string name="action_expand">Open</string>
+    <string name="action_collapse">Close</string>
+    <string-array name="shade_pin_steps">
+        <item>Open Settings and search for “Pin” (the name varies: “App pinning”, “Screen pinning” or “Pin app”).</item>
+        <item>Turn it on, and also “Ask for PIN before unpinning” if you see it.</item>
+        <item>Open the video, tap the recent apps button, tap the app icon and choose “Pin”.</item>
+        <item>Then lock BabyLock as usual. With the app pinned, the notification shade won\'t come down.</item>
+    </string-array>
+
+    <!-- Botão de travar e cadeado do canto -->
+    <string name="setting_a11y_button">Lock button on screen</string>
+    <string name="setting_a11y_button_hint">Open the video and tap the accessibility button to lock. We\'ll open Settings: tap BabyLock and turn the shortcut on or off.</string>
+    <string name="setting_a11y_button_hint_old">Android accessibility button: open the video and tap it to lock. Turn it off for normal phone use.</string>
+    <string name="setting_corner_hint">Show lock in the corner</string>
+    <string name="setting_corner_hint_hint">Reminds you where to hold to unlock</string>
+    <string name="corner_hint_description">Hold here to unlock</string>
 </resources>

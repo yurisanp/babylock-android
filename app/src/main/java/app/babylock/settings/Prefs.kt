@@ -29,6 +29,27 @@ object Prefs {
         get() = sp.getInt("hold_seconds", 3)
         set(v) = sp.edit().putInt("hold_seconds", v.coerceIn(2, 6)).apply()
 
+    /**
+     * Mostrar o botão de acessibilidade do Android para travar com um toque, já dentro do vídeo.
+     * Desligado por padrão, para não aparecer no uso normal do celular.
+     */
+    var accessibilityButton: Boolean
+        get() = sp.getBoolean("accessibility_button", false)
+        set(v) = sp.edit().putBoolean("accessibility_button", v).apply()
+
+    /** Mostrar um cadeado discreto no canto de desbloqueio enquanto travado. */
+    var showCornerHint: Boolean
+        get() = sp.getBoolean("show_corner_hint", true)
+        set(v) = sp.edit().putBoolean("show_corner_hint", v).apply()
+
+    /**
+     * A barra de notificações abriu durante um bloqueio e precisou ser fechada à força.
+     * A tela inicial usa isso para ensinar a fixar o app (que barra a barra de vez).
+     */
+    var shadeEscaped: Boolean
+        get() = sp.getBoolean("shade_escaped", false)
+        set(v) = sp.edit().putBoolean("shade_escaped", v).apply()
+
     /** O adulto aceitou a divulgação do uso de acessibilidade (exigência do Google Play). */
     var disclosureAccepted: Boolean
         get() = sp.getBoolean("disclosure_accepted", false)
