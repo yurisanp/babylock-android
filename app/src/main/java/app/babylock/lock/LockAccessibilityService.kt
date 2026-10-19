@@ -4,10 +4,14 @@ import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
+import android.database.ContentObserver
+import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.provider.Settings
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
@@ -22,6 +26,8 @@ import app.babylock.settings.Prefs
 class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     private var overlay: LockOverlayView? = null
+    private var bubble: LockBubbleView? = null
+    private var bubbleParams: WindowManager.LayoutParams? = null
     private var visible = false
     private val main = Handler(Looper.getMainLooper())
 
@@ -55,37 +61,117 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         super.onServiceConnected()
         instance = this
         accessibilityButtonController.registerAccessibilityButtonCallback(buttonCallback, main)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            contentResolver.registerContentObserver(Settings.Secure.getUriFor(BUTTON_TARGETS), false, shortcutObserver)
+        }
         updateButton(locked = LockController.locked.value)
     }
 
     /**
-     * O adulto tocou no botão de acessibilidade: trava na hora, por cima do que estiver aberto.
-     * Travado, o toque é ignorado (a criança não consegue destravar nem desligar nada por ele).
+     * O adulto tocou no botão de travar (o flutuante do BabyLock ou o atalho de acessibilidade do sistema):
+     * trava na hora, por cima do que estiver aberto. Travado, o toque é ignorado.
      */
     internal fun onButtonClicked() {
-        if (LockController.locked.value) return
-        // No Android 11+ o botão só existe se o adulto o colocou nas Configurações: isso já é o "ligar".
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || Prefs.accessibilityButton) LockController.lockNow(this)
+        if (!LockController.locked.value) LockController.lockNow(this)
     }
 
-    /** Liga ou desliga o botão conforme a configuração. Some enquanto travado, para não ficar sobre o vídeo. */
+    /** Mostra ou esconde o botão flutuante conforme a configuração. Some enquanto travado. */
     fun refreshButton() = updateButton(locked = LockController.locked.value)
 
+    internal val bubbleShown: Boolean get() = bubble?.parent != null
+
+    /** Centro do botão flutuante na tela (para o teste no emulador tocar nele). */
+    internal fun bubbleCenter(): Pair<Int, Int>? {
+        val b = bubble?.takeIf { it.parent != null && it.width > 0 } ?: return null
+        val loc = IntArray(2).also { b.getLocationOnScreen(it) }
+        return loc[0] + b.width / 2 to loc[1] + b.height / 2
+    }
+
     private fun updateButton(locked: Boolean) {
-        val info = serviceInfo ?: return
-        // Até o Android 10 este pedido mostra ou esconde o botão. Do 11 em diante quem mostra o botão é o
-        // adulto, nas Configurações de acessibilidade; o pedido fica sempre ligado para o toque chegar aqui
-        // (sem ele, tocar no botão desligaria o serviço).
-        val want = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) true else Prefs.accessibilityButton && !locked
-        val flags = if (want) {
-            info.flags or AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON
-        } else {
-            info.flags and AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON.inv()
+        keepShortcutRequest()
+        val want = Prefs.accessibilityButton && !locked
+        val wm = getSystemService(WindowManager::class.java)
+        val view = bubble
+        if (want && (view == null || view.parent == null)) {
+            val b = view ?: LockBubbleView(
+                this,
+                onTap = ::onButtonClicked,
+                onDrag = { dx, dy -> moveBubble(dx, dy) },
+                onDrop = ::dropBubble,
+            ).also { bubble = it }
+            val params = bubbleParams ?: newBubbleParams().also { bubbleParams = it }
+            clampBubble(params)
+            try {
+                wm.addView(b, params)
+            } catch (_: RuntimeException) {
+                // Sem janela agora (serviço sendo desligado): tenta de novo na próxima vez.
+            }
+        } else if (!want && view?.parent != null) {
+            wm.removeView(view)
         }
-        if (flags != info.flags) {
-            info.flags = flags
+    }
+
+    private fun bubbleSize() = (56 * resources.displayMetrics.density).toInt()
+
+    private fun newBubbleParams() = WindowManager.LayoutParams(
+        bubbleSize(),
+        bubbleSize(),
+        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+        PixelFormat.TRANSLUCENT,
+    ).apply {
+        title = "BabyLock botão"
+        gravity = Gravity.TOP or Gravity.START
+        val dm = resources.displayMetrics
+        x = Prefs.bubbleX.takeIf { it >= 0 } ?: (dm.widthPixels - bubbleSize())
+        y = Prefs.bubbleY.takeIf { it >= 0 } ?: (dm.heightPixels * 2 / 5)
+    }
+
+    private fun clampBubble(p: WindowManager.LayoutParams) {
+        val dm = resources.displayMetrics
+        p.x = p.x.coerceIn(0, (dm.widthPixels - bubbleSize()).coerceAtLeast(0))
+        p.y = p.y.coerceIn(0, (dm.heightPixels - bubbleSize()).coerceAtLeast(0))
+    }
+
+    private fun moveBubble(dx: Int, dy: Int) {
+        val b = bubble ?: return
+        val p = bubbleParams ?: return
+        p.x += dx
+        p.y += dy
+        clampBubble(p)
+        if (b.parent != null) getSystemService(WindowManager::class.java).updateViewLayout(b, p)
+    }
+
+    /** Ao soltar, o botão gruda na borda mais perto (fica fora do meio do vídeo) e o lugar é lembrado. */
+    private fun dropBubble() {
+        val b = bubble ?: return
+        val p = bubbleParams ?: return
+        val dm = resources.displayMetrics
+        p.x = if (p.x + bubbleSize() / 2 < dm.widthPixels / 2) 0 else dm.widthPixels - bubbleSize()
+        clampBubble(p)
+        Prefs.bubbleX = p.x
+        Prefs.bubbleY = p.y
+        if (b.parent != null) getSystemService(WindowManager::class.java).updateViewLayout(b, p)
+    }
+
+    /**
+     * Se o adulto pôs o BabyLock no atalho de acessibilidade do sistema (Android 11+), um toque nesse atalho
+     * DESLIGA o serviço, a menos que ele tenha pedido o botão. O sistema tira esse pedido quando o atalho não
+     * está configurado, então ele é refeito sempre que algo muda (inclusive quando o atalho é configurado).
+     * Até o Android 10 o pedido faria aparecer um botão do sistema, então lá ele não é feito.
+     */
+    private fun keepShortcutRequest() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+        val info = serviceInfo ?: return
+        val flag = AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON
+        if ((info.flags and flag) == 0) {
+            info.flags = info.flags or flag
             serviceInfo = info
         }
+    }
+
+    private val shortcutObserver = object : ContentObserver(main) {
+        override fun onChange(selfChange: Boolean) = keepShortcutRequest()
     }
 
     override fun showOverlay() {
@@ -222,7 +308,11 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     override fun onDestroy() {
         accessibilityButtonController.unregisterAccessibilityButtonCallback(buttonCallback)
-        release()
+        contentResolver.unregisterContentObserver(shortcutObserver)
+        hideOverlay()
+        overlay = null
+        bubble?.let { if (it.parent != null) getSystemService(WindowManager::class.java).removeView(it) }
+        bubble = null
         if (instance === this) instance = null
         LockController.onSurfaceLost(this, this)
         super.onDestroy()
@@ -230,6 +320,8 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     companion object {
         private const val SYSTEM_UI = "com.android.systemui"
+        // Configuração do sistema com os serviços postos no botão/atalho de acessibilidade (Android 11+).
+        private const val BUTTON_TARGETS = "accessibility_button_targets"
         private const val RECHECK_MS = 350L
         private const val WATCHDOG_MS = 500L
         private const val BACK_AFTER_MS = 700L
