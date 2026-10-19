@@ -1,5 +1,6 @@
 package app.babylock.ui
 
+import android.app.Activity
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -93,6 +94,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.babylock.R
+import app.babylock.ads.AdBanner
+import app.babylock.ads.Ads
+import app.babylock.billing.Pro
 import app.babylock.lock.LockAccessibilityService
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
@@ -144,6 +148,9 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
     var holdSeconds by remember { mutableIntStateOf(Prefs.holdSeconds) }
     var hasPin by remember { mutableStateOf(Prefs.hasPin) }
     val countdown by LockController.countdown.collectAsStateWithLifecycle()
+    val privacyOptionsRequired by Ads.privacyOptionsRequired.collectAsStateWithLifecycle()
+    val pro by Pro.owned.collectAsStateWithLifecycle()
+    val proPrice by Pro.price.collectAsStateWithLifecycle()
 
     // Reavalia as permissões sempre que o adulto volta das Configurações.
     LifecycleResumeEffect(Unit) {
@@ -172,174 +179,192 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
 
     Box(Modifier.fillMaxSize()) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            Column(
-                Modifier
-                    .safeDrawingPadding()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(18.dp),
-            ) {
-                Text(
-                    stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.enterUp(0).semantics { heading() },
-                )
-
-                HeroCard(
-                    accessibilityOn = accessibilityOn,
-                    overlayOn = overlayOn,
-                    enabled = ready && countdown == null,
-                    onLock = { startLock(OPEN_AND_LOCK_SECONDS) },
-                    modifier = Modifier.enterUp(1),
-                )
-
-                if (shadeEscaped) {
-                    ShadeHelpCard(
-                        highlight = true,
-                        onOpenSettings = { openSettings(context) },
-                        onDismiss = { shadeEscaped = false; Prefs.shadeEscaped = false },
-                        modifier = Modifier.enterUp(2),
+            Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(18.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.enterUp(0).semantics { heading() },
                     )
-                }
 
-                if (!accessibilityOn) {
-                    PermissionCard(
-                        title = stringResource(R.string.permission_accessibility_title),
-                        badge = stringResource(R.string.permission_badge),
-                        body = stringResource(R.string.permission_accessibility_body),
-                        onClick = {
-                            if (Prefs.disclosureAccepted) openAccessibilitySettings(context) else showDisclosure = true
-                        },
-                        modifier = Modifier.enterUp(2).testTag("enable_accessibility"),
+                    HeroCard(
+                        accessibilityOn = accessibilityOn,
+                        overlayOn = overlayOn,
+                        enabled = ready && countdown == null,
+                        onLock = { startLock(OPEN_AND_LOCK_SECONDS) },
+                        modifier = Modifier.enterUp(1),
                     )
-                }
-                if (!accessibilityOn && !overlayOn) {
-                    PermissionCard(
-                        title = stringResource(R.string.permission_overlay_title),
-                        badge = null,
-                        body = stringResource(R.string.permission_overlay_body),
-                        onClick = { openOverlaySettings(context) },
-                        modifier = Modifier.enterUp(3).testTag("enable_overlay"),
-                    )
-                }
 
-                val installed = VIDEO_APPS.filter { context.packageManager.getLaunchIntentForPackage(it.pkg) != null }
-                if (installed.isNotEmpty()) {
-                    Row(Modifier.enterUp(4), verticalAlignment = Alignment.Bottom) {
-                        SectionTitle(stringResource(R.string.open_and_lock_title), Modifier.weight(1f))
-                        Text(
-                            stringResource(R.string.open_and_lock_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    if (shadeEscaped) {
+                        ShadeHelpCard(
+                            highlight = true,
+                            onOpenSettings = { openSettings(context) },
+                            onDismiss = { shadeEscaped = false; Prefs.shadeEscaped = false },
+                            modifier = Modifier.enterUp(2),
                         )
                     }
-                    installed.chunked(2).forEachIndexed { r, row ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            row.forEachIndexed { i, app ->
-                                AppTile(
-                                    app = app,
-                                    enabled = ready && countdown == null,
-                                    onClick = { startLock(OPEN_AND_LOCK_SECONDS, app) },
-                                    modifier = Modifier.weight(1f).enterUp(5 + r * 2 + i),
-                                )
-                            }
-                            if (row.size == 1) Spacer(Modifier.weight(1f))
-                        }
+
+                    if (!accessibilityOn) {
+                        PermissionCard(
+                            title = stringResource(R.string.permission_accessibility_title),
+                            badge = stringResource(R.string.permission_badge),
+                            body = stringResource(R.string.permission_accessibility_body),
+                            onClick = {
+                                if (Prefs.disclosureAccepted) openAccessibilitySettings(context) else showDisclosure = true
+                            },
+                            modifier = Modifier.enterUp(2).testTag("enable_accessibility"),
+                        )
                     }
-                }
+                    if (!accessibilityOn && !overlayOn) {
+                        PermissionCard(
+                            title = stringResource(R.string.permission_overlay_title),
+                            badge = null,
+                            body = stringResource(R.string.permission_overlay_body),
+                            onClick = { openOverlaySettings(context) },
+                            modifier = Modifier.enterUp(3).testTag("enable_overlay"),
+                        )
+                    }
 
-                UnlockHowTo(holdSeconds, Modifier.enterUp(9))
-
-                SectionTitle(stringResource(R.string.settings_title))
-                Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
-                    Column(Modifier.padding(vertical = 8.dp)) {
-                        SettingSwitch(stringResource(R.string.setting_volume), stringResource(R.string.setting_needs_accessibility), lockVolume) {
-                            lockVolume = it; Prefs.lockVolume = it
-                        }
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        SettingSwitch(stringResource(R.string.setting_shade), stringResource(R.string.setting_needs_accessibility), closeShade) {
-                            closeShade = it; Prefs.closeShade = it
-                        }
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        SettingSwitch(
-                            stringResource(R.string.setting_a11y_button),
-                            stringResource(R.string.setting_a11y_button_hint),
-                            accessibilityButton,
-                        ) {
-                            accessibilityButton = it; Prefs.accessibilityButton = it
-                            LockAccessibilityService.instance?.refreshButton()
-                        }
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        SettingSwitch(stringResource(R.string.setting_corner_hint), stringResource(R.string.setting_corner_hint_hint), showCornerHint) {
-                            showCornerHint = it; Prefs.showCornerHint = it
-                        }
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            Text(pluralStringResource(R.plurals.setting_hold, holdSeconds, holdSeconds), style = MaterialTheme.typography.bodyLarge)
+                    val installed = VIDEO_APPS.filter { context.packageManager.getLaunchIntentForPackage(it.pkg) != null }
+                    if (installed.isNotEmpty()) {
+                        Row(Modifier.enterUp(4), verticalAlignment = Alignment.Bottom) {
+                            SectionTitle(stringResource(R.string.open_and_lock_title), Modifier.weight(1f))
                             Text(
-                                stringResource(R.string.setting_hold_hint),
+                                stringResource(R.string.open_and_lock_hint),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            Slider(
-                                value = holdSeconds.toFloat(),
-                                onValueChange = {
-                                    if (it.toInt() != holdSeconds) Haptics.tick(view)
-                                    holdSeconds = it.toInt(); Prefs.holdSeconds = holdSeconds
-                                },
-                                valueRange = 2f..6f,
-                                steps = 3,
-                                colors = SliderDefaults.colors(
-                                    thumbColor = MaterialTheme.colorScheme.primary,
-                                    activeTrackColor = MaterialTheme.colorScheme.primary,
-                                ),
-                            )
                         }
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        Row(
-                            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Column(Modifier.weight(1f)) {
-                                Text(stringResource(R.string.setting_pin), style = MaterialTheme.typography.bodyLarge)
+                        installed.chunked(2).forEachIndexed { r, row ->
+                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                row.forEachIndexed { i, app ->
+                                    AppTile(
+                                        app = app,
+                                        enabled = ready && countdown == null,
+                                        onClick = { startLock(OPEN_AND_LOCK_SECONDS, app) },
+                                        modifier = Modifier.weight(1f).enterUp(5 + r * 2 + i),
+                                    )
+                                }
+                                if (row.size == 1) Spacer(Modifier.weight(1f))
+                            }
+                        }
+                    }
+
+                    UnlockHowTo(holdSeconds, Modifier.enterUp(9))
+
+                    SectionTitle(stringResource(R.string.settings_title))
+                    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
+                        Column(Modifier.padding(vertical = 8.dp)) {
+                            SettingSwitch(stringResource(R.string.setting_volume), stringResource(R.string.setting_needs_accessibility), lockVolume) {
+                                lockVolume = it; Prefs.lockVolume = it
+                            }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            SettingSwitch(stringResource(R.string.setting_shade), stringResource(R.string.setting_needs_accessibility), closeShade) {
+                                closeShade = it; Prefs.closeShade = it
+                            }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            SettingSwitch(
+                                stringResource(R.string.setting_a11y_button),
+                                stringResource(R.string.setting_a11y_button_hint),
+                                accessibilityButton,
+                            ) {
+                                accessibilityButton = it; Prefs.accessibilityButton = it
+                                LockAccessibilityService.instance?.refreshButton()
+                            }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            SettingSwitch(stringResource(R.string.setting_corner_hint), stringResource(R.string.setting_corner_hint_hint), showCornerHint) {
+                                showCornerHint = it; Prefs.showCornerHint = it
+                            }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                Text(pluralStringResource(R.plurals.setting_hold, holdSeconds, holdSeconds), style = MaterialTheme.typography.bodyLarge)
                                 Text(
-                                    stringResource(if (hasPin) R.string.setting_pin_on else R.string.setting_pin_off),
+                                    stringResource(R.string.setting_hold_hint),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
+                                Slider(
+                                    value = holdSeconds.toFloat(),
+                                    onValueChange = {
+                                        if (it.toInt() != holdSeconds) Haptics.tick(view)
+                                        holdSeconds = it.toInt(); Prefs.holdSeconds = holdSeconds
+                                    },
+                                    valueRange = 2f..6f,
+                                    steps = 3,
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = MaterialTheme.colorScheme.primary,
+                                        activeTrackColor = MaterialTheme.colorScheme.primary,
+                                    ),
+                                )
                             }
-                            TextButton(onClick = { showPinDialog = true }, modifier = Modifier.testTag("pin_button")) {
-                                Text(stringResource(if (hasPin) R.string.action_change else R.string.action_set))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            Row(
+                                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(stringResource(R.string.setting_pin), style = MaterialTheme.typography.bodyLarge)
+                                    Text(
+                                        stringResource(if (hasPin) R.string.setting_pin_on else R.string.setting_pin_off),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                TextButton(onClick = { showPinDialog = true }, modifier = Modifier.testTag("pin_button")) {
+                                    Text(stringResource(if (hasPin) R.string.action_change else R.string.action_set))
+                                }
                             }
                         }
                     }
-                }
 
-                if (!shadeEscaped) {
-                    ShadeHelpCard(
-                        highlight = false,
-                        onOpenSettings = { openSettings(context) },
-                        onDismiss = null,
-                    )
-                }
+                    if (!shadeEscaped) {
+                        ShadeHelpCard(
+                            highlight = false,
+                            onOpenSettings = { openSettings(context) },
+                            onDismiss = null,
+                        )
+                    }
 
-                DeviceTips.current(context)?.let { tip ->
-                    SectionTitle(stringResource(R.string.tips_title, tip.brand))
-                    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceVariant) {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            tip.steps.forEachIndexed { i, s -> Text("${i + 1}. $s", style = MaterialTheme.typography.bodyMedium) }
+                    DeviceTips.current(context)?.let { tip ->
+                        SectionTitle(stringResource(R.string.tips_title, tip.brand))
+                        Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceVariant) {
+                            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                tip.steps.forEachIndexed { i, s -> Text("${i + 1}. $s", style = MaterialTheme.typography.bodyMedium) }
+                            }
                         }
                     }
-                }
-                SectionTitle(stringResource(R.string.help_title))
-                Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
-                    Column(Modifier.padding(vertical = 4.dp)) {
-                        HelpRow(stringResource(R.string.help_tour), onShowTour, Modifier.testTag("help_tour"))
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        HelpRow(stringResource(R.string.help_privacy), { showPrivacy = true }, Modifier.testTag("help_privacy"))
+                    // Só aparece quando a Play já respondeu com o preço, ou para agradecer quem comprou.
+                    val price = proPrice
+                    if (pro || price != null) {
+                        ProCard(owned = pro, price = price, onBuy = { (context as? Activity)?.let { Pro.buy(it) } })
                     }
+
+                    SectionTitle(stringResource(R.string.help_title))
+                    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
+                        Column(Modifier.padding(vertical = 4.dp)) {
+                            HelpRow(stringResource(R.string.help_tour), onShowTour, Modifier.testTag("help_tour"))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            HelpRow(stringResource(R.string.help_privacy), { showPrivacy = true }, Modifier.testTag("help_privacy"))
+                            if (privacyOptionsRequired) {
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                                HelpRow(
+                                    stringResource(R.string.help_ad_choices),
+                                    { (context as? Activity)?.let { Ads.showPrivacyOptions(it) } },
+                                    Modifier.testTag("help_ad_choices"),
+                                )
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(24.dp))
                 }
-                Spacer(Modifier.height(24.dp))
+                // Anúncio só aqui, no rodapé da tela do adulto, longe do botão de travar.
+                AdBanner()
             }
         }
 
@@ -859,4 +884,26 @@ private fun openOverlaySettings(context: Context) {
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
     )
     Toast.makeText(context, R.string.guide_overlay, Toast.LENGTH_LONG).show()
+}
+
+/** Compra única que tira os anúncios. Depois de comprado, só agradece. */
+@Composable
+private fun ProCard(owned: Boolean, price: String?, onBuy: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceVariant, modifier = modifier.testTag("pro_card")) {
+        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (owned) {
+                Text(stringResource(R.string.pro_owned), style = MaterialTheme.typography.titleMedium)
+            } else {
+                Text(stringResource(R.string.pro_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.pro_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Button(onClick = onBuy, modifier = Modifier.fillMaxWidth().testTag("pro_buy")) {
+                    Text(stringResource(R.string.pro_buy, price.orEmpty()))
+                }
+            }
+        }
+    }
 }

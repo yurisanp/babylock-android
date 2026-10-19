@@ -27,6 +27,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BabyLock">
 
+        <!-- AdMob: anúncios só na tela inicial do adulto (o ID vem do build, ver app/build.gradle.kts) -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
+            android:value="true" />
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

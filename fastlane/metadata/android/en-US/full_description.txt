@@ -21,11 +21,13 @@ EASY TO USE
 • In English, Portuguese and Spanish
 
 YOUR PRIVACY
-• Collects no personal data
+• No account, keeps none of your data
 • Does not read your text or record the screen
-• No account needed, works offline
+• Locks even without internet
+• Free, with ads only on the adult screen. Never during the video.
+• BabyLock Pro: pay once and remove ads forever. No subscription.
 
 ABOUT THE ACCESSIBILITY PERMISSION
-BabyLock uses the Android accessibility service only to lock touches, gestures and volume while the lock is on, and to close the notification shade. It only checks whether the shade is open, never reads text or other apps and sends nothing to the internet. If you prefer not to turn on accessibility, a simpler mode locks touches only.
+BabyLock uses the Android accessibility service only to lock touches, gestures and volume while the lock is on, and to close the notification shade. It only checks whether the shade is open, never reads text or other apps, and nothing it sees leaves your phone. If you prefer not to turn on accessibility, a simpler mode locks touches only.
 
 Note: no app can lock the power button. Restarting the phone always unlocks it.

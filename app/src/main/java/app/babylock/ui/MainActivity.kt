@@ -22,6 +22,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import app.babylock.ads.Ads
+import app.babylock.billing.Pro
 import app.babylock.settings.Prefs
 import app.babylock.ui.theme.BabyLockTheme
 import app.babylock.ui.theme.Motion
@@ -43,6 +45,13 @@ class MainActivity : ComponentActivity() {
                         SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
                     }
                     enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+                }
+                // Anúncios e o pedido de consentimento só depois das boas-vindas, já na tela do adulto.
+                LaunchedEffect(onboarded) {
+                    if (onboarded) {
+                        Pro.start(this@MainActivity)
+                        Ads.start(this@MainActivity)
+                    }
                 }
                 AnimatedContent(
                     targetState = onboarded,

@@ -64,6 +64,11 @@ object Prefs {
         get() = sp.getBoolean("disclosure_accepted", false)
         set(v) = sp.edit().putBoolean("disclosure_accepted", v).apply()
 
+    /** Última resposta da Play sobre a compra do BabyLock Pro (vale até a Play responder de novo). */
+    var pro: Boolean
+        get() = sp.getBoolean("pro", false)
+        set(v) = sp.edit().putBoolean("pro", v).apply()
+
     /** As boas-vindas já foram vistas (ou puladas). */
     var onboardingDone: Boolean
         get() = sp.getBoolean("onboarding_done", false)

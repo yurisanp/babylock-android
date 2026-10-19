@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.babylock.billing.Pro
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
 import app.babylock.ui.theme.BabyLockTheme
@@ -48,6 +49,7 @@ class HomeScreenTest {
         LockController.cancelScheduled()
         LockController.unlock(context)
         ShadowSettings.setCanDrawOverlays(false)
+        Pro.setForTest(owned = false, price = null)
     }
 
     private var tours = 0
@@ -157,7 +159,7 @@ class HomeScreenTest {
         assertThat(tours).isEqualTo(1)
         compose.onNodeWithTag("help_privacy").performScrollTo().performClick()
         compose.onNodeWithText("Sua privacidade").assertIsDisplayed()
-        compose.onNodeWithText("não tem acesso à internet", substring = true).assertExists()
+        compose.onNodeWithText("nunca durante o vídeo", substring = true).assertExists()
         compose.onNodeWithTag("privacy_ok").performClick()
         compose.onNodeWithText("Sua privacidade").assertDoesNotExist()
     }
@@ -200,5 +202,27 @@ class HomeScreenTest {
         assertThat(Prefs.accessibilityButton).isTrue()
         // O botão é do próprio BabyLock: não precisa mexer no atalho de acessibilidade do sistema.
         assertThat(startedActions()).doesNotContain(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+    }
+
+    @Test
+    fun `sem resposta da Play nao mostra a oferta do Pro`() {
+        show()
+        compose.onNodeWithTag("pro_card").assertDoesNotExist()
+    }
+
+    @Test
+    fun `oferta do Pro mostra o preco da Play`() {
+        Pro.setForTest(owned = false, price = "R$ 14,99")
+        show()
+        compose.onNodeWithText("Sem anúncios para sempre").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Tirar anúncios por R$ 14,99").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
+    fun `quem tem o Pro so ve o agradecimento`() {
+        Pro.setForTest(owned = true, price = "R$ 14,99")
+        show()
+        compose.onNodeWithText("BabyLock Pro ativo. Sem anúncios. Obrigado!").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("pro_buy").assertDoesNotExist()
     }
 }

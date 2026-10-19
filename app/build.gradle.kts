@@ -18,6 +18,13 @@ fun signingValue(env: String, prop: String): String? =
 
 val releaseStoreFile = signingValue("BABYLOCK_KEYSTORE_FILE", "storeFile")
 
+// Anúncios (AdMob). Sem os IDs reais, usa os IDs de teste do Google (mostram "Test Ad" e não pagam nada).
+// Os reais vêm dos segredos ADMOB_APP_ID e ADMOB_BANNER_ID, ou de admobAppId/admobBannerId no keystore.properties.
+val testAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
+val testAdmobBannerId = "ca-app-pub-3940256099942544/9214589741"
+val admobAppId = signingValue("ADMOB_APP_ID", "admobAppId") ?: testAdmobAppId
+val admobBannerId = signingValue("ADMOB_BANNER_ID", "admobBannerId") ?: testAdmobBannerId
+
 android {
     namespace = "app.babylock"
     compileSdk = 36
@@ -33,6 +40,9 @@ android {
         // Só os idiomas que o app traduziu (as bibliotecas trazem dezenas; os outros caem no inglês).
         @Suppress("DEPRECATION")
         resourceConfigurations += listOf("en", "pt", "es")
+        // Debug e testes sempre com os IDs de teste: clicar em anúncio real do próprio app é proibido.
+        manifestPlaceholders["admobAppId"] = testAdmobAppId
+        buildConfigField("String", "ADMOB_BANNER_ID", "\"$testAdmobBannerId\"")
     }
 
     androidResources {
@@ -57,6 +67,8 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfigs.findByName("release")?.let { signingConfig = it }
+            manifestPlaceholders["admobAppId"] = admobAppId
+            buildConfigField("String", "ADMOB_BANNER_ID", "\"$admobBannerId\"")
         }
     }
     bundle {
@@ -69,6 +81,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     testOptions {
         unitTests {
@@ -123,6 +136,9 @@ dependencies {
     implementation(libs.androidx.compose.material.icons)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.biometric)
+    implementation(libs.play.services.ads)
+    implementation(libs.ump)
+    implementation(libs.billing)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
