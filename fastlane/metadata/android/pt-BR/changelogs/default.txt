@@ -1,0 +1,1 @@
+Primeira versão do BabyLock: trave a tela com um toque enquanto a criança assiste e destrave com a digital, o rosto ou o seu PIN.

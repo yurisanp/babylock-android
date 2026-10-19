@@ -50,7 +50,9 @@ class HomeScreenTest {
         ShadowSettings.setCanDrawOverlays(false)
     }
 
-    private fun show() = compose.setContent { BabyLockTheme { HomeScreen() } }
+    private var tours = 0
+
+    private fun show() = compose.setContent { BabyLockTheme { HomeScreen(onShowTour = { tours++ }) } }
 
     /** Ações de todas as telas que o app tentou abrir até agora. */
     private fun startedActions(): List<String?> {
@@ -74,11 +76,11 @@ class HomeScreenTest {
         compose.onNodeWithText("Proteção básica").assertIsDisplayed()
         compose.onNodeWithTag("enable_overlay").assertDoesNotExist()
         compose.onNodeWithTag("lock_button").assertIsEnabled().performClick()
-        compose.onNodeWithText("Travando em 5 s… abra o vídeo").assertIsDisplayed()
+        compose.onNodeWithText("Travando em 5 segundos… abra o vídeo").assertIsDisplayed()
         assertThat(LockController.countdown.value).isEqualTo(5)
         compose.onNodeWithTag("cancel_countdown").performClick()
         assertThat(LockController.countdown.value).isNull()
-        compose.onNodeWithText("Travando em 5 s… abra o vídeo").assertDoesNotExist()
+        compose.onNodeWithText("Travando em 5 segundos… abra o vídeo").assertDoesNotExist()
         compose.onNodeWithTag("lock_button").assertIsEnabled()
     }
 
@@ -114,7 +116,7 @@ class HomeScreenTest {
     @Test
     // Com a tela grande dos outros testes, o AlertDialog com campos de texto nunca fica ocioso
     // no Robolectric (acontece até com o tema padrão do Material). Na tela padrão ele funciona.
-    @Config(qualifiers = "w320dp-h470dp")
+    @Config(qualifiers = "pt-rBR-w320dp-h470dp")
     fun `definir PIN exige 4 digitos e confirmacao igual`() {
         show()
         compose.onNodeWithTag("pin_button").performScrollTo().performClick()
@@ -137,5 +139,26 @@ class HomeScreenTest {
         show()
         compose.onNodeWithText("Segure o canto superior direito", substring = true).assertExists()
         compose.onNodeWithText("por 4 segundos", substring = true).assertExists()
+        compose.onNodeWithText("Segurar o canto por 4 segundos").assertExists()
+    }
+
+    @Test
+    fun `divulgacao explica o proximo passo nas configuracoes`() {
+        show()
+        compose.onNodeWithTag("enable_accessibility").performClick()
+        compose.onNodeWithText("toque em BabyLock e ligue a chave", substring = true).assertIsDisplayed()
+        compose.onNodeWithText("não lê a tela", substring = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun `ajuda reabre as boas-vindas e mostra a privacidade`() {
+        show()
+        compose.onNodeWithTag("help_tour").performScrollTo().performClick()
+        assertThat(tours).isEqualTo(1)
+        compose.onNodeWithTag("help_privacy").performScrollTo().performClick()
+        compose.onNodeWithText("Sua privacidade").assertIsDisplayed()
+        compose.onNodeWithText("não tem acesso à internet", substring = true).assertExists()
+        compose.onNodeWithTag("privacy_ok").performClick()
+        compose.onNodeWithText("Sua privacidade").assertDoesNotExist()
     }
 }

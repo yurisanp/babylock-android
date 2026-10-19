@@ -164,7 +164,7 @@ class LockEndToEndTest {
         val answer = device.wait(Until.findObject(By.res("unlock_answer")), 5_000)
         answer.text = "0000"
         confirmButton().click()
-        assertThat(device.wait(Until.hasObject(By.textContains("Não confere")), 3_000)).isTrue()
+        assertThat(device.wait(Until.hasObject(By.text(context.getString(R.string.unlock_wrong))), 3_000)).isTrue()
         assertThat(LockController.locked.value).isTrue()
     }
 

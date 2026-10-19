@@ -60,6 +60,8 @@ import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
@@ -70,6 +72,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.babylock.R
 import app.babylock.ui.components.FingerprintGlyph
 import app.babylock.ui.components.Haptics
 import app.babylock.ui.components.pressScale
@@ -83,6 +86,7 @@ import kotlinx.coroutines.awaitCancellation
 
 /** Mesmo valor de UnlockActivity.TIMEOUT_MS: a barra mostra quanto falta para travar de novo. */
 private const val TIMEOUT_MS = 20_000
+private const val TIMEOUT_SECONDS = TIMEOUT_MS / 1000
 
 /**
  * Folha de confirmação do adulto, que sobe por cima do vídeo.
@@ -104,6 +108,7 @@ fun UnlockScreen(
     var attempts by remember { mutableIntStateOf(0) }
     val view = LocalView.current
     val showAnswer = hasPin || !canUseSystemAuth
+    val pane = stringResource(R.string.unlock_pane)
 
     val sheetState = remember { MutableTransitionState(false).apply { targetState = true } }
     val scrim = remember { Animatable(0f) }
@@ -158,7 +163,7 @@ fun UnlockScreen(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .semantics { paneTitle = "Confirmar que é um adulto" }
+                    .semantics { paneTitle = pane }
                     .verticalScroll(rememberScrollState())
                     .navigationBarsPadding()
                     .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 24.dp),
@@ -167,12 +172,18 @@ fun UnlockScreen(
             ) {
                 Box(Modifier.size(width = 40.dp, height = 5.dp).background(MaterialTheme.colorScheme.outlineVariant, CircleShape))
                 TimeoutBar()
-                Text("Confirme que é você", style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    pluralStringResource(R.plurals.unlock_timeout_hint, TIMEOUT_SECONDS, TIMEOUT_SECONDS),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+                Text(stringResource(R.string.unlock_title), style = MaterialTheme.typography.headlineSmall)
 
                 if (canUseSystemAuth && !showAnswer) {
                     BigFingerprint(onSystemAuth)
                     Text(
-                        "Toque para usar a digital, o rosto ou a senha do celular",
+                        stringResource(R.string.unlock_biometric_hint),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
@@ -184,7 +195,7 @@ fun UnlockScreen(
 
                 if (showAnswer) {
                     Text(
-                        if (hasPin) "PIN do BabyLock" else "Quanto é ${challenge.first} × ${challenge.second}?",
+                        if (hasPin) stringResource(R.string.unlock_pin) else stringResource(R.string.unlock_math, challenge.first, challenge.second),
                         style = MaterialTheme.typography.titleMedium,
                     )
                     InterceptPlatformTextInput(interceptor = { _, _ -> awaitCancellation() }) {
@@ -234,7 +245,7 @@ fun UnlockScreen(
                     modifier = Modifier.fillMaxWidth().height(52.dp).testTag("unlock_cancel"),
                     border = BorderStroke(2.dp, MaterialTheme.colorScheme.outlineVariant),
                 ) {
-                    Text("Continuar bloqueado", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.unlock_cancel), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -263,6 +274,7 @@ private fun TimeoutBar() {
 
 @Composable
 private fun BigFingerprint(onClick: () -> Unit) {
+    val description = stringResource(R.string.unlock_biometric_button)
     val interaction = remember { MutableInteractionSource() }
     val r1 = rememberLoop(2200)
     val r2 = rememberLoop(2200, delayMs = 1100)
@@ -286,7 +298,7 @@ private fun BigFingerprint(onClick: () -> Unit) {
                 .clip(CircleShape)
                 .background(Night)
                 .clickable(interactionSource = interaction, indication = null, role = Role.Button, onClick = onClick)
-                .semantics { contentDescription = "Usar digital ou rosto" }
+                .semantics { contentDescription = description }
                 .testTag("unlock_biometric"),
             contentAlignment = Alignment.Center,
         ) { FingerprintGlyph(Cream) }
@@ -309,7 +321,7 @@ private fun BiometricPill(onClick: () -> Unit) {
     ) {
         FingerprintGlyph(Cream, Modifier.size(24.dp))
         Spacer(Modifier.width(10.dp))
-        Text("Usar digital ou rosto", style = MaterialTheme.typography.labelLarge, color = Cream)
+        Text(stringResource(R.string.unlock_biometric_button), style = MaterialTheme.typography.labelLarge, color = Cream)
     }
 }
 
@@ -359,7 +371,7 @@ private fun Keypad(canConfirm: Boolean, onDigit: (String) -> Unit, onBackspace: 
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(22.dp)) {
-            Key(tag = "unlock_backspace", description = "Apagar", onClick = onBackspace) {
+            Key(tag = "unlock_backspace", description = stringResource(R.string.unlock_key_backspace), onClick = onBackspace) {
                 Icon(Icons.AutoMirrored.Outlined.Backspace, null, tint = MaterialTheme.colorScheme.onSurface)
             }
             Key(label = "0", tag = "unlock_key_0", onClick = { onDigit("0") })
@@ -370,7 +382,7 @@ private fun Keypad(canConfirm: Boolean, onDigit: (String) -> Unit, onBackspace: 
             )
             Key(
                 tag = "unlock_confirm",
-                description = "Confirmar",
+                description = stringResource(R.string.unlock_key_confirm),
                 enabled = canConfirm,
                 background = bg,
                 onClick = onConfirm,

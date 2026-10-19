@@ -11,7 +11,7 @@ class DeviceTipsTest {
 
     private fun tipFor(manufacturer: String): DeviceTips.Tip? {
         ShadowBuild.setManufacturer(manufacturer)
-        return DeviceTips.current()
+        return DeviceTips.current(androidx.test.core.app.ApplicationProvider.getApplicationContext())
     }
 
     @Test

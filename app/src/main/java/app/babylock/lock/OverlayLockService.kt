@@ -74,7 +74,7 @@ class OverlayLockService : Service(), LockSurface {
         return NotificationCompat.Builder(this, BabyLockApp.CHANNEL_LOCK)
             .setSmallIcon(R.drawable.ic_lock)
             .setContentTitle(getString(R.string.app_name))
-            .setContentText(getString(R.string.notification_text))
+            .setContentText(getString(R.string.notification_text, Prefs.holdSeconds))
             .setOngoing(true)
             .setContentIntent(open)
             .build()

@@ -16,6 +16,14 @@ Plano completo: [BabyLock: pesquisa e plano](https://claude.ai/code/artifact/b57
 | Atalho | `lock/LockTileService.kt` | Bloco nas Configurações rápidas. |
 | Tela inicial | `ui/HomeScreen.kt` | Estado das permissões, divulgação de acessibilidade (exigida pelo Google Play), "Abrir e travar" para apps de vídeo, configurações, dicas por fabricante. |
 
+## Idiomas
+
+O app fala **português** (`values-pt`), **inglês** (`values`, padrão para idiomas sem tradução) e **espanhol** (`values-es`). Toda frase fica em `strings.xml`; o lint quebra o build se faltar tradução. No Android 13+ dá para escolher o idioma só do BabyLock em Configurações > Apps > BabyLock > Idioma.
+
+## Google Play
+
+Guia completo, com o que falta fazer na conta da Play e as respostas dos formulários: [docs/PLAY_STORE.md](docs/PLAY_STORE.md).
+
 ## Compilar
 
 O GitHub Actions compila a cada push e publica o APK de teste em **Actions > (última execução) > Artifacts > babylock-debug-apk**.
@@ -32,6 +40,9 @@ Rodam no GitHub Actions a cada push e pull request. O resumo de cada execução 
 | Comportamento (Robolectric) | `LockOverlayViewTest`, `LockControllerTest`, `DeviceTipsTest` | Gesto do canto (tempo, soltar antes, segundo dedo, arrastar), escolha do motor, contagem regressiva, trava/destrava, dicas por marca |
 | Telas (Compose + Robolectric) | `HomeScreenTest`, `UnlockScreenTest`, `UnlockActivityTest` | Estados de permissão, divulgação da acessibilidade antes de abrir as configurações, PIN, desbloqueio certo/errado, cancelar e voltar retravam |
 | Ponta a ponta (emulador API 30 e 34) | `app/src/androidTest/.../LockEndToEndTest` | Liga o serviço de acessibilidade de verdade e confere: toques não chegam ao "app de vídeo", volume travado, barra de notificações fecha, gesto + PIN destrava, cancelar e PIN errado mantêm travado, toques rápidos no canto não destravam |
+| Jornadas (emulador API 30 e 34) | `JourneyEndToEndTest` | Boas-vindas só na primeira vez, ajuda reabre as boas-vindas, aviso da acessibilidade antes das configurações, botão Travar com contagem por cima do vídeo, cancelar a contagem, tela apaga e acende continua travado, tela de desbloqueio esquecida volta a travar, modo básico (sem acessibilidade) trava e destrava |
+| Idiomas | `LocalizationTest` | Telas em inglês e espanhol, plurais, idioma sem tradução cai no inglês |
+| Capturas para a Play | `PlayScreenshots` (job próprio, API 34) | Tira capturas reais em português, inglês e espanhol (artefato `capturas-play`) |
 | Lint e cobertura | Android Lint, Kover | Relatório HTML de lint e de cobertura |
 
 Rodar localmente:
@@ -69,3 +80,4 @@ Para cada aparelho (Samsung, Xiaomi, Motorola, Pixel) e cada app (YouTube, Netfl
 - Em navegação por gestos, alguns aparelhos tratam as bordas antes do overlay. O Modo Fortaleza (fixação de tela) resolve; o guia dentro do app vem na próxima etapa.
 - No Android 11 ou anterior, fechar a barra usa "voltar", que pode afetar o app de vídeo em casos raros.
 - Ainda sem anúncios, compra Pro, timer e Não perturbe: entram na Fase 2 do plano.
+- Na Play o app não precisa do passo de "configurações restritas" (ele só existe para APK instalado por fora).
