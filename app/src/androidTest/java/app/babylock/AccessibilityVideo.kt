@@ -155,7 +155,7 @@ class AccessibilityVideo : EndToEndBase() {
     private fun clickFresh(selector: androidx.test.uiautomator.BySelector, what: String) {
         repeat(3) {
             val obj = device.wait(Until.findObject(selector), 3_000)
-                ?: throw AssertionError("Não achei $what. ${screenSummary()}")
+                ?: throw AssertionError("Não achei $what. ${screenSummary()}\n${diagnostics()}")
             try {
                 obj.click()
                 return
@@ -171,11 +171,14 @@ class AccessibilityVideo : EndToEndBase() {
         val windows = instrumentation.getUiAutomation(android.app.UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES)
             .windows.joinToString { "${it.type}:${it.title}:${it.isFocused}" }
         val top = device.executeShellCommand("dumpsys activity activities").lines()
-            .filter { "ResumedActivity" in it }.take(2).joinToString(" | ") { it.trim() }
-        val keys = listOf("BabyLockHold", "UnlockActivity", "START u0", "Background activity", "AndroidRuntime", "BAL")
+            .filter { "ResumedActivity" in it }.take(2).joinToString(" | ") { it.trim() } +
+            " | " + device.executeShellCommand("dumpsys window").lines()
+                .filter { "mCurrentFocus" in it || "mFocusedApp" in it }.joinToString(" | ") { it.trim() }
+        val keys = listOf("BabyLockHold", "UnlockActivity", "TouchProbe", "START u0", "Background activity", "AndroidRuntime", "BAL", "QuickNotice")
         val log = device.executeShellCommand("logcat -d").lines()
             .filter { line -> keys.any { it in line } }
-            .takeLast(25).joinToString("\n")
+            .map { it.take(260) }
+            .takeLast(40).joinToString("\n")
         return "locked=${LockController.locked.value} surface=${LockController.activeSurface?.javaClass?.simpleName} " +
             "service=${LockAccessibilityService.instance != null}\njanelas=[$windows]\ntopo=$top\nlog:\n$log"
     }
