@@ -30,6 +30,9 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Baixar o emulador (com novas tentativas)
+        run: bash .github/scripts/sdk_prefetch.sh 34
+
       - name: Compilar antes de ligar o emulador
         run: ./gradlew --no-daemon assembleDebug assembleDebugAndroidTest
 

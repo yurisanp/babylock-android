@@ -82,6 +82,9 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Baixar o emulador (com novas tentativas)
+        run: bash .github/scripts/sdk_prefetch.sh ${{ matrix.api-level }}
+
       - name: Compilar antes de ligar o emulador
         run: ./gradlew --no-daemon assembleDebug assembleDebugAndroidTest
 
@@ -125,6 +128,9 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+
+      - name: Baixar o emulador (com novas tentativas)
+        run: bash .github/scripts/sdk_prefetch.sh 34
 
       - name: Compilar antes de ligar o emulador
         run: ./gradlew --no-daemon assembleDebug assembleDebugAndroidTest
