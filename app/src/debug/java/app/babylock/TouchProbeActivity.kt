@@ -81,6 +81,17 @@ private class CartoonView(context: android.content.Context) : View(context) {
         canvas.drawRect(0f, h - 120f, w, h - 108f, paint)
         paint.color = Color.rgb(230, 50, 50)
         canvas.drawRect(0f, h - 120f, w * ((t / 120f) % 1f), h - 108f, paint)
-        postInvalidateOnAnimation()
+        // ~20 quadros por segundo bastam para o vídeo; parado quando outra tela (o desbloqueio) está por cima.
+        // Redesenhar a tela inteira sem parar no emulador sem GPU travava o resto (o UiAutomator não via o desbloqueio).
+        if (hasWindowFocus()) postInvalidateDelayed(FRAME_MS)
+    }
+
+    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+        super.onWindowFocusChanged(hasWindowFocus)
+        if (hasWindowFocus) invalidate()
+    }
+
+    private companion object {
+        const val FRAME_MS = 50L
     }
 }
