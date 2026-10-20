@@ -33,7 +33,7 @@ Tudo o que dá para preparar sem a conta de desenvolvedor já está no repositó
    Guarde o `.jks` e as senhas num lugar seguro (sem eles não dá para atualizar o app). Em GitHub > Settings > Secrets and variables > Actions, crie:
    `BABYLOCK_KEYSTORE_BASE64` (conteúdo do `.b64`), `BABYLOCK_KEYSTORE_PASSWORD`, `BABYLOCK_KEY_ALIAS` (`babylock-upload`), `BABYLOCK_KEY_PASSWORD`.
 5. **Gerar o primeiro pacote**: GitHub > Actions > "Versão para a Play" > Run workflow. Baixe o artefato `babylock-play-N` (tem o `app-release.aab`).
-6. **Criar o app no Play Console**: nome "BabyLock", idioma padrão **Português (Brasil)**, app gratuito. Aceite a **Assinatura de apps do Google Play**. E-mail de contato da ficha: `yurisantp@gmail.com`.
+6. **Criar o app no Play Console**: nome "BabyLock", idioma padrão **Português (Brasil)**, app gratuito. Aceite a **Assinatura de apps do Google Play**. E-mail de contato da ficha: `yurisantp@gmail.com`. Nome do pacote: `com.santech.babylock` (já é o do app; não dá para mudar depois do primeiro envio).
 7. **Primeiro envio manual**: Teste > Teste interno > Criar versão > envie o `.aab`. (A Play não deixa a API enviar antes do primeiro envio manual.)
 8. **Preencher a ficha e os formulários** com as respostas abaixo.
 9. **Teste fechado obrigatório**: contas pessoais novas precisam de **12 testadores por 14 dias seguidos** num teste fechado antes de pedir produção. Chame amigas e familiares com Android (é só um e-mail do Google de cada).
