@@ -131,8 +131,15 @@ class AccessibilityVideo : EndToEndBase() {
                     )
             }
         pause(1_500)
-        answer.text = pin
-        pause(1_500)
+        // Digita no teclado da tela, como o adulto faria: aparece no vídeo.
+        check(answer.isEnabled)
+        pin.forEach { d ->
+            val key = device.wait(Until.findObject(By.res("unlock_key_$d")), 3_000)
+                ?: throw AssertionError("Não achei a tecla $d. ${screenSummary()}")
+            key.click()
+            pause(450)
+        }
+        pause(1_000)
         device.wait(Until.findObject(By.res("unlock_confirm").enabled(true)), 3_000)?.click()
             ?: throw AssertionError("O botão Confirmar não ficou ativo")
         waitUntil("destravar") { !LockController.locked.value }
