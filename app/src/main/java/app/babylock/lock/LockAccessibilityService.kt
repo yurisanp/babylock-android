@@ -2,15 +2,12 @@ package app.babylock.lock
 
 import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
-import android.database.ContentObserver
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import android.provider.Settings
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.WindowManager
@@ -52,7 +49,8 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         }
     }
 
-    // Botão de acessibilidade do Android (na barra de navegação ou flutuante): trava com um toque.
+    // Atalho de acessibilidade do Android (botão flutuante, canto, teclas de volume): trava com um toque.
+    // Só chega aqui porque o serviço pede o botão em xml-v30/accessibility_service_config.xml.
     private val buttonCallback = object : AccessibilityButtonController.AccessibilityButtonCallback() {
         override fun onClicked(controller: AccessibilityButtonController) = onButtonClicked()
     }
@@ -61,9 +59,6 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         super.onServiceConnected()
         instance = this
         accessibilityButtonController.registerAccessibilityButtonCallback(buttonCallback, main)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            contentResolver.registerContentObserver(Settings.Secure.getUriFor(BUTTON_TARGETS), false, shortcutObserver)
-        }
         updateButton(locked = LockController.locked.value)
     }
 
@@ -88,7 +83,6 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
     }
 
     private fun updateButton(locked: Boolean) {
-        keepShortcutRequest()
         val want = Prefs.accessibilityButton && !locked
         val wm = getSystemService(WindowManager::class.java)
         val view = bubble
@@ -152,26 +146,6 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
         Prefs.bubbleX = p.x
         Prefs.bubbleY = p.y
         if (b.parent != null) getSystemService(WindowManager::class.java).updateViewLayout(b, p)
-    }
-
-    /**
-     * Se o adulto pôs o BabyLock no atalho de acessibilidade do sistema (Android 11+), um toque nesse atalho
-     * DESLIGA o serviço, a menos que ele tenha pedido o botão. O sistema tira esse pedido quando o atalho não
-     * está configurado, então ele é refeito sempre que algo muda (inclusive quando o atalho é configurado).
-     * Até o Android 10 o pedido faria aparecer um botão do sistema, então lá ele não é feito.
-     */
-    private fun keepShortcutRequest() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
-        val info = serviceInfo ?: return
-        val flag = AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON
-        if ((info.flags and flag) == 0) {
-            info.flags = info.flags or flag
-            serviceInfo = info
-        }
-    }
-
-    private val shortcutObserver = object : ContentObserver(main) {
-        override fun onChange(selfChange: Boolean) = keepShortcutRequest()
     }
 
     override fun showOverlay() {
@@ -308,7 +282,6 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     override fun onDestroy() {
         accessibilityButtonController.unregisterAccessibilityButtonCallback(buttonCallback)
-        contentResolver.unregisterContentObserver(shortcutObserver)
         hideOverlay()
         overlay = null
         bubble?.let { if (it.parent != null) getSystemService(WindowManager::class.java).removeView(it) }
@@ -320,8 +293,6 @@ class LockAccessibilityService : AccessibilityService(), LockSurface {
 
     companion object {
         private const val SYSTEM_UI = "com.android.systemui"
-        // Configuração do sistema com os serviços postos no botão/atalho de acessibilidade (Android 11+).
-        private const val BUTTON_TARGETS = "accessibility_button_targets"
         private const val RECHECK_MS = 350L
         private const val WATCHDOG_MS = 500L
         private const val BACK_AFTER_MS = 700L
