@@ -5,6 +5,7 @@ import android.os.SystemClock
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -35,6 +36,9 @@ class AccessibilityVideo : EndToEndBase() {
 
     @Before
     fun preparar() {
+        // Com as animações ligadas (para o vídeo ficar natural) a tela nunca fica "parada":
+        // sem isto cada busca do UiAutomator espera 10 s pelo ocioso e perde a tela de desbloqueio.
+        Configurator.getInstance().waitForIdleTimeout = 500
         prepareDevice()
         setOverlayPermission(false)
         device.executeShellCommand("settings delete secure enabled_accessibility_services")
