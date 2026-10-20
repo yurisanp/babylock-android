@@ -30,7 +30,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "app.babylock"
+        applicationId = "com.santech.babylock"
         minSdk = 26
         targetSdk = 36
         // A Play exige um versionCode maior a cada envio: o CI passa o número da execução.
