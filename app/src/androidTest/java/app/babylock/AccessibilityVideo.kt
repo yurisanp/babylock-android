@@ -118,6 +118,7 @@ class AccessibilityVideo : EndToEndBase() {
         // Segura bem mais que o tempo do canto (2 s), para dar para ver o anel enchendo.
         val (x, y) = corner()
         val before = diagnostics()
+        device.executeShellCommand("logcat -c")
         device.swipe(x, y, x, y, 900)
         // Só confere que a tela abriu: com animações a árvore muda e referências guardadas ficam velhas.
         if (!device.wait(Until.hasObject(By.res("unlock_answer")), 8_000)) {
@@ -171,9 +172,10 @@ class AccessibilityVideo : EndToEndBase() {
             .windows.joinToString { "${it.type}:${it.title}:${it.isFocused}" }
         val top = device.executeShellCommand("dumpsys activity activities").lines()
             .filter { "ResumedActivity" in it }.take(2).joinToString(" | ") { it.trim() }
-        val log = device.executeShellCommand("logcat -d -t 300").lines()
-            .filter { "babylock" in it.lowercase() || "AndroidRuntime" in it || "Unlock" in it }
-            .takeLast(15).joinToString("\n")
+        val keys = listOf("BabyLockHold", "UnlockActivity", "START u0", "Background activity", "AndroidRuntime", "BAL")
+        val log = device.executeShellCommand("logcat -d").lines()
+            .filter { line -> keys.any { it in line } }
+            .takeLast(25).joinToString("\n")
         return "locked=${LockController.locked.value} surface=${LockController.activeSurface?.javaClass?.simpleName} " +
             "service=${LockAccessibilityService.instance != null}\njanelas=[$windows]\ntopo=$top\nlog:\n$log"
     }

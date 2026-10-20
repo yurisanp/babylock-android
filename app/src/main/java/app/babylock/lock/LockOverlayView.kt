@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -13,6 +14,7 @@ import android.widget.FrameLayout
 import android.view.animation.OvershootInterpolator
 import android.view.animation.PathInterpolator
 import android.widget.ImageView
+import app.babylock.BuildConfig
 import app.babylock.R
 
 /**
@@ -34,6 +36,7 @@ class LockOverlayView(
         holding = false
         ring.reset()
         performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        if (BuildConfig.DEBUG) Log.d(TAG, "canto segurado: pedindo desbloqueio")
         onUnlockRequested()
     }
     private var holding = false
@@ -115,6 +118,9 @@ class LockOverlayView(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (BuildConfig.DEBUG && event.actionMasked == MotionEvent.ACTION_DOWN) {
+            Log.d(TAG, "toque em (${event.x}, ${event.y}) tela ${width}x$height canto=${inCorner(event.x, event.y)}")
+        }
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN ->
                 if (inCorner(event.x, event.y)) {
@@ -122,16 +128,17 @@ class LockOverlayView(
                     mainHandler.postDelayed(trigger, holdMillis)
                     ring.start(holdMillis)
                 }
-            MotionEvent.ACTION_POINTER_DOWN -> cancelHold()
-            MotionEvent.ACTION_MOVE -> if (holding && !inCorner(event.x, event.y)) cancelHold()
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> cancelHold()
+            MotionEvent.ACTION_POINTER_DOWN -> cancelHold(event)
+            MotionEvent.ACTION_MOVE -> if (holding && !inCorner(event.x, event.y)) cancelHold(event)
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> cancelHold(event)
         }
         return true // consome tudo: nada chega ao vídeo
     }
 
     private fun inCorner(x: Float, y: Float) = x >= width - cornerPx && y <= cornerPx
 
-    private fun cancelHold() {
+    private fun cancelHold(event: MotionEvent? = null) {
+        if (BuildConfig.DEBUG && holding) Log.d(TAG, "segurar cancelado: ${event?.let { MotionEvent.actionToString(it.actionMasked) + " em (${it.x}, ${it.y})" } ?: "janela saiu"}")
         holding = false
         mainHandler.removeCallbacks(trigger)
         ring.cancel()
@@ -143,6 +150,7 @@ class LockOverlayView(
     }
 
     private companion object {
+        const val TAG = "BabyLockHold"
         const val CORNER_ALPHA = 0.55f
     }
 }

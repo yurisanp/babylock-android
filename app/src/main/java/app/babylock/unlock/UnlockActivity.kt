@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import app.babylock.BuildConfig
 import app.babylock.R
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
@@ -131,6 +132,7 @@ class UnlockActivity : FragmentActivity() {
         super.onStop()
         // Saiu desta tela sem confirmar (Home, troca de app, tela apagou): trava de novo.
         // Exceção: a tela de senha do próprio sistema (Android 9 e anteriores) também para esta Activity.
+        if (BuildConfig.DEBUG && !done) android.util.Log.d("BabyLockHold", "tela de desbloqueio parou sem confirmar")
         if (!isChangingConfigurations && !authInProgress) giveUp()
     }
 
