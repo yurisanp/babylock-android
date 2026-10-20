@@ -40,7 +40,6 @@ class AccessibilityVideo : EndToEndBase() {
         device.executeShellCommand("settings delete secure enabled_accessibility_services")
         waitUntil("o serviço começar desligado", timeoutMs = 15_000) { LockAccessibilityService.instance == null }
         Prefs.disclosureAccepted = false
-        Prefs.holdSeconds = 3
         device.executeShellCommand("settings put system show_touches 1")
         listOf(
             "settings put global sysui_demo_allowed 1",
@@ -112,8 +111,10 @@ class AccessibilityVideo : EndToEndBase() {
         check(LockController.locked.value) { "Destravou sozinho durante o vídeo" }
 
         // 6. O adulto segura o canto e confirma com o PIN.
-        holdCorner()
-        val answer = byTag("unlock_answer")
+        // Segura bem mais que o tempo do canto (2 s), para dar para ver o anel enchendo.
+        val (x, y) = corner()
+        device.swipe(x, y, x, y, 900)
+        val answer = byTag("unlock_answer", timeoutMs = 8_000)
         pause(1_500)
         answer.text = pin
         pause(1_500)
