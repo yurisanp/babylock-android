@@ -119,29 +119,26 @@ class AccessibilityVideo : EndToEndBase() {
         val (x, y) = corner()
         val before = diagnostics()
         device.swipe(x, y, x, y, 900)
-        val answer = device.wait(Until.findObject(By.res("unlock_answer")), 8_000)
-            ?: run {
-                val after = diagnostics()
-                // Segunda tentativa, igual aos testes de ponta a ponta, para saber se foi o gesto.
-                holdCorner()
-                device.wait(Until.findObject(By.res("unlock_answer")), 8_000)
-                    ?: throw AssertionError(
-                        "A tela de desbloqueio não abriu. canto=($x,$y) tela=${device.displayWidth}x${device.displayHeight}\n" +
-                            "ANTES: $before\nDEPOIS: $after\nDEPOIS DA 2ª: ${diagnostics()}",
-                    )
+        // Só confere que a tela abriu: com animações a árvore muda e referências guardadas ficam velhas.
+        if (!device.wait(Until.hasObject(By.res("unlock_answer")), 8_000)) {
+            val after = diagnostics()
+            // Segunda tentativa, igual aos testes de ponta a ponta, para saber se foi o gesto.
+            holdCorner()
+            if (!device.wait(Until.hasObject(By.res("unlock_answer")), 8_000)) {
+                throw AssertionError(
+                    "A tela de desbloqueio não abriu. canto=($x,$y) tela=${device.displayWidth}x${device.displayHeight}\n" +
+                        "ANTES: $before\nDEPOIS: $after\nDEPOIS DA 2ª: ${diagnostics()}",
+                )
             }
+        }
         pause(1_500)
         // Digita no teclado da tela, como o adulto faria: aparece no vídeo.
-        check(answer.isEnabled)
         pin.forEach { d ->
-            val key = device.wait(Until.findObject(By.res("unlock_key_$d")), 3_000)
-                ?: throw AssertionError("Não achei a tecla $d. ${screenSummary()}")
-            key.click()
+            clickFresh(By.res("unlock_key_$d"), "a tecla $d")
             pause(450)
         }
         pause(1_000)
-        device.wait(Until.findObject(By.res("unlock_confirm").enabled(true)), 3_000)?.click()
-            ?: throw AssertionError("O botão Confirmar não ficou ativo")
+        clickFresh(By.res("unlock_confirm").enabled(true), "o Confirmar ativo")
         waitUntil("destravar") { !LockController.locked.value }
         pause(2_000)
         device.click(device.displayWidth / 2, device.displayHeight / 2)
@@ -152,6 +149,21 @@ class AccessibilityVideo : EndToEndBase() {
     }
 
     private fun pause(ms: Long) = SystemClock.sleep(ms)
+
+    /** Acha e toca na hora; se o elemento for redesenhado no meio, procura de novo. */
+    private fun clickFresh(selector: androidx.test.uiautomator.BySelector, what: String) {
+        repeat(3) {
+            val obj = device.wait(Until.findObject(selector), 3_000)
+                ?: throw AssertionError("Não achei $what. ${screenSummary()}")
+            try {
+                obj.click()
+                return
+            } catch (_: androidx.test.uiautomator.StaleObjectException) {
+                pause(200)
+            }
+        }
+        throw AssertionError("$what sumia toda vez. ${screenSummary()}")
+    }
 
     /** Estado do bloqueio e das janelas, para entender uma falha só pelo log do CI. */
     private fun diagnostics(): String {
