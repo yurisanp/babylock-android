@@ -117,8 +117,19 @@ class AccessibilityVideo : EndToEndBase() {
         // 6. O adulto segura o canto e confirma com o PIN.
         // Segura bem mais que o tempo do canto (2 s), para dar para ver o anel enchendo.
         val (x, y) = corner()
+        val before = diagnostics()
         device.swipe(x, y, x, y, 900)
-        val answer = byTag("unlock_answer", timeoutMs = 8_000)
+        val answer = device.wait(Until.findObject(By.res("unlock_answer")), 8_000)
+            ?: run {
+                val after = diagnostics()
+                // Segunda tentativa, igual aos testes de ponta a ponta, para saber se foi o gesto.
+                holdCorner()
+                device.wait(Until.findObject(By.res("unlock_answer")), 8_000)
+                    ?: throw AssertionError(
+                        "A tela de desbloqueio não abriu. canto=($x,$y) tela=${device.displayWidth}x${device.displayHeight}\n" +
+                            "ANTES: $before\nDEPOIS: $after\nDEPOIS DA 2ª: ${diagnostics()}",
+                    )
+            }
         pause(1_500)
         answer.text = pin
         pause(1_500)
@@ -134,6 +145,19 @@ class AccessibilityVideo : EndToEndBase() {
     }
 
     private fun pause(ms: Long) = SystemClock.sleep(ms)
+
+    /** Estado do bloqueio e das janelas, para entender uma falha só pelo log do CI. */
+    private fun diagnostics(): String {
+        val windows = instrumentation.getUiAutomation(android.app.UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES)
+            .windows.joinToString { "${it.type}:${it.title}:${it.isFocused}" }
+        val top = device.executeShellCommand("dumpsys activity activities").lines()
+            .filter { "ResumedActivity" in it }.take(2).joinToString(" | ") { it.trim() }
+        val log = device.executeShellCommand("logcat -d -t 300").lines()
+            .filter { "babylock" in it.lowercase() || "AndroidRuntime" in it || "Unlock" in it }
+            .takeLast(15).joinToString("\n")
+        return "locked=${LockController.locked.value} surface=${LockController.activeSurface?.javaClass?.simpleName} " +
+            "service=${LockAccessibilityService.instance != null}\njanelas=[$windows]\ntopo=$top\nlog:\n$log"
+    }
 
     /** Procura um item rolando a lista das configurações, que muda de ordem entre versões do Android. */
     private fun findScrolling(selector: androidx.test.uiautomator.BySelector): UiObject2 {
