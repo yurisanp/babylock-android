@@ -57,6 +57,22 @@ class LockControllerTest {
     }
 
     @Test
+    fun `fim de um bloqueio abre a pausa para o anuncio de tela cheia`() {
+        app.getSharedPreferences("babylock", android.content.Context.MODE_PRIVATE).edit().clear().commit()
+        app.babylock.settings.Prefs.init(app)
+        app.babylock.ads.Interstitial.resetForTest()
+        ShadowSettings.setCanDrawOverlays(true)
+        LockController.unlock(app)
+        // Desbloquear sem estar travado não conta.
+        assertThat(app.babylock.ads.Interstitial.pendingForTest).isFalse()
+        LockController.lockNow(app)
+        LockController.unlock(app)
+        assertThat(app.babylock.settings.Prefs.sessionsDone).isEqualTo(1)
+        assertThat(app.babylock.ads.Interstitial.pendingForTest).isTrue()
+        app.babylock.ads.Interstitial.resetForTest()
+    }
+
+    @Test
     fun `bloqueio agendado faz contagem regressiva e trava no fim`() {
         ShadowSettings.setCanDrawOverlays(true)
         LockController.scheduleLock(app, 3)

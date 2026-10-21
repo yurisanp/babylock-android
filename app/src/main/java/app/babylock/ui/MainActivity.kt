@@ -22,7 +22,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.babylock.ads.Ads
+import app.babylock.ads.Interstitial
 import app.babylock.billing.Pro
 import app.babylock.settings.Prefs
 import app.babylock.ui.theme.BabyLockTheme
@@ -53,6 +55,11 @@ class MainActivity : ComponentActivity() {
                         Ads.start(this@MainActivity)
                     }
                 }
+                // Deixa o anúncio de tela cheia carregado para quando um bloqueio terminar.
+                val adsReady by Ads.ready.collectAsStateWithLifecycle()
+                LaunchedEffect(onboarded, adsReady) {
+                    if (onboarded && adsReady) Interstitial.preload(this@MainActivity)
+                }
                 AnimatedContent(
                     targetState = onboarded,
                     transitionSpec = {
@@ -77,5 +84,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // O adulto voltou para a tela inicial: se um bloqueio acabou de terminar, é a pausa certa para o anúncio.
+        if (Prefs.onboardingDone) Interstitial.maybeShow(this)
     }
 }
