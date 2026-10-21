@@ -69,6 +69,16 @@ object Prefs {
         get() = sp.getBoolean("pro", false)
         set(v) = sp.edit().putBoolean("pro", v).apply()
 
+    /** Quantos bloqueios já terminaram com o desbloqueio do adulto (o primeiro fica sem anúncio). */
+    var sessionsDone: Int
+        get() = sp.getInt("sessions_done", 0)
+        set(v) = sp.edit().putInt("sessions_done", v).apply()
+
+    /** Quando apareceu o último anúncio de tela cheia (para respeitar o intervalo mínimo). */
+    var lastInterstitialAt: Long
+        get() = sp.getLong("last_interstitial_at", 0L)
+        set(v) = sp.edit().putLong("last_interstitial_at", v).apply()
+
     /** As boas-vindas já foram vistas (ou puladas). */
     var onboardingDone: Boolean
         get() = sp.getBoolean("onboarding_done", false)

@@ -171,6 +171,9 @@
     <string name="pro_body">Pay only once. No monthly fee. Works on your next phone too.</string>
     <string name="pro_buy">Remove ads for %1$s</string>
     <string name="pro_owned">BabyLock Pro is on. No ads. Thank you!</string>
+    <string name="ads_hint">Ads keep BabyLock free.</string>
+    <string name="ads_hint_action">Remove ads</string>
+    <string name="pro_nudge">Prefer no ads? BabyLock Pro removes them all. Pay only once.</string>
 
     <!-- Avisos rápidos (somem sozinhos, sem nada na barra de notificações) -->
     <string name="notice_locked">Screen locked. Hold the corner to unlock.</string>

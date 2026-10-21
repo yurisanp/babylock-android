@@ -58,6 +58,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -95,6 +99,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.babylock.R
 import app.babylock.ads.AdBanner
+import app.babylock.ads.Interstitial
 import app.babylock.ads.Ads
 import app.babylock.billing.Pro
 import app.babylock.lock.LockAccessibilityService
@@ -151,6 +156,25 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
     val privacyOptionsRequired by Ads.privacyOptionsRequired.collectAsStateWithLifecycle()
     val pro by Pro.owned.collectAsStateWithLifecycle()
     val proPrice by Pro.price.collectAsStateWithLifecycle()
+    val offerPro by Interstitial.offerPro.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    val nudgeText = stringResource(R.string.pro_nudge)
+    val nudgeAction = stringResource(R.string.ads_hint_action)
+    fun buyPro() {
+        (context as? Activity)?.let { Pro.buy(it) }
+    }
+
+    // Logo depois de um anúncio de tela cheia, um lembrete só (que some sozinho) de que o Pro tira os anúncios.
+    LaunchedEffect(offerPro) {
+        if (!offerPro) return@LaunchedEffect
+        try {
+            if (Pro.owned.value || Pro.price.value == null) return@LaunchedEffect
+            val result = snackbar.showSnackbar(nudgeText, actionLabel = nudgeAction, withDismissAction = true, duration = SnackbarDuration.Long)
+            if (result == SnackbarResult.ActionPerformed) buyPro()
+        } finally {
+            Interstitial.proOffered()
+        }
+    }
 
     // Reavalia as permissões sempre que o adulto volta das Configurações.
     LifecycleResumeEffect(Unit) {
@@ -342,7 +366,7 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
                     // Só aparece quando a Play já respondeu com o preço, ou para agradecer quem comprou.
                     val price = proPrice
                     if (pro || price != null) {
-                        ProCard(owned = pro, price = price, onBuy = { (context as? Activity)?.let { Pro.buy(it) } })
+                        ProCard(owned = pro, price = price, onBuy = { buyPro() })
                     }
 
                     SectionTitle(stringResource(R.string.help_title))
@@ -363,8 +387,9 @@ fun HomeScreen(onShowTour: () -> Unit = {}) {
                     }
                     Spacer(Modifier.height(24.dp))
                 }
+                SnackbarHost(snackbar, Modifier.testTag("pro_nudge"))
                 // Anúncio só aqui, no rodapé da tela do adulto, longe do botão de travar.
-                AdBanner()
+                AdBanner(onRemoveAds = if (proPrice != null) { { buyPro() } } else null)
             }
         }
 

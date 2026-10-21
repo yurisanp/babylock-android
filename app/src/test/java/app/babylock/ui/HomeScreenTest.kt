@@ -13,6 +13,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import app.babylock.ads.Interstitial
+import app.babylock.ads.RemoveAdsHint
 import app.babylock.billing.Pro
 import app.babylock.lock.LockController
 import app.babylock.settings.Prefs
@@ -50,6 +52,7 @@ class HomeScreenTest {
         LockController.unlock(context)
         ShadowSettings.setCanDrawOverlays(false)
         Pro.setForTest(owned = false, price = null)
+        Interstitial.resetForTest()
     }
 
     private var tours = 0
@@ -224,5 +227,39 @@ class HomeScreenTest {
         show()
         compose.onNodeWithText("BabyLock Pro ativo. Sem anúncios. Obrigado!").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("pro_buy").assertDoesNotExist()
+    }
+
+    @Test
+    fun `depois do anuncio de tela cheia lembra uma vez que o Pro tira os anuncios`() {
+        Pro.setForTest(owned = false, price = "R$ 14,99")
+        show()
+        compose.mainClock.autoAdvance = false
+        Interstitial.setOfferProForTest(true)
+        compose.mainClock.advanceTimeBy(1_000)
+        compose.onNodeWithText("Prefere sem anúncios? O BabyLock Pro tira todos. Pague uma vez só.").assertIsDisplayed()
+        compose.onNodeWithText("Tirar anúncios").assertIsDisplayed()
+        compose.mainClock.autoAdvance = true
+        compose.onNodeWithText("Tirar anúncios").performClick()
+        compose.waitForIdle()
+        assertThat(Interstitial.offerPro.value).isFalse()
+    }
+
+    @Test
+    fun `quem tem o Pro nao recebe o lembrete`() {
+        Pro.setForTest(owned = true, price = "R$ 14,99")
+        show()
+        Interstitial.setOfferProForTest(true)
+        compose.waitForIdle()
+        compose.onNodeWithText("Prefere sem anúncios? O BabyLock Pro tira todos. Pague uma vez só.").assertDoesNotExist()
+        assertThat(Interstitial.offerPro.value).isFalse()
+    }
+
+    @Test
+    fun `linha acima do anuncio explica e leva ao Pro`() {
+        var cliques = 0
+        compose.setContent { BabyLockTheme { RemoveAdsHint(onClick = { cliques++ }) } }
+        compose.onNodeWithText("Os anúncios deixam o BabyLock grátis.").assertIsDisplayed()
+        compose.onNodeWithTag("ads_hint_remove").performClick()
+        assertThat(cliques).isEqualTo(1)
     }
 }

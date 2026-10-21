@@ -23,8 +23,11 @@ val releaseStoreFile = signingValue("BABYLOCK_KEYSTORE_FILE", "storeFile")
 // ADMOB_APP_ID/ADMOB_BANNER_ID no ambiente ou no keystore.properties trocam os reais, se um dia precisar.
 val testAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
 val testAdmobBannerId = "ca-app-pub-3940256099942544/9214589741"
+val testAdmobInterstitialId = "ca-app-pub-3940256099942544/1033173712"
 val admobAppId = signingValue("ADMOB_APP_ID", "admobAppId") ?: "ca-app-pub-3843018901761925~1080065725"
 val admobBannerId = signingValue("ADMOB_BANNER_ID", "admobBannerId") ?: "ca-app-pub-3843018901761925/7894167347"
+// Tela cheia: sem o ID real (segredo ADMOB_INTERSTITIAL_ID), o release sai sem esse anúncio.
+val admobInterstitialId = signingValue("ADMOB_INTERSTITIAL_ID", "admobInterstitialId") ?: ""
 
 android {
     namespace = "app.babylock"
@@ -44,6 +47,7 @@ android {
         // Debug e testes sempre com os IDs de teste: clicar em anúncio real do próprio app é proibido.
         manifestPlaceholders["admobAppId"] = testAdmobAppId
         buildConfigField("String", "ADMOB_BANNER_ID", "\"$testAdmobBannerId\"")
+        buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"$testAdmobInterstitialId\"")
     }
 
     androidResources {
@@ -70,6 +74,7 @@ android {
             signingConfigs.findByName("release")?.let { signingConfig = it }
             manifestPlaceholders["admobAppId"] = admobAppId
             buildConfigField("String", "ADMOB_BANNER_ID", "\"$admobBannerId\"")
+            buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"$admobInterstitialId\"")
         }
     }
     bundle {

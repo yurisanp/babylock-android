@@ -7,6 +7,7 @@ import android.os.Looper
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 import app.babylock.R
+import app.babylock.ads.Interstitial
 import app.babylock.unlock.UnlockActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -112,7 +113,11 @@ object LockController {
         app.stopService(Intent(app, OverlayLockService::class.java))
         _locked.value = false
         LockTileService.refresh(app)
-        if (wasLocked) QuickNotice.show(app, R.string.notice_unlocked)
+        if (wasLocked) {
+            QuickNotice.show(app, R.string.notice_unlocked)
+            // Pausa natural: quando o adulto voltar para a tela inicial, pode aparecer um anúncio de tela cheia.
+            Interstitial.onSessionEnded()
+        }
     }
 
     /** Chamado quando o motor some sozinho (ex.: o sistema desligou o serviço). */

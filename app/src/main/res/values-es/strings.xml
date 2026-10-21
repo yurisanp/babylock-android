@@ -173,6 +173,9 @@
     <string name="pro_body">Paga una sola vez. Sin mensualidad. Sirve también en tu próximo celular.</string>
     <string name="pro_buy">Quitar anuncios por %1$s</string>
     <string name="pro_owned">BabyLock Pro activo. Sin anuncios. ¡Gracias!</string>
+    <string name="ads_hint">Los anuncios mantienen BabyLock gratis.</string>
+    <string name="ads_hint_action">Quitar anuncios</string>
+    <string name="pro_nudge">¿Prefieres sin anuncios? BabyLock Pro los quita todos. Pagas una sola vez.</string>
 
     <!-- Avisos rápidos (somem sozinhos, sem nada na barra de notificações) -->
     <string name="notice_locked">Pantalla bloqueada. Mantén presionada la esquina para desbloquear.</string>
