@@ -72,6 +72,8 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfigs.findByName("release")?.let { signingConfig = it }
+            // Símbolos do código nativo (vem das bibliotecas) dentro do .aab: a Play mostra relatórios de falha legíveis.
+            ndk { debugSymbolLevel = "SYMBOL_TABLE" }
             manifestPlaceholders["admobAppId"] = admobAppId
             buildConfigField("String", "ADMOB_BANNER_ID", "\"$admobBannerId\"")
             buildConfigField("String", "ADMOB_INTERSTITIAL_ID", "\"$admobInterstitialId\"")
