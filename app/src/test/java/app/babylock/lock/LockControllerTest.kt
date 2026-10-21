@@ -1,10 +1,13 @@
 package app.babylock.lock
 
 import android.app.Application
+import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.babylock.R
+import app.babylock.ads.Interstitial
+import app.babylock.settings.Prefs
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
 import org.junit.Test
@@ -58,18 +61,18 @@ class LockControllerTest {
 
     @Test
     fun `fim de um bloqueio abre a pausa para o anuncio de tela cheia`() {
-        app.getSharedPreferences("babylock", android.content.Context.MODE_PRIVATE).edit().clear().commit()
-        app.babylock.settings.Prefs.init(app)
-        app.babylock.ads.Interstitial.resetForTest()
+        app.getSharedPreferences("babylock", Context.MODE_PRIVATE).edit().clear().commit()
+        Prefs.init(app)
+        Interstitial.resetForTest()
         ShadowSettings.setCanDrawOverlays(true)
         LockController.unlock(app)
         // Desbloquear sem estar travado não conta.
-        assertThat(app.babylock.ads.Interstitial.pendingForTest).isFalse()
+        assertThat(Interstitial.pendingForTest).isFalse()
         LockController.lockNow(app)
         LockController.unlock(app)
-        assertThat(app.babylock.settings.Prefs.sessionsDone).isEqualTo(1)
-        assertThat(app.babylock.ads.Interstitial.pendingForTest).isTrue()
-        app.babylock.ads.Interstitial.resetForTest()
+        assertThat(Prefs.sessionsDone).isEqualTo(1)
+        assertThat(Interstitial.pendingForTest).isTrue()
+        Interstitial.resetForTest()
     }
 
     @Test
