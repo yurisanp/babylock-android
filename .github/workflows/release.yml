@@ -8,8 +8,7 @@ name: Versão para a Play
 #   BABYLOCK_KEYSTORE_PASSWORD senha do keystore
 #   BABYLOCK_KEY_ALIAS         apelido da chave
 #   BABYLOCK_KEY_PASSWORD      senha da chave
-#   ADMOB_APP_ID               ID do app no AdMob (ca-app-pub-...~...); sem ele os anúncios ficam em modo de teste
-#   ADMOB_BANNER_ID            ID do bloco de banner (ca-app-pub-.../...)
+#   (Os IDs do AdMob já estão em app/build.gradle.kts; ADMOB_APP_ID/ADMOB_BANNER_ID só se quiser trocá-los.)
 #   PLAY_SERVICE_ACCOUNT_JSON  (opcional) conta de serviço da Play; com ela o pacote sobe sozinho
 #                              para o teste interno como rascunho. Veja docs/PLAY_STORE.md.
 
@@ -36,7 +35,6 @@ jobs:
       BABYLOCK_VERSION_CODE: ${{ github.run_number }}
       HAS_KEYSTORE: ${{ secrets.BABYLOCK_KEYSTORE_BASE64 != '' }}
       HAS_PLAY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
-      HAS_ADMOB: ${{ secrets.ADMOB_APP_ID != '' && secrets.ADMOB_BANNER_ID != '' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -59,10 +57,6 @@ jobs:
           ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
           ADMOB_BANNER_ID: ${{ secrets.ADMOB_BANNER_ID }}
         run: ./gradlew --no-daemon testDebugUnitTest bundleRelease
-
-      - name: Aviso sem AdMob
-        if: env.HAS_ADMOB != 'true'
-        run: echo "::warning::Sem os segredos ADMOB_APP_ID e ADMOB_BANNER_ID o pacote usa os anúncios de teste do Google e não gera receita. Veja docs/PLAY_STORE.md."
 
       - name: Aviso sem assinatura
         if: env.HAS_KEYSTORE != 'true'
