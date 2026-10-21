@@ -18,12 +18,13 @@ fun signingValue(env: String, prop: String): String? =
 
 val releaseStoreFile = signingValue("BABYLOCK_KEYSTORE_FILE", "storeFile")
 
-// Anúncios (AdMob). Sem os IDs reais, usa os IDs de teste do Google (mostram "Test Ad" e não pagam nada).
-// Os reais vêm dos segredos ADMOB_APP_ID e ADMOB_BANNER_ID, ou de admobAppId/admobBannerId no keystore.properties.
+// Anúncios (AdMob). O release usa os IDs reais do BabyLock (não são segredos: vão dentro do app).
+// Debug e testes usam os IDs de teste do Google (mostram "Test Ad" e não pagam nada).
+// ADMOB_APP_ID/ADMOB_BANNER_ID no ambiente ou no keystore.properties trocam os reais, se um dia precisar.
 val testAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
 val testAdmobBannerId = "ca-app-pub-3940256099942544/9214589741"
-val admobAppId = signingValue("ADMOB_APP_ID", "admobAppId") ?: testAdmobAppId
-val admobBannerId = signingValue("ADMOB_BANNER_ID", "admobBannerId") ?: testAdmobBannerId
+val admobAppId = signingValue("ADMOB_APP_ID", "admobAppId") ?: "ca-app-pub-3843018901761925~1080065725"
+val admobBannerId = signingValue("ADMOB_BANNER_ID", "admobBannerId") ?: "ca-app-pub-3843018901761925/7894167347"
 
 android {
     namespace = "app.babylock"
